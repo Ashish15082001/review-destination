@@ -19,9 +19,9 @@ export default async function ReviewPage({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link
-          href={`/reviews/${id}/comments`}
+          href={`/review/${id}/comments`}
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6"
         >
           go to comments
@@ -29,7 +29,7 @@ export default async function ReviewPage({
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Header Image */}
-          <Link href={`/reviews/${id}/photo`}>
+          <Link href={`/review/${id}/photo`}>
             <div className="relative h-96 w-full">
               <Image
                 src={reviewDataFromMongoDB.destinationPhotoUrl}

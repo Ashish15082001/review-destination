@@ -1,0 +1,33 @@
+import { getReviewData } from "@/lib/mongodb";
+import { ReactNode } from "react";
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id } = await params;
+  const reviewData = await getReviewData(id);
+
+  return {
+    title: `Review ${reviewData.destinationName}`,
+    description: `Read the detailed review for destination with ID ${id}. Discover insights, tips, and experiences shared by our travelers.`,
+  };
+};
+
+export default function ReviewLayout({
+  children,
+  modal,
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
+  console.log("[id]/layout.tsx");
+
+  return (
+    <div className="review-layout">
+      {children}
+      {modal}
+    </div>
+  );
+}

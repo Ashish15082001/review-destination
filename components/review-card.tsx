@@ -5,7 +5,7 @@ import { ReviewLikeButton } from "./review-like-button";
 
 export function ReviewCard({ review }: { review: ReviewDataFromMongoDB }) {
   return (
-    <Link href={`/reviews/${review._id}`}>
+    <Link href={`/review/${review._id}`}>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-[1.05] transition-all duration-300">
         {/* Destination Image */}
         <div className="relative h-60 w-full bg-gray-200">
