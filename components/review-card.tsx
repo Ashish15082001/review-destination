@@ -8,14 +8,14 @@ export function ReviewCard({ review }: { review: ReviewDataFromMongoDB }) {
     <Link href={`/reviews/${review._id}`}>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-[1.05] transition-all duration-300">
         {/* Destination Image */}
-        <div className="relative h-70 w-full bg-gray-200">
-          {/* <Image
+        <div className="relative h-60 w-full bg-gray-200">
+          <Image
             src={review.destinationPhotoUrl}
             alt={review.destinationName}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          /> */}
+          />
         </div>
 
         {/* Card Content */}

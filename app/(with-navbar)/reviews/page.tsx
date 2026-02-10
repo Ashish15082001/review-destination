@@ -1,6 +1,12 @@
 import { getAllReviewsData } from "@/lib/mongodb";
 import { ReviewCard } from "@/components/review-card";
 
+export const metadata = {
+  title: "Travel Reviews - Share Your Experiences",
+  description:
+    "Discover amazing destinations through travelers' experiences. Read and share reviews of your favorite travel spots.",
+};
+
 export default async function ReviewsPage() {
   const reviews = await getAllReviewsData();
 
