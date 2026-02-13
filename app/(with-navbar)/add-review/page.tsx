@@ -8,6 +8,7 @@ export default function AddReviewPage() {
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("File input changed:", e.target.files);
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -312,6 +313,7 @@ export default function AddReviewPage() {
             <button
               type="reset"
               className="px-6 py-3 border border-gray-300 rounded-md font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={() => setPreview(null)}
             >
               Reset
             </button>
