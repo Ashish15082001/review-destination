@@ -24,6 +24,17 @@ const addReviewAction = async (
   // Handle famousLocations - could be a JSON string or multiple form fields
   const famousLocations = formData.get("famousLocations") as string;
 
+  console.log({
+    userName,
+    destinationName,
+    destinationPhoto,
+    whenVisited,
+    review,
+    description,
+    experience,
+    famousLocations,
+  });
+
   // Validate form data with Zod
   const validationResult = ReviewDataFromBrowserSchema.safeParse({
     userName,

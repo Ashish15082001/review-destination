@@ -1,6 +1,9 @@
+import { isUserAthenticated } from "@/lib/auth";
 import Link from "next/link";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const isUserAuthenticated = await isUserAthenticated();
+
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
       <div className="container mx-auto px-6 py-6 flex items-center justify-between">
@@ -31,6 +34,22 @@ export default function Navbar() {
           >
             Add Review
           </Link>
+
+          {isUserAuthenticated ? (
+            <Link
+              href="/profile"
+              className="text-gray-600 hover:text-gray-900 transition"
+            >
+              Profile
+            </Link>
+          ) : (
+            <Link
+              href="/auth"
+              className="text-gray-600 hover:text-gray-900 transition"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </nav>
