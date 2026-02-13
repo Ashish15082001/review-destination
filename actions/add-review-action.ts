@@ -36,15 +36,46 @@ const addReviewAction = async (
     famousLocations,
   });
 
-  if (!validationResult.success) {
-    const errorMessage = validationResult.error.issues.map(
-      (issue) => issue.message,
-    );
+  const returnValue: AddReviewActionReturnType = {
+    type: validationResult.success ? "success" : "error",
+    fields: {
+      userName: {
+        value: userName,
+      },
+      destinationName: {
+        value: destinationName,
+      },
+      destinationPhoto: {},
+      whenVisited: {
+        value: whenVisited,
+      },
+      review: {
+        value: review,
+      },
+      description: {
+        value: description,
+      },
+      experience: {
+        value: experience,
+      },
+      famousLocations: {
+        value: famousLocations,
+      },
+    },
+  };
 
-    return {
-      error: true,
-      message: errorMessage,
-    };
+  if (!validationResult.success) {
+    validationResult.error.issues.forEach((issue) => {
+      const fieldName = issue.path[issue.path.length - 1];
+      if (returnValue.fields)
+        returnValue.fields[fieldName] = {
+          ...returnValue.fields[fieldName],
+          error: issue.message,
+        };
+      else returnValue.fields = { [fieldName]: { error: issue.message } };
+    });
+
+    return returnValue;
   }
 
   // Create review object with proper typing
@@ -56,10 +87,15 @@ const addReviewAction = async (
   );
 
   if (!uploadResult || !uploadResult.secure_url) {
-    return {
-      error: true,
-      message: ["Failed to upload image. Please try again."],
-    };
+    if (returnValue.fields)
+      returnValue.fields.destinationPhoto.error =
+        "Image upload failed. Please try again.";
+    else
+      returnValue.fields = {
+        destinationPhoto: { error: "Image upload failed. Please try again." },
+      };
+
+    return returnValue;
   }
 
   // Transform to MongoDB schema (replace File with URL)
@@ -79,15 +115,18 @@ const addReviewAction = async (
   await putReviewData(reviewDataToMongoDB);
   revalidatePath("/reviews");
 
-  return {
-    error: false,
-    message: ["Review added successfully. Redirecting to reviews page..."],
-  };
+  return { type: "success" };
 };
 
 export { addReviewAction };
 
 export interface AddReviewActionReturnType {
-  error: boolean;
-  message: string[] | null;
+  type?: "success" | "error";
+  fields?: Record<
+    PropertyKey,
+    {
+      value?: string;
+      error?: string;
+    }
+  >;
 }

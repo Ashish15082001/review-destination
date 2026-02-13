@@ -1,20 +1,40 @@
 "use client";
 
 import { addReviewAction } from "@/actions/add-review-action";
-import { Fragment, useActionState } from "react";
+import { useActionState, useState } from "react";
 
 export default function AddReviewPage() {
-  const [state, formAction, isPending] = useActionState(addReviewAction, {
-    error: false,
-    message: null,
-  });
+  const [state, formAction, isPending] = useActionState(addReviewAction, {});
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  };
+
+  const handleAddReview = async (formData: FormData) => {
+    formAction(formData);
+    setPreview(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-8">Add Your Travel Review</h1>
 
-        <form className="space-y-6" action={formAction}>
+        <form
+          className="space-y-6"
+          action={handleAddReview}
+          key={state.type === "success" ? Date.now() : "add-review-form"}
+        >
           {/* Destination Information Section */}
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
             <h2 className="text-xl font-semibold mb-4">Destination Details</h2>
@@ -29,10 +49,22 @@ export default function AddReviewPage() {
               <input
                 type="text"
                 id="userName"
+                defaultValue={
+                  state.fields && state.fields.userName
+                    ? (state.fields.userName.value as string)
+                    : ""
+                }
                 name="userName"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your name"
               />
+
+              {/* error message */}
+              {state.fields && state.fields.userName?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.userName.error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -46,9 +78,21 @@ export default function AddReviewPage() {
                 type="text"
                 id="destinationName"
                 name="destinationName"
+                defaultValue={
+                  state.fields && state.fields.destinationName
+                    ? (state.fields.destinationName.value as string)
+                    : ""
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="e.g., Paris, Tokyo, New York"
               />
+
+              {/* error message */}
+              {state.fields && state.fields.destinationName?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.destinationName.error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -62,8 +106,20 @@ export default function AddReviewPage() {
                 type="date"
                 id="whenVisited"
                 name="whenVisited"
+                defaultValue={
+                  state.fields && state.fields.whenVisited
+                    ? (state.fields.whenVisited.value as string)
+                    : ""
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+
+              {/* error message */}
+              {state.fields && state.fields.whenVisited?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.whenVisited.error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -73,13 +129,36 @@ export default function AddReviewPage() {
               >
                 Destination Photo *
               </label>
-              <input
-                type="file"
-                id="destinationPhoto"
-                name="destinationPhoto"
-                accept="image/*"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
+              <div className="flex gap-6">
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    id="destinationPhoto"
+                    name="destinationPhoto"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+
+                  {/* error message */}
+                  {state.fields && state.fields.destinationPhoto?.error && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {state.fields.destinationPhoto.error}
+                    </p>
+                  )}
+                </div>
+                {preview && (
+                  <div className="flex-1">
+                    <div className="w-full h-48 rounded-md overflow-hidden border border-gray-300">
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -98,9 +177,21 @@ export default function AddReviewPage() {
                 type="text"
                 id="review"
                 name="review"
+                defaultValue={
+                  state.fields && state.fields.review
+                    ? (state.fields.review.value as string)
+                    : ""
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Give your review a title"
               />
+
+              {/* error message */}
+              {state.fields && state.fields.review?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.review?.error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -114,9 +205,21 @@ export default function AddReviewPage() {
                 id="description"
                 name="description"
                 rows={4}
+                defaultValue={
+                  state.fields && state.fields.description
+                    ? (state.fields.description.value as string)
+                    : ""
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
                 placeholder="Provide a brief description of the destination"
               />
+
+              {/* error message */}
+              {state.fields && state.fields.description?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.description?.error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -130,9 +233,21 @@ export default function AddReviewPage() {
                 id="experience"
                 name="experience"
                 rows={6}
+                defaultValue={
+                  state.fields && state.fields.experience
+                    ? (state.fields.experience.value as string)
+                    : ""
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
                 placeholder="Share your detailed experience, what you loved, tips for other travelers, etc."
               />
+
+              {/* error message */}
+              {state.fields && state.fields.experience?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.experience.error}
+                </p>
+              )}
             </div>
           </div>
 
@@ -154,24 +269,38 @@ export default function AddReviewPage() {
                 id="famousLocations"
                 name="famousLocations"
                 rows={5}
+                defaultValue={
+                  state.fields && state.fields.famousLocations
+                    ? (state.fields.famousLocations.value as string)
+                    : ""
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
                 placeholder="Enter locations (one per line)&#10;e.g.,&#10;Eiffel Tower&#10;Louvre Museum&#10;Arc de Triomphe"
               />
               <p className="mt-2 text-sm text-gray-500">
                 Tip: Enter each location on a new line
               </p>
+
+              {/* error message */}
+              {state.fields && state.fields.famousLocations?.error && (
+                <p className="mt-2 text-sm text-red-600">
+                  {state.fields.famousLocations.error}
+                </p>
+              )}
             </div>
           </div>
 
-          {state.message && state.message.length > 0 && (
+          {/* success message */}
+          {state.type === "success" && (
             <div
-              className={`p-4 rounded-md ${state.error ? "bg-red-50 border border-red-700 text-red-700" : "bg-green-500 text-white"}`}
+              className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+              role="alert"
             >
-              {state.message.map((msg, index) => (
-                <Fragment key={index}>
-                  <p>{msg}</p>
-                </Fragment>
-              ))}
+              <strong className="font-bold">Success! </strong>
+              <span className="block sm:inline">
+                Your review has been submitted successfully. Thank you for
+                sharing your experience!
+              </span>
             </div>
           )}
 

@@ -14,7 +14,11 @@ const BaseReviewSchema = z.object({
 
 // Schema for form data (with File)
 export const ReviewDataFromBrowserSchema = BaseReviewSchema.extend({
-  destinationPhoto: z.instanceof(File, { message: "Please upload an image" }),
+  destinationPhoto: z
+    .instanceof(File, { message: "Please upload an image" })
+    .refine((file) => file.size > 0, {
+      message: "File size cannot be empty",
+    }),
 });
 
 // Schema for data going to MongoDB (with URL and datePosted)
