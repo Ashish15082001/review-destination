@@ -30,11 +30,7 @@ export default function AddReviewPage() {
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-8">Add Your Travel Review</h1>
 
-        <form
-          className="space-y-6"
-          action={handleAddReview}
-          key={state.type === "success" ? Date.now() : "add-review-form"}
-        >
+        <form className="space-y-6" action={handleAddReview}>
           {/* Destination Information Section */}
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
             <h2 className="text-xl font-semibold mb-4">Destination Details</h2>
