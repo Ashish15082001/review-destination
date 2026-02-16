@@ -73,6 +73,7 @@ const signInUser = async (
     }
 
     const sessionData = await createUserSession({
+      userId: userData._id,
       expiresOn: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Session expires in 7 days
     });
 

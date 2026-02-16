@@ -104,10 +104,12 @@ export interface UserDataToMongoDB extends z.infer<
 
 export const UserSessionDataFromMongoDBSchema = z.object({
   _id: z.instanceof(ObjectId),
+  userId: z.instanceof(ObjectId),
   expiresOn: z.date(),
 });
 
 export const UserSessionDataToMongoDBSchema = z.object({
+  userId: z.instanceof(ObjectId),
   expiresOn: z.date(),
 });
 

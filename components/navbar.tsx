@@ -37,6 +37,14 @@ export default async function Navbar() {
           >
             Add Review
           </Link>
+          {isUserAuthenticated && (
+            <Link
+              href="/profile"
+              className="text-gray-600 hover:text-gray-900 transition"
+            >
+              Profile
+            </Link>
+          )}
 
           {isUserAuthenticated ? (
             <form action={signOutUser}>

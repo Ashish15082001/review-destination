@@ -9,6 +9,7 @@ import {
   UserSessionDataToMongoDB,
 } from "@/schema/schema";
 import { MongoClient, Db, ObjectId, Collection } from "mongodb";
+import { cookies } from "next/headers";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your MongoDB URI to .env.local");
@@ -153,6 +154,23 @@ export async function registerNewUser({
   return result.insertedId;
 }
 
+export async function getUserDataUsingSession(): Promise<UserDataFromMongoDB | null> {
+  const sessionCookie = await cookies();
+
+  const sessionId = sessionCookie.get("sessionId")?.value;
+
+  if (!sessionId) return null;
+
+  const userSessionData = await getUserSessionDataFromMongoDB(sessionId);
+
+  if (!userSessionData) return null;
+
+  const collection = await getUsersCollectionFromMongoDM();
+  const userData = await collection.findOne({ _id: userSessionData.userId });
+
+  return userData;
+}
+
 // ###################### User Sessionrelated functions ######################
 
 export async function getUsersSessionCollectionFromMongoDB(): Promise<
@@ -160,6 +178,17 @@ export async function getUsersSessionCollectionFromMongoDB(): Promise<
 > {
   const db = await getDatabase();
   return db.collection("usersSessions");
+}
+
+export async function getUserSessionDataFromMongoDB(
+  sessionId: string,
+): Promise<UserSessionDataFromMongoDB | null> {
+  const userSessionsCollection = await getUsersSessionCollectionFromMongoDB();
+  const userSessionData = await userSessionsCollection.findOne({
+    _id: new ObjectId(sessionId),
+  });
+
+  return userSessionData;
 }
 
 export async function getUsersSessionCollectionToMongoDB(): Promise<
@@ -171,10 +200,12 @@ export async function getUsersSessionCollectionToMongoDB(): Promise<
 
 export async function createUserSession({
   expiresOn,
+  userId,
 }: UserSessionDataToMongoDB) {
   const collection = await getUsersSessionCollectionToMongoDB();
   const result = await collection.insertOne({
     expiresOn,
+    userId,
   });
 
   return result.insertedId;

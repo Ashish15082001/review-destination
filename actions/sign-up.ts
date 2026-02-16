@@ -66,9 +66,14 @@ const signUpUser = async (
       return returnValue;
     }
 
-    await registerNewUser({ userName, password, registeredAt: new Date() });
+    const registeredUserId = await registerNewUser({
+      userName,
+      password,
+      registeredAt: new Date(),
+    });
 
     const sessionData = await createUserSession({
+      userId: registeredUserId,
       expiresOn: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Session expires in 7 days
     });
 
