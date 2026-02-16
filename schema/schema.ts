@@ -99,3 +99,22 @@ export interface UserDataFromMongoDB extends z.infer<
 export interface UserDataToMongoDB extends z.infer<
   typeof UserDataToMongoDBSchema
 > {}
+
+// ############################## Schemas and Types for Users Session ##############################
+
+export const UserSessionDataFromMongoDBSchema = z.object({
+  _id: z.instanceof(ObjectId),
+  expiresOn: z.date(),
+});
+
+export const UserSessionDataToMongoDBSchema = z.object({
+  expiresOn: z.date(),
+});
+
+export interface UserSessionDataFromMongoDB extends z.infer<
+  typeof UserSessionDataFromMongoDBSchema
+> {}
+
+export interface UserSessionDataToMongoDB extends z.infer<
+  typeof UserSessionDataToMongoDBSchema
+> {}

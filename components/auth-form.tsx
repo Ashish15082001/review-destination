@@ -2,15 +2,20 @@
 
 import signInUser from "@/actions/sign-in";
 import signUpUser from "@/actions/sign-up";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { AuthMode } from "@/lib/auth-mode";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [state, formAction, isPending] = useActionState(
     mode === AuthMode.SIGN_IN ? signInUser : signUpUser,
     {},
   );
+
+  useEffect(() => {
+    if (state.type === "success") redirect("/");
+  }, [state.type]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -28,6 +33,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
               id="userName"
               name="userName"
               type="text"
+              defaultValue={
+                state.fields && state.fields.userName
+                  ? (state.fields.userName.value as string)
+                  : ""
+              }
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your userName"
             />
@@ -52,6 +62,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
               id="password"
               name="password"
               type="password"
+              defaultValue={
+                state.fields && state.fields.password
+                  ? (state.fields.password.value as string)
+                  : ""
+              }
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your password"
             />
@@ -64,6 +79,19 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             )}
           </div>
 
+          {state.message && (
+            <div
+              className={`rounded-md bg-${state.type === "success" ? "green" : "red"}-50 p-4`}
+            >
+              <p
+                className={`mt-2 text-sm text-${state.type === "success" ? "green" : "red"}-600`}
+              >
+                {state.message}
+              </p>
+            </div>
+          )}
+
+          {/* action button */}
           <button
             type="submit"
             disabled={isPending}

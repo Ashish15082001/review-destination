@@ -3,8 +3,12 @@ import {
   ReviewDataFromMongoDBSchema,
   ReviewDataToMongoDB,
   ReviewDataToMongoDBSchema,
+  UserDataFromMongoDB,
+  UserDataToMongoDB,
+  UserSessionDataFromMongoDB,
+  UserSessionDataToMongoDB,
 } from "@/schema/schema";
-import { MongoClient, Db, Collection, ObjectId } from "mongodb";
+import { MongoClient, Db, ObjectId, Collection } from "mongodb";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your MongoDB URI to .env.local");
@@ -78,7 +82,6 @@ export async function getReviewData(
 }
 
 export async function getAllReviewsData(): Promise<ReviewDataFromMongoDB[]> {
-  console.log("######## getAllReviewsData");
   // await new Promise((resolve) => setTimeout(resolve, 2000));
 
   console.log("Fetching all reviews data from MongoDB...");
@@ -106,6 +109,84 @@ export async function postLikeForReview(reviewId: string) {
     { _id: new ObjectId(reviewId) },
     { $inc: { totalLikes: 1 } },
   );
+}
+
+// ###################### User related functions ######################
+
+export async function getUsersCollectionFromMongoDM(): Promise<
+  Collection<UserDataFromMongoDB>
+> {
+  const db = await getDatabase();
+  return db.collection("users");
+}
+
+export async function getUsersCollectionToMongoDB(): Promise<
+  Collection<UserDataToMongoDB>
+> {
+  const db = await getDatabase();
+  return db.collection("users");
+}
+
+export async function getUserData({
+  userName,
+}: {
+  userName: string;
+}): Promise<UserDataFromMongoDB | null> {
+  const collection = await getUsersCollectionFromMongoDM();
+  const userData = await collection.findOne({ userName });
+
+  return userData;
+}
+
+export async function registerNewUser({
+  userName,
+  password,
+  registeredAt,
+}: UserDataToMongoDB) {
+  const collection = await getUsersCollectionToMongoDB();
+  const result = await collection.insertOne({
+    userName,
+    password,
+    registeredAt,
+  });
+
+  return result.insertedId;
+}
+
+// ###################### User Sessionrelated functions ######################
+
+export async function getUsersSessionCollectionFromMongoDB(): Promise<
+  Collection<UserSessionDataFromMongoDB>
+> {
+  const db = await getDatabase();
+  return db.collection("usersSessions");
+}
+
+export async function getUsersSessionCollectionToMongoDB(): Promise<
+  Collection<UserSessionDataToMongoDB>
+> {
+  const db = await getDatabase();
+  return db.collection("usersSessions");
+}
+
+export async function createUserSession({
+  expiresOn,
+}: UserSessionDataToMongoDB) {
+  const collection = await getUsersSessionCollectionToMongoDB();
+  const result = await collection.insertOne({
+    expiresOn,
+  });
+
+  return result.insertedId;
+}
+
+export async function deleteUserSession({ _id }: UserSessionDataFromMongoDB) {
+  const collection = await getUsersSessionCollectionToMongoDB();
+  const result = await collection.deleteOne({
+    _id: new ObjectId(_id),
+  });
+
+  return result.deletedCount > 0;
 }
 
 export default clientPromise;

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import BackButtonHeader from "@/components/back-button-header";
+import { isUserAthenticated } from "@/lib/isUserAthenticated";
+import { redirect } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,17 +20,20 @@ export const metadata: Metadata = {
     "People can review any destination they visited. This will help others to plan accordingly before visiting there.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isUserAuthenticated = await isUserAthenticated();
+
+  if (isUserAuthenticated === true) return redirect("/");
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <BackButtonHeader />
         {children}
       </body>
     </html>

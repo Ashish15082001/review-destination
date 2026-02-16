@@ -1,4 +1,7 @@
-import { isUserAthenticated } from "@/lib/auth";
+"use server";
+
+import signOutUser from "@/actions/sign-out";
+import { isUserAthenticated } from "@/lib/isUserAthenticated";
 import Link from "next/link";
 
 export default async function Navbar() {
@@ -36,12 +39,14 @@ export default async function Navbar() {
           </Link>
 
           {isUserAuthenticated ? (
-            <Link
-              href="/profile"
-              className="text-gray-600 hover:text-gray-900 transition"
-            >
-              Profile
-            </Link>
+            <form action={signOutUser}>
+              <button
+                type="submit"
+                className="text-gray-600 hover:text-gray-900 transition"
+              >
+                Sign Out
+              </button>
+            </form>
           ) : (
             <Link
               href="/auth"

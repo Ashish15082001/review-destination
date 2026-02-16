@@ -4,7 +4,9 @@ import { cookies } from "next/headers";
 
 export async function isUserAthenticated() {
   //  return if user is authenticated or not
-  const sessionId = (await cookies()).get("session-id");
+  const sessionData = (await cookies()).get("sessionId");
 
-  return sessionId ? true : false;
+  console.log(sessionData);
+
+  return sessionData ? true : false;
 }
