@@ -5,6 +5,7 @@ import { putReviewData } from "@/lib/mongodb";
 import {
   ReviewDataFromBrowser,
   ReviewDataFromBrowserSchema,
+  ReviewDataToMongoDB,
 } from "@/schema/schema";
 import { revalidatePath } from "next/cache";
 
@@ -110,7 +111,7 @@ const addReviewAction = async (
   }
 
   // Transform to MongoDB schema (replace File with URL)
-  const reviewDataToMongoDB = {
+  const reviewDataToMongoDB: ReviewDataToMongoDB = {
     userName: reviewDataFromBrowser.userName,
     destinationName: reviewDataFromBrowser.destinationName,
     destinationPhotoUrl: uploadResult.secure_url,
@@ -120,7 +121,7 @@ const addReviewAction = async (
     experience: reviewDataFromBrowser.experience,
     famousLocations: reviewDataFromBrowser.famousLocations,
     datePosted: new Date(),
-    totalLikes: 0,
+    likes: [],
   };
 
   await putReviewData(reviewDataToMongoDB);

@@ -16,6 +16,7 @@ const BaseReviewSchema = z.object({
 
 // Schema for form data (with File)
 export const ReviewDataFromBrowserSchema = BaseReviewSchema.extend({
+  // url of image hosted/stored in cloudnary
   destinationPhoto: z
     .instanceof(File, { message: "Please upload an image" })
     .refine((file) => file.size > 0, {
@@ -26,7 +27,15 @@ export const ReviewDataFromBrowserSchema = BaseReviewSchema.extend({
 // Schema for data going to MongoDB (with URL and datePosted)
 export const ReviewDataToMongoDBSchema = BaseReviewSchema.extend({
   destinationPhotoUrl: z.url("Invalid URL"),
-  totalLikes: z.number().default(0),
+  // storing likes as an array of user ids who liked
+  likes: z
+    .array(
+      z.object({
+        dateLiked: z.date().default(() => new Date()),
+        userId: z.string(),
+      }),
+    )
+    .default([]),
   datePosted: z.date().default(() => new Date()),
 });
 
