@@ -1,10 +1,18 @@
 "use server";
 
-import { postLikeForReview } from "@/lib/mongodb";
-import { revalidatePath } from "next/cache";
+import { insertLikeData } from "@/lib/mongodb";
 
-const likeReviewAction = async (reviewId: string) => {
-  await postLikeForReview(reviewId);
+export interface LikeReviewActionArgs {
+  reviewId: string;
+  userId: string;
+}
+
+const likeReviewAction = async ({ reviewId, userId }: LikeReviewActionArgs) => {
+  await insertLikeData({
+    userId: userId,
+    reviewId: reviewId,
+    likedOn: new Date(),
+  });
   // revalidatePath(`/reviews`);
 };
 

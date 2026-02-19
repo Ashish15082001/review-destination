@@ -1,11 +1,11 @@
 "use client";
 
 import { likeReviewAction } from "@/actions/like-review-action";
-import { UserDataFromMongoDB } from "@/schema/schema";
+import { UserData } from "@/schema/user";
 import { useOptimistic, useTransition } from "react";
 
 interface ReviewLikeButtonProps {
-  userData: UserDataFromMongoDB | null;
+  userData: UserData | null;
   reviewId: string;
   totalLikes: number;
 }
@@ -21,19 +21,18 @@ export function ReviewLikeButton({
   );
   const [isPending, startTransition] = useTransition();
 
-  const likeAction = async (reviewId: string) => {
-    startTransition(() => {
-      addOptimisticLike(1);
-    });
+  const likeAction = async () => {
+    if (userData) {
+      startTransition(() => {
+        addOptimisticLike(1);
+      });
 
-    await likeReviewAction(reviewId);
+      await likeReviewAction({ reviewId, userId: userData._id });
+    }
   };
 
-  if (reviewId === "6984b9219ed4d67fa4f500b9")
-    console.log("component is rendering...", totalLikes, optimisticLikes);
-
   return (
-    <form action={likeAction.bind(null, reviewId)} className="w-full">
+    <form action={likeAction.bind(null)} className="w-full">
       <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200">
         {userData && (
           <button
@@ -59,9 +58,6 @@ export function ReviewLikeButton({
             </svg>
           </button>
         )}
-        <span className="text-sm text-gray-700 font-medium">
-          {totalLikes} likes
-        </span>
       </div>
     </form>
   );

@@ -13,7 +13,7 @@ const BaseReviewSchema = z.object({
 });
 
 // Schema for form data (with File) recieved from browser
-export const ReviewDataFromBrowserSchema = BaseReviewSchema.extend({
+export const ReviewDataBrowserSchema = BaseReviewSchema.extend({
   // url of image hosted/stored in cloudnary
   destinationPhoto: z
     .instanceof(File, { message: "Please upload an image" })
@@ -22,32 +22,24 @@ export const ReviewDataFromBrowserSchema = BaseReviewSchema.extend({
     }),
 });
 
-// Schema for data going to MongoDB (with URL and datePosted)
-export const ReviewDataToMongoDBSchema = BaseReviewSchema.extend({
+// Schema for review data stored in database
+export const ReviewDataDocumentSchema = BaseReviewSchema.extend({
+  _id: z.instanceof(ObjectId),
   destinationPhotoUrl: z.url("Invalid URL"),
-  // storing likes as an array of user ids who liked
-  likes: z.array(
-    z.object({
-      dateLiked: z.date(),
-      userId: z.instanceof(ObjectId),
-    }),
-  ),
   datePosted: z.date(),
 });
 
-// Schema for data coming from MongoDB (with _id)
-export const ReviewDataFromMongoDBSchema = ReviewDataToMongoDBSchema.extend({
-  _id: z.instanceof(ObjectId),
+// Schema for review data used in app
+export const ReviewDataSchema = ReviewDataDocumentSchema.extend({
+  _id: z.string(),
 });
 
-export interface ReviewDataFromBrowser extends z.infer<
-  typeof ReviewDataFromBrowserSchema
+export interface ReviewDataBrowser extends z.infer<
+  typeof ReviewDataBrowserSchema
 > {}
 
-export interface ReviewDataFromMongoDB extends z.infer<
-  typeof ReviewDataFromMongoDBSchema
+export interface ReviewDataDocument extends z.infer<
+  typeof ReviewDataDocumentSchema
 > {}
 
-export interface ReviewDataToMongoDB extends z.infer<
-  typeof ReviewDataToMongoDBSchema
-> {}
+export interface ReviewData extends z.infer<typeof ReviewDataSchema> {}

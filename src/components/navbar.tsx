@@ -32,7 +32,7 @@ export default async function Navbar() {
             Reviews
           </Link>
           <Link
-            href="/add-review"
+            href={isUserAuthenticated ? "/add-review" : "/auth?mode=signin"}
             className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
           >
             Add Review
@@ -57,7 +57,7 @@ export default async function Navbar() {
             </form>
           ) : (
             <Link
-              href="/auth"
+              href="/auth?mode=signin"
               className="text-gray-600 hover:text-gray-900 transition"
             >
               Sign In

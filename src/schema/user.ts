@@ -21,17 +21,15 @@ export const SignUpUserDataFromBrowserSchema = z.object({
 //   path: ["confirmPassword"],
 // });
 
-export const UserDataFromMongoDBSchema = z.object({
+export const UserDataDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   userName: z.string(),
   password: z.string(),
   registeredAt: z.date(),
 });
 
-export const UserDataToMongoDBSchema = z.object({
-  userName: z.string(),
-  password: z.string(),
-  registeredAt: z.date(),
+export const UserDataSchema = UserDataDocumentSchema.extend({
+  _id: z.string(),
 });
 
 export interface SignInUserDataFromBrowser extends z.infer<
@@ -42,10 +40,8 @@ export interface SignUpUserDataFromBrowser extends z.infer<
   typeof SignUpUserDataFromBrowserSchema
 > {}
 
-export interface UserDataFromMongoDB extends z.infer<
-  typeof UserDataFromMongoDBSchema
+export interface UserDataDocument extends z.infer<
+  typeof UserDataDocumentSchema
 > {}
 
-export interface UserDataToMongoDB extends z.infer<
-  typeof UserDataToMongoDBSchema
-> {}
+export interface UserData extends z.infer<typeof UserDataSchema> {}

@@ -1,11 +1,11 @@
 "use server";
 
 import { uploadImage } from "@/lib/cloudinary";
-import { putReviewData } from "@/lib/mongodb";
+import { insertReviewData } from "@/lib/mongodb";
 import {
-  ReviewDataFromBrowser,
-  ReviewDataFromBrowserSchema,
-  ReviewDataToMongoDB,
+  ReviewData,
+  ReviewDataBrowser,
+  ReviewDataBrowserSchema,
 } from "@/schema/review";
 import { revalidatePath } from "next/cache";
 
@@ -37,7 +37,7 @@ const addReviewAction = async (
   });
 
   // Validate form data with Zod
-  const validationResult = ReviewDataFromBrowserSchema.safeParse({
+  const validationResult = ReviewDataBrowserSchema.safeParse({
     userName,
     destinationName,
     destinationPhoto,
@@ -91,12 +91,10 @@ const addReviewAction = async (
   }
 
   // Create review object with proper typing
-  const reviewDataFromBrowser: ReviewDataFromBrowser = validationResult.data;
+  const reviewDataBrowser: ReviewDataBrowser = validationResult.data;
 
   // Upload image to Cloudinary
-  const uploadResult = await uploadImage(
-    reviewDataFromBrowser.destinationPhoto,
-  );
+  const uploadResult = await uploadImage(reviewDataBrowser.destinationPhoto);
 
   if (!uploadResult || !uploadResult.secure_url) {
     if (returnValue.fields)
@@ -110,21 +108,17 @@ const addReviewAction = async (
     return returnValue;
   }
 
-  // Transform to MongoDB schema (replace File with URL)
-  const reviewDataToMongoDB: ReviewDataToMongoDB = {
-    userName: reviewDataFromBrowser.userName,
-    destinationName: reviewDataFromBrowser.destinationName,
+  await insertReviewData({
+    userName: reviewDataBrowser.userName,
+    destinationName: reviewDataBrowser.destinationName,
     destinationPhotoUrl: uploadResult.secure_url,
-    whenVisited: reviewDataFromBrowser.whenVisited,
-    review: reviewDataFromBrowser.review,
-    description: reviewDataFromBrowser.description,
-    experience: reviewDataFromBrowser.experience,
-    famousLocations: reviewDataFromBrowser.famousLocations,
+    whenVisited: reviewDataBrowser.whenVisited,
+    review: reviewDataBrowser.review,
+    description: reviewDataBrowser.description,
+    experience: reviewDataBrowser.experience,
+    famousLocations: reviewDataBrowser.famousLocations,
     datePosted: new Date(),
-    likes: [],
-  };
-
-  await putReviewData(reviewDataToMongoDB);
+  });
   revalidatePath("/reviews");
 
   return { type: "success" };

@@ -1,14 +1,10 @@
-import { ReviewDataFromMongoDB } from "@/schema/schema";
 import Image from "next/image";
 import Link from "next/link";
 import { ReviewLikeButton } from "./review-like-button";
 import { getUserDataUsingSession } from "@/lib/mongodb";
+import { ReviewData } from "@/schema/review";
 
-export async function ReviewCard({
-  review,
-}: {
-  review: ReviewDataFromMongoDB;
-}) {
+export async function ReviewCard({ review }: { review: ReviewData }) {
   const userData = await getUserDataUsingSession();
 
   return (
@@ -55,7 +51,7 @@ export async function ReviewCard({
           <ReviewLikeButton
             userData={userData}
             reviewId={review._id}
-            totalLikes={review.likes.length}
+            totalLikes={0}
           />
         </div>
       </div>

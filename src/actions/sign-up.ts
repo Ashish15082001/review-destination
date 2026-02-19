@@ -1,6 +1,10 @@
 "use server";
 
-import { createUserSession, getUserData, registerNewUser } from "@/lib/mongodb";
+import {
+  getUserDataByUserName,
+  insertUserSession,
+  registerNewUser,
+} from "@/lib/mongodb";
 import { SignUpUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 
@@ -47,7 +51,7 @@ const signUpUser = async (
     }
 
     // check if user already exists
-    const userData = await getUserData({ userName });
+    const userData = await getUserDataByUserName({ userName });
 
     if (userData) {
       returnValue.type = "error";
@@ -69,7 +73,7 @@ const signUpUser = async (
       registeredAt: new Date(),
     });
 
-    const sessionData = await createUserSession({
+    const sessionData = await insertUserSession({
       userId: registeredUserId,
       expiresOn: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Session expires in 7 days
     });

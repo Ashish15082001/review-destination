@@ -1,21 +1,21 @@
 import z from "zod";
 import { ObjectId } from "mongodb";
 
-export const UserSessionDataFromMongoDBSchema = z.object({
+export const UserSessionDataDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   userId: z.instanceof(ObjectId),
   expiresOn: z.date(),
 });
 
-export const UserSessionDataToMongoDBSchema = z.object({
-  userId: z.instanceof(ObjectId),
-  expiresOn: z.date(),
+export const UserSessionDataSchema = UserSessionDataDocumentSchema.extend({
+  _id: z.string(),
+  userId: z.string(),
 });
 
-export interface UserSessionDataFromMongoDB extends z.infer<
-  typeof UserSessionDataFromMongoDBSchema
+export interface UserSessionDataDocument extends z.infer<
+  typeof UserSessionDataDocumentSchema
 > {}
 
-export interface UserSessionDataToMongoDB extends z.infer<
-  typeof UserSessionDataToMongoDBSchema
+export interface UserSessionData extends z.infer<
+  typeof UserSessionDataSchema
 > {}
