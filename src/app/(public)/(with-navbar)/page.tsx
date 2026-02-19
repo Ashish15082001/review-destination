@@ -134,17 +134,6 @@ export default function LandingPage() {
           <p className="mb-4">
             © 2026 Review Destination. All rights reserved.
           </p>
-          <div className="flex items-center justify-center space-x-6">
-            <Link href="/about" className="hover:text-gray-900 transition">
-              About Us
-            </Link>
-            <Link href="/reviews" className="hover:text-gray-900 transition">
-              All Reviews
-            </Link>
-            <Link href="/add-review" className="hover:text-gray-900 transition">
-              Add Review
-            </Link>
-          </div>
         </div>
       </footer>
     </div>
