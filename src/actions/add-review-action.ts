@@ -6,7 +6,7 @@ import {
   ReviewDataFromBrowser,
   ReviewDataFromBrowserSchema,
   ReviewDataToMongoDB,
-} from "@/schema/schema";
+} from "@/schema/review";
 import { revalidatePath } from "next/cache";
 
 const addReviewAction = async (

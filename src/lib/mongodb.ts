@@ -3,11 +3,16 @@ import {
   ReviewDataFromMongoDBSchema,
   ReviewDataToMongoDB,
   ReviewDataToMongoDBSchema,
+} from "@/schema/review";
+import {
   UserDataFromMongoDB,
+  UserDataFromMongoDBSchema,
   UserDataToMongoDB,
+} from "@/schema/user";
+import {
   UserSessionDataFromMongoDB,
   UserSessionDataToMongoDB,
-} from "@/schema/schema";
+} from "@/schema/userSession";
 import { MongoClient, Db, ObjectId, Collection } from "mongodb";
 import { cookies } from "next/headers";
 
@@ -62,8 +67,6 @@ export async function putReviewData(reviewData: ReviewDataToMongoDB) {
 export async function getReviewData(
   id: string,
 ): Promise<ReviewDataFromMongoDB> {
-  console.log("######## getReviewData");
-  // await new Promise((resolve) => setTimeout(resolve, 2000));
   const collection = await getReviewsCollection();
   const reviewData = await collection.findOne({ _id: new ObjectId(id) });
 
@@ -83,9 +86,6 @@ export async function getReviewData(
 }
 
 export async function getAllReviewsData(): Promise<ReviewDataFromMongoDB[]> {
-  // await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  console.log("Fetching all reviews data from MongoDB...");
   const collection = await getReviewsCollection();
   const reviewsData = await collection
     .find()
@@ -106,6 +106,7 @@ export async function getAllReviewsData(): Promise<ReviewDataFromMongoDB[]> {
 
 export async function postLikeForReview(reviewId: string) {
   const collection = await getReviewsCollection();
+
   await collection.updateOne(
     { _id: new ObjectId(reviewId) },
     { $inc: { totalLikes: 1 } },
@@ -114,16 +115,7 @@ export async function postLikeForReview(reviewId: string) {
 
 // ###################### User related functions ######################
 
-export async function getUsersCollectionFromMongoDM(): Promise<
-  Collection<UserDataFromMongoDB>
-> {
-  const db = await getDatabase();
-  return db.collection("users");
-}
-
-export async function getUsersCollectionToMongoDB(): Promise<
-  Collection<UserDataToMongoDB>
-> {
+export async function getUsersCollectionFromMongoDB() {
   const db = await getDatabase();
   return db.collection("users");
 }
@@ -133,10 +125,20 @@ export async function getUserData({
 }: {
   userName: string;
 }): Promise<UserDataFromMongoDB | null> {
-  const collection = await getUsersCollectionFromMongoDM();
+  const collection = await getUsersCollectionFromMongoDB();
   const userData = await collection.findOne({ userName });
 
-  return userData;
+  if (!userData) {
+    throw new Error("user not found");
+  }
+
+  const parseResult = UserDataFromMongoDBSchema.safeParse(userData);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid user data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
 }
 
 export async function registerNewUser({
@@ -144,7 +146,7 @@ export async function registerNewUser({
   password,
   registeredAt,
 }: UserDataToMongoDB) {
-  const collection = await getUsersCollectionToMongoDB();
+  const collection = await getUsersCollectionFromMongoDB();
   const result = await collection.insertOne({
     userName,
     password,
@@ -165,10 +167,20 @@ export async function getUserDataUsingSession(): Promise<UserDataFromMongoDB | n
 
   if (!userSessionData) return null;
 
-  const collection = await getUsersCollectionFromMongoDM();
+  const collection = await getUsersCollectionFromMongoDB();
   const userData = await collection.findOne({ _id: userSessionData.userId });
 
-  return userData;
+  if (!userData) {
+    throw new Error("user not found");
+  }
+
+  const parseResult = UserDataFromMongoDBSchema.safeParse(userData);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid user data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
 }
 
 // ###################### User Sessionrelated functions ######################

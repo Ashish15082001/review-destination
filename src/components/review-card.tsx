@@ -2,8 +2,15 @@ import { ReviewDataFromMongoDB } from "@/schema/schema";
 import Image from "next/image";
 import Link from "next/link";
 import { ReviewLikeButton } from "./review-like-button";
+import { getUserDataUsingSession } from "@/lib/mongodb";
 
-export function ReviewCard({ review }: { review: ReviewDataFromMongoDB }) {
+export async function ReviewCard({
+  review,
+}: {
+  review: ReviewDataFromMongoDB;
+}) {
+  const userData = await getUserDataUsingSession();
+
   return (
     <Link href={`/review/${review._id}`}>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-[1.05] transition-all duration-300">
@@ -46,8 +53,9 @@ export function ReviewCard({ review }: { review: ReviewDataFromMongoDB }) {
 
           {/* Like button and count */}
           <ReviewLikeButton
+            userData={userData}
             reviewId={review._id}
-            totalLikes={review.totalLikes}
+            totalLikes={review.likes.length}
           />
         </div>
       </div>

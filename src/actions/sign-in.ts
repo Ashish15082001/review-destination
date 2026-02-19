@@ -1,7 +1,7 @@
 "use server";
 
 import { createUserSession, getUserData } from "@/lib/mongodb";
-import { SignInUserDataFromBrowserSchema } from "@/schema/schema";
+import { SignInUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 
 const signInUser = async (

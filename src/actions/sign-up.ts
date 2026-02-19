@@ -1,10 +1,7 @@
 "use server";
 
 import { createUserSession, getUserData, registerNewUser } from "@/lib/mongodb";
-import {
-  SignUpUserDataFromBrowserSchema,
-  UserDataFromMongoDBSchema,
-} from "@/schema/schema";
+import { SignUpUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 
 const signUpUser = async (
