@@ -1,3 +1,4 @@
+import LottieAnimation from "@/components/lottie-animation";
 import WhyReviewDestinationCard from "@/components/why-review-destination-card";
 import Link from "next/link";
 
@@ -68,8 +69,8 @@ export default function LandingPage() {
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-bold">
-              1
+            <div className="w-40 h-40  rounded-full flex items-center justify-center mx-auto mb-6">
+              <LottieAnimation animationType="firstPlaceBadge" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">
               Explore Destinations
@@ -81,8 +82,8 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-bold">
-              2
+            <div className="w-40 h-40  rounded-full flex items-center justify-center mx-auto mb-6">
+              <LottieAnimation animationType="secondPlaceBadge" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">
               Share Your Experience
@@ -94,8 +95,8 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-bold">
-              3
+            <div className="w-40 h-40  rounded-full flex items-center justify-center mx-auto mb-6">
+              <LottieAnimation animationType="thirdPlaceBadge" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">
               Help Others Plan
