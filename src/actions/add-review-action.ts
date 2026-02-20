@@ -15,46 +15,34 @@ const addReviewAction = async (
   formData: FormData,
 ): Promise<AddReviewActionReturnType> => {
   // Extract and type the form data
-  const userName = formData.get("userName") as string;
   const destinationName = formData.get("destinationName") as string;
   const destinationPhotos = formData.getAll("destinationPhoto") as File[];
   const whenVisited = formData.get("whenVisited") as string;
-  const review = formData.get("review") as string;
   const description = formData.get("description") as string;
   const experience = formData.get("experience") as string;
 
-  // Handle famousLocations - could be a JSON string or multiple form fields
-  const famousLocations = formData.get("famousLocations") as string;
-
   console.log({
-    userName,
     destinationName,
     destinationPhotos,
     whenVisited,
-    review,
     description,
     experience,
-    famousLocations,
   });
 
   // Validate form data with Zod
   const validationResult = ReviewDataBrowserSchema.safeParse({
-    userName,
     destinationName,
     destinationPhotos,
     whenVisited,
-    review,
     description,
     experience,
-    famousLocations,
   });
+
+  console.log(validationResult);
 
   const returnValue: AddReviewActionReturnType = {
     type: validationResult.success ? "success" : "error",
     fields: {
-      userName: {
-        value: userName,
-      },
       destinationName: {
         value: destinationName,
       },
@@ -62,24 +50,18 @@ const addReviewAction = async (
       whenVisited: {
         value: whenVisited,
       },
-      review: {
-        value: review,
-      },
       description: {
         value: description,
       },
       experience: {
         value: experience,
       },
-      famousLocations: {
-        value: famousLocations,
-      },
     },
   };
 
   if (!validationResult.success) {
     validationResult.error.issues.forEach((issue) => {
-      const fieldName = issue.path[issue.path.length - 1];
+      const fieldName = issue.path[0];
       if (returnValue.fields)
         returnValue.fields[fieldName] = {
           ...returnValue.fields[fieldName],
