@@ -1,4 +1,4 @@
-export function ReviewCardStatsSkeleton() {
+export function ReviewStatsSkeleton() {
   return (
     <>
       {/* Likes skeleton */}

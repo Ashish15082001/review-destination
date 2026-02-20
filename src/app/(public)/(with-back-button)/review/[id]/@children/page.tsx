@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getReviewData, getUserDataByUserId } from "@/lib/mongodb";
+import { ReviewStats } from "@/components/review-stats/review-stats";
+import { Comments } from "@/components/comments/comments";
+import { CommentForm } from "@/components/comment-form/comment-form";
 
 export default async function ReviewPage({
   params,
@@ -10,9 +13,14 @@ export default async function ReviewPage({
 }) {
   const { id } = await params;
   const reviewData = await getReviewData(id);
+
+  if (!reviewData) {
+    notFound();
+  }
+
   const userData = await getUserDataByUserId({ userId: reviewData.userId });
 
-  if (!reviewData || !userData) {
+  if (!userData) {
     notFound();
   }
 
@@ -53,6 +61,9 @@ export default async function ReviewPage({
                 <span>•</span>
                 <span>Visited: {reviewData.whenVisited}</span>
               </div>
+              <div className="flex items-center gap-4 mt-3">
+                <ReviewStats reviewId={id} />
+              </div>
             </div>
 
             {/* Description */}
@@ -73,6 +84,16 @@ export default async function ReviewPage({
               <p className="text-gray-700 leading-relaxed">
                 {reviewData.experience}
               </p>
+            </div>
+
+            {/* comments */}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Comments
+              </h2>
+              <Comments reviewId={id} />
+
+              <CommentForm reviewId={id} />
             </div>
           </div>
         </div>

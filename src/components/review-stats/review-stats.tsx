@@ -5,7 +5,7 @@ import {
   getCommentsDataByReviewId,
 } from "@/lib/mongodb";
 
-export async function ReviewCardStats({ reviewId }: { reviewId: string }) {
+export async function ReviewStats({ reviewId }: { reviewId: string }) {
   const [likesData, commentsData] = await Promise.all([
     getLikesDataByReviewId({ reviewId }),
     getCommentsDataByReviewId({ reviewId }),

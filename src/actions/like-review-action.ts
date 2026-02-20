@@ -9,7 +9,7 @@ export interface LikeReviewActionArgs {
 
 const likeReviewAction = async ({ reviewId, userId }: LikeReviewActionArgs) => {
   await insertLikeData({
-    userId: userId,
+    likedBy: userId,
     reviewId: reviewId,
     likedOn: new Date(),
   });

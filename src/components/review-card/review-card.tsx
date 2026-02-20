@@ -4,8 +4,8 @@ import { ReviewData } from "@/schema/review";
 import { UserInfo } from "./user-info";
 import { Suspense } from "react";
 import { UserInfoSkeleton } from "./user-info-skeleton";
-import { ReviewCardStats } from "./review-card-stats";
-import { ReviewCardStatsSkeleton } from "./review-card-stats-skeleton";
+import { ReviewStats } from "../review-stats/review-stats";
+import { ReviewStatsSkeleton } from "../review-stats/review-stats-skeleton";
 
 export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
   return (
@@ -26,8 +26,8 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
         <div className="p-6">
           {/* reciew stats */}
           <div className="flex items-center space-x-4 mb-4">
-            <Suspense fallback={<ReviewCardStatsSkeleton />}>
-              <ReviewCardStats reviewId={reviewData._id} />
+            <Suspense fallback={<ReviewStatsSkeleton />}>
+              <ReviewStats reviewId={reviewData._id} />
             </Suspense>
           </div>
 
