@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from "mongodb";
+import { env } from "process";
 
-const uri =
-  "mongodb+srv://ashish:12345@cluster0.r2ify.mongodb.net/?retryWrites=true&w=majority";
+const uri = env.MONGODB_URI;
 
 function getRandomDate(monthsAgo: number = 6): Date {
   const now = new Date();
@@ -266,6 +266,11 @@ const commentPool = [
 
 // ─── Seed function ─────────────────────────────────────────────────────────────
 async function seedAll() {
+  if (!uri) {
+    console.error("Error: MONGODB_URI environment variable is not set.");
+    return;
+  }
+
   const client = new MongoClient(uri);
 
   try {
