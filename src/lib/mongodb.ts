@@ -31,35 +31,37 @@ import {
   UserSessionDataSchema,
 } from "@/schema/userSession";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("Please add your MongoDB URI to .env.local");
-}
-
-const uri: string = process.env.MONGODB_URI;
-const options = {};
-
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
-
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-if (process.env.NODE_ENV === "development") {
-  // In development mode, use a global variable to preserve the client across hot reloads
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+let _prodClientPromise: Promise<MongoClient> | undefined;
+
+function getClientPromise(): Promise<MongoClient> {
+  if (!process.env.MONGODB_URI) {
+    throw new Error("Please add your MongoDB URI to .env.local");
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  // In production mode, create a new client
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  const uri: string = process.env.MONGODB_URI;
+
+  if (process.env.NODE_ENV === "development") {
+    // In development mode, use a global variable to preserve the client across hot reloads
+    if (!global._mongoClientPromise) {
+      const client = new MongoClient(uri);
+      global._mongoClientPromise = client.connect();
+    }
+    return global._mongoClientPromise!;
+  } else {
+    // In production mode, cache the promise at module scope
+    if (!_prodClientPromise) {
+      const client = new MongoClient(uri);
+      _prodClientPromise = client.connect();
+    }
+    return _prodClientPromise;
+  }
 }
 
 export async function getDatabase(): Promise<Db> {
-  const client = await clientPromise;
+  const client = await getClientPromise();
   return client.db("review-destination");
 }
 
@@ -565,5 +567,3 @@ export async function deleteUserSession(_id: string) {
 
   return result.deletedCount > 0;
 }
-
-export default clientPromise;
