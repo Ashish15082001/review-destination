@@ -1,11 +1,8 @@
 import { getReviewData } from "@/lib/mongodb";
-import { ReactNode } from "react";
 
 export const generateMetadata = async ({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) => {
+}: PageProps<"/review/[id]">) => {
   const { id } = await params;
   const reviewData = await getReviewData(id);
 
@@ -25,10 +22,7 @@ export const generateMetadata = async ({
 export default function ReviewLayout({
   children,
   modal,
-}: {
-  children: ReactNode;
-  modal: ReactNode;
-}) {
+}: LayoutProps<"/review/[id]">) {
   console.log("[id]/layout.tsx");
 
   return (

@@ -8,9 +8,7 @@ import { CommentForm } from "@/components/comment-form/comment-form";
 
 export default async function ReviewPage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: PageProps<"/review/[id]">) {
   const { id } = await params;
   const reviewData = await getReviewData(id);
 

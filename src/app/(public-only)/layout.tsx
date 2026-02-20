@@ -20,11 +20,7 @@ export const metadata: Metadata = {
     "People can review any destination they visited. This will help others to plan accordingly before visiting there.",
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   const isUserAuthenticated = await isUserAthenticated();
 
   if (isUserAuthenticated === true) return redirect("/");

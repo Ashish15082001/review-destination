@@ -7,11 +7,7 @@ export const metadata: Metadata = {
     "People can review any destination they visited. This will help others to plan accordingly before visiting there.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <Navbar />

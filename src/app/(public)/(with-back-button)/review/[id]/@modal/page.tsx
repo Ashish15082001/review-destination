@@ -1,8 +1,4 @@
-export default function CommentPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function CommentPage() {
   console.log("[id]/@modal/page.tsx");
 
   return null;

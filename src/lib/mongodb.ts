@@ -30,6 +30,7 @@ import {
   UserSessionDataDocumentSchema,
   UserSessionDataSchema,
 } from "@/schema/userSession";
+import { cache } from "react";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -95,9 +96,10 @@ export async function insertReviewData(
   return newReviewDataDocument._id.toString();
 }
 
-export async function getReviewData(
+export const getReviewData = cache(async function (
   reviewId: string,
 ): Promise<ReviewData | null> {
+  console.log("getReviewData called with reviewId:", reviewId);
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
     _id: new ObjectId(reviewId),
@@ -121,7 +123,7 @@ export async function getReviewData(
   }
 
   return parseResult.data;
-}
+});
 
 export async function getAllReviewsData(): Promise<ReviewData[]> {
   const collection = await getReviewsCollection();

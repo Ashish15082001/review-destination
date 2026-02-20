@@ -1,8 +1,6 @@
 export default async function CommentPage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: PageProps<"/review/[id]">) {
   const { id } = await params;
 
   console.log("[id]/comments", id);

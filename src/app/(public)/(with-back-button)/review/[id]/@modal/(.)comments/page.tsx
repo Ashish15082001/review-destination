@@ -3,11 +3,7 @@
 import { useRouter } from "next/navigation";
 import { use } from "react";
 
-export default function CommentPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function CommentPage({ params }: PageProps<"/review/[id]">) {
   const { id } = use(params);
   const router = useRouter();
 

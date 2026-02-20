@@ -3,13 +3,7 @@
 import AuthForm from "@/components/auth-form/auth-form";
 import { AuthMode } from "@/lib/auth-mode";
 
-export default async function AuthPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+export default async function AuthPage({ searchParams }: PageProps<"/auth">) {
   const modeParam = (await searchParams).mode;
   const authMode: AuthMode =
     modeParam &&
