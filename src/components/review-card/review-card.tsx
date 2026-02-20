@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ReviewLikeButton } from "./review-like-button";
 import { ReviewData } from "@/schema/review";
-import { getUserDataByUserId } from "@/lib/mongodb";
 import { UserInfo } from "./user-info";
 import { Suspense } from "react";
 import { UserInfoSkeleton } from "./user-info-skeleton";
+import { ReviewCardStats } from "./review-card-stats";
+import { ReviewCardStatsSkeleton } from "./review-card-stats-skeleton";
 
 export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
   return (
@@ -24,6 +24,13 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
 
         {/* Card Content */}
         <div className="p-6">
+          {/* reciew stats */}
+          <div className="flex items-center space-x-4 mb-4">
+            <Suspense fallback={<ReviewCardStatsSkeleton />}>
+              <ReviewCardStats reviewId={reviewData._id} />
+            </Suspense>
+          </div>
+
           {/* Destination Name */}
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             {reviewData.destinationName}
@@ -44,13 +51,6 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
                 .toLowerCase()}
             </span>
           </div>
-
-          {/* Like button and count */}
-          {/* <ReviewLikeButton
-            userData={userData}
-            reviewId={reviewData._id}
-            totalLikes={0}
-          /> */}
         </div>
       </div>
     </Link>

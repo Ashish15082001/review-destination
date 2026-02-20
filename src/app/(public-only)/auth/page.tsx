@@ -18,7 +18,7 @@ export default async function AuthPage({
       ? (modeParam as AuthMode)
       : AuthMode.SIGN_IN;
 
-  console.log("AuthPage authMode", AuthMode.SIGN_IN);
+  console.log(authMode);
 
   return <AuthForm mode={authMode} />;
 }

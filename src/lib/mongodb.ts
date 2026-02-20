@@ -1,4 +1,15 @@
-import { LikeData, LikeDataDocument, LikeDataSchema } from "@/schema/like";
+import {
+  CommentData,
+  CommentDataDocument,
+  CommentDataDocumentSchema,
+  CommentDataSchema,
+} from "@/schema/comment";
+import {
+  LikeData,
+  LikeDataDocument,
+  LikeDataDocumentSchema,
+  LikeDataSchema,
+} from "@/schema/like";
 import {
   ReviewData,
   ReviewDataDocument,
@@ -61,7 +72,9 @@ export async function getReviewsCollection(): Promise<
   return db.collection("reviews");
 }
 
-export async function insertReviewData(reviewData: Omit<ReviewData, "_id">) {
+export async function insertReviewData(
+  reviewData: Omit<ReviewData, "_id">,
+): Promise<string> {
   // creating review document to be inserted
   const newReviewDataDocument: ReviewDataDocument = {
     ...reviewData,
@@ -76,6 +89,8 @@ export async function insertReviewData(reviewData: Omit<ReviewData, "_id">) {
 
   const collection = await getReviewsCollection();
   await collection.insertOne(parseResult.data);
+
+  return newReviewDataDocument._id.toString();
 }
 
 export async function getReviewData(
@@ -142,57 +157,246 @@ export async function getLikesCollection(): Promise<
   return db.collection("likes");
 }
 
-export async function insertLikeData({
-  reviewId,
-  likedOn,
-  userId,
-}: {
-  reviewId: string;
-  likedOn: Date;
-  userId: string;
-}) {
+export async function insertLikeData(
+  likeData: Omit<LikeData, "_id">,
+): Promise<string> {
   const collection = await getLikesCollection();
+  const likeDataDocument: LikeDataDocument = {
+    ...likeData,
+    _id: new ObjectId(),
+    reviewId: new ObjectId(likeData.reviewId),
+    likedBy: new ObjectId(likeData.likedBy),
+  };
 
-  await collection.updateOne(
-    { _id: new ObjectId(reviewId) },
-    {
-      $push: {
-        likes: {
-          userId: new ObjectId(userId),
-          likedOn: likedOn,
-        },
-      },
-    },
-    { upsert: true },
-  );
+  const parseResult = LikeDataDocumentSchema.safeParse(likeDataDocument);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid like data: ${parseResult.error.message}`);
+  }
+
+  await collection.insertOne(parseResult.data);
+
+  return likeDataDocument._id.toString();
 }
 
 export async function getLikeData({
-  reviewId,
+  likeId,
 }: {
-  reviewId: string;
+  likeId: string;
 }): Promise<LikeData | null> {
   const collection = await getLikesCollection();
 
   const LikeDataDocument = await collection.findOne({
-    _id: new ObjectId(reviewId),
+    _id: new ObjectId(likeId),
   });
 
   if (!LikeDataDocument) return null;
 
-  // Convert DB shape → App shape
   const LikeData: LikeData = {
-    reviewId: LikeDataDocument._id.toString(),
-    likes: LikeDataDocument.likes.map((like) => ({
-      userId: like.userId.toString(),
-      likedOn: like.likedOn,
-    })),
+    ...LikeDataDocument,
+    _id: LikeDataDocument._id.toString(),
+    reviewId: LikeDataDocument.reviewId.toString(),
+    likedBy: LikeDataDocument.likedBy.toString(),
   };
 
   const parseResult = LikeDataSchema.safeParse(LikeData);
 
   if (!parseResult.success) {
     throw new Error(`Invalid like data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
+}
+
+export async function getLikesData({
+  likeIds,
+}: {
+  likeIds: string[];
+}): Promise<LikeData[] | null> {
+  const collection = await getLikesCollection();
+
+  const LikeDataDocuments = await collection
+    .find({
+      _id: { $in: likeIds.map((id) => new ObjectId(id)) },
+    })
+    .toArray();
+
+  if (!LikeDataDocuments || LikeDataDocuments.length === 0) return null;
+
+  const LikeData: LikeData[] = LikeDataDocuments.map((LikeDataDocument) => ({
+    ...LikeDataDocument,
+    _id: LikeDataDocument._id.toString(),
+    reviewId: LikeDataDocument.reviewId.toString(),
+    likedBy: LikeDataDocument.likedBy.toString(),
+  }));
+
+  const parseResult = LikeDataSchema.array().safeParse(LikeData);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid like data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
+}
+
+export async function getLikesDataByReviewId({
+  reviewId,
+}: {
+  reviewId: string;
+}): Promise<LikeData[] | null> {
+  const collection = await getLikesCollection();
+
+  const LikeDataDocuments = await collection
+    .find({
+      reviewId: new ObjectId(reviewId),
+    })
+    .toArray();
+
+  if (!LikeDataDocuments || LikeDataDocuments.length === 0) return null;
+
+  const LikeData: LikeData[] = LikeDataDocuments.map((LikeDataDocument) => ({
+    ...LikeDataDocument,
+    _id: LikeDataDocument._id.toString(),
+    reviewId: LikeDataDocument.reviewId.toString(),
+    likedBy: LikeDataDocument.likedBy.toString(),
+  }));
+
+  const parseResult = LikeDataSchema.array().safeParse(LikeData);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid like data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
+}
+
+// ###################### comment related functions ######################
+
+export async function getCommentsCollection(): Promise<
+  Collection<CommentDataDocument>
+> {
+  const db = await getDatabase();
+  return db.collection("comments");
+}
+
+export async function insertCommentData(
+  commentData: Omit<CommentData, "_id">,
+): Promise<string> {
+  const collection = await getCommentsCollection();
+  const commentDataDocument: CommentDataDocument = {
+    ...commentData,
+    _id: new ObjectId(),
+    reviewId: new ObjectId(commentData.reviewId),
+    commentedBy: new ObjectId(commentData.commentedBy),
+  };
+
+  const parseResult = CommentDataDocumentSchema.safeParse(commentDataDocument);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid comment data: ${parseResult.error.message}`);
+  }
+
+  await collection.insertOne(parseResult.data);
+
+  return commentDataDocument._id.toString();
+}
+
+export async function getCommentData({
+  commentId,
+}: {
+  commentId: string;
+}): Promise<CommentData | null> {
+  const collection = await getCommentsCollection();
+
+  const commentDataDocument = await collection.findOne({
+    _id: new ObjectId(commentId),
+  });
+
+  if (!commentDataDocument) return null;
+
+  const commentData: CommentData = {
+    ...commentDataDocument,
+    _id: commentDataDocument._id.toString(),
+    reviewId: commentDataDocument.reviewId.toString(),
+    commentedBy: commentDataDocument.commentedBy.toString(),
+  };
+
+  const parseResult = CommentDataSchema.safeParse(commentData);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid comment data from DB: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
+}
+
+export async function getCommentsData({
+  commentIds,
+}: {
+  commentIds: string[];
+}): Promise<CommentData[] | null> {
+  const collection = await getCommentsCollection();
+
+  const commentDataDocuments = await collection
+    .find({
+      _id: { $in: commentIds.map((id) => new ObjectId(id)) },
+    })
+    .toArray();
+
+  if (!commentDataDocuments || commentDataDocuments.length === 0) return null;
+
+  const commentsData: CommentData[] = commentDataDocuments.map(
+    (commentDataDocument) => ({
+      ...commentDataDocument,
+      _id: commentDataDocument._id.toString(),
+      reviewId: commentDataDocument.reviewId.toString(),
+      commentedBy: commentDataDocument.commentedBy.toString(),
+    }),
+  );
+
+  const parseResult = CommentDataSchema.array().safeParse(commentsData);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid comment data from DB: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
+}
+
+export async function getCommentsDataByReviewId({
+  reviewId,
+}: {
+  reviewId: string;
+}): Promise<CommentData[] | null> {
+  const collection = await getCommentsCollection();
+
+  const commentDataDocuments = await collection
+    .find({
+      reviewId: new ObjectId(reviewId),
+    })
+    .toArray();
+
+  if (!commentDataDocuments || commentDataDocuments.length === 0) return null;
+
+  const commentsData: CommentData[] = commentDataDocuments.map(
+    (commentDataDocument) => ({
+      ...commentDataDocument,
+      _id: commentDataDocument._id.toString(),
+      reviewId: commentDataDocument.reviewId.toString(),
+      commentedBy: commentDataDocument.commentedBy.toString(),
+    }),
+  );
+
+  const parseResult = CommentDataSchema.array().safeParse(commentsData);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid comment data from DB: ${parseResult.error.message}`,
+    );
   }
 
   return parseResult.data;

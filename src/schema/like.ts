@@ -2,23 +2,17 @@ import z from "zod";
 import { ObjectId } from "mongodb";
 
 export const LikeDataDocumentSchema = z.object({
-  _id: z.instanceof(ObjectId), // reviewId
-  likes: z.array(
-    z.object({
-      userId: z.instanceof(ObjectId),
-      likedOn: z.date(),
-    }),
-  ),
+  _id: z.instanceof(ObjectId),
+  reviewId: z.instanceof(ObjectId),
+  likedBy: z.instanceof(ObjectId),
+  likedOn: z.date(),
 });
 
 export const LikeDataSchema = z.object({
+  _id: z.string(),
   reviewId: z.string(),
-  likes: z.array(
-    z.object({
-      userId: z.string(),
-      likedOn: z.date(),
-    }),
-  ),
+  likedBy: z.string(),
+  likedOn: z.date(),
 });
 
 export type LikeDataDocument = z.infer<typeof LikeDataDocumentSchema>;
