@@ -5,25 +5,32 @@ import { useActionState, useState } from "react";
 
 export default function AddReviewPage() {
   const [state, formAction, isPending] = useActionState(addReviewAction, {});
-  const [preview, setPreview] = useState<string | null>(null);
+  const [previews, setPreviews] = useState<string[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("File input changed:", e.target.files);
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) {
+      setPreviews([]);
+      return;
+    }
+    const newPreviews: string[] = new Array(files.length);
+    let loaded = 0;
+    files.forEach((file, i) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result as string);
+        newPreviews[i] = reader.result as string;
+        loaded++;
+        if (loaded === files.length) {
+          setPreviews([...newPreviews]);
+        }
       };
       reader.readAsDataURL(file);
-    } else {
-      setPreview(null);
-    }
+    });
   };
 
   const handleAddReview = async (formData: FormData) => {
     formAction(formData);
-    setPreview(null);
+    setPreviews([]);
   };
 
   return (
@@ -35,34 +42,6 @@ export default function AddReviewPage() {
           {/* Destination Information Section */}
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
             <h2 className="text-xl font-semibold mb-4">Destination Details</h2>
-
-            <div>
-              <label
-                htmlFor="userName"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Your Name *
-              </label>
-              <input
-                type="text"
-                id="userName"
-                defaultValue={
-                  state.fields && state.fields.userName
-                    ? (state.fields.userName.value as string)
-                    : ""
-                }
-                name="userName"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your name"
-              />
-
-              {/* error message */}
-              {state.fields && state.fields.userName?.error && (
-                <p className="mt-2 text-sm text-red-600">
-                  {state.fields.userName.error}
-                </p>
-              )}
-            </div>
 
             <div>
               <label
@@ -134,25 +113,31 @@ export default function AddReviewPage() {
                     name="destinationPhoto"
                     accept="image/*"
                     onChange={handleFileChange}
+                    multiple
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
 
                   {/* error message */}
-                  {state.fields && state.fields.destinationPhoto?.error && (
+                  {state.fields && state.fields.destinationPhotos?.error && (
                     <p className="mt-2 text-sm text-red-600">
-                      {state.fields.destinationPhoto.error}
+                      {state.fields.destinationPhotos.error}
                     </p>
                   )}
                 </div>
-                {preview && (
-                  <div className="flex-1">
-                    <div className="w-full h-48 rounded-md overflow-hidden border border-gray-300">
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                {previews.length > 0 && (
+                  <div className="flex-1 grid grid-cols-2 gap-2">
+                    {previews.map((src, i) => (
+                      <div
+                        key={i}
+                        className="w-full h-48 rounded-md overflow-hidden border border-gray-300"
+                      >
+                        <img
+                          src={src}
+                          alt={`Preview ${i + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -162,34 +147,6 @@ export default function AddReviewPage() {
           {/* Review Section */}
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
             <h2 className="text-xl font-semibold mb-4">Your Review</h2>
-
-            <div>
-              <label
-                htmlFor="review"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Review Title *
-              </label>
-              <input
-                type="text"
-                id="review"
-                name="review"
-                defaultValue={
-                  state.fields && state.fields.review
-                    ? (state.fields.review.value as string)
-                    : ""
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Give your review a title"
-              />
-
-              {/* error message */}
-              {state.fields && state.fields.review?.error && (
-                <p className="mt-2 text-sm text-red-600">
-                  {state.fields.review?.error}
-                </p>
-              )}
-            </div>
 
             <div>
               <label
@@ -248,45 +205,6 @@ export default function AddReviewPage() {
             </div>
           </div>
 
-          {/* Famous Locations Section */}
-          <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Famous Locations</h2>
-            <p className="text-sm text-gray-600 mb-4">
-              List famous locations or attractions you visited (one per line)
-            </p>
-
-            <div>
-              <label
-                htmlFor="famousLocations"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Famous Locations *
-              </label>
-              <textarea
-                id="famousLocations"
-                name="famousLocations"
-                rows={5}
-                defaultValue={
-                  state.fields && state.fields.famousLocations
-                    ? (state.fields.famousLocations.value as string)
-                    : ""
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
-                placeholder="Enter locations (one per line)&#10;e.g.,&#10;Eiffel Tower&#10;Louvre Museum&#10;Arc de Triomphe"
-              />
-              <p className="mt-2 text-sm text-gray-500">
-                Tip: Enter each location on a new line
-              </p>
-
-              {/* error message */}
-              {state.fields && state.fields.famousLocations?.error && (
-                <p className="mt-2 text-sm text-red-600">
-                  {state.fields.famousLocations.error}
-                </p>
-              )}
-            </div>
-          </div>
-
           {/* success message */}
           {state.type === "success" && (
             <div
@@ -313,7 +231,7 @@ export default function AddReviewPage() {
             <button
               type="reset"
               className="px-6 py-3 border border-gray-300 rounded-md font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-              onClick={() => setPreview(null)}
+              onClick={() => setPreviews([])}
             >
               Reset
             </button>

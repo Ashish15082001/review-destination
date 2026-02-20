@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getReviewData } from "@/lib/mongodb";
+import { getReviewData, getUserDataByUserId } from "@/lib/mongodb";
 
 export default async function ReviewPage({
   params,
@@ -9,9 +9,10 @@ export default async function ReviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const reviewDataFromMongoDB = await getReviewData(id);
+  const reviewData = await getReviewData(id);
+  const userData = await getUserDataByUserId({ userId: reviewData.userId });
 
-  if (!reviewDataFromMongoDB) {
+  if (!reviewData || !userData) {
     notFound();
   }
 
@@ -32,8 +33,8 @@ export default async function ReviewPage({
           <Link href={`/review/${id}/photo`}>
             <div className="relative h-96 w-full">
               <Image
-                src={reviewDataFromMongoDB.destinationPhotoUrl}
-                alt={reviewDataFromMongoDB.destinationName}
+                src={reviewData.destinationPhotoUrls[0]}
+                alt={reviewData.destinationName}
                 fill
                 className="object-cover"
                 priority
@@ -45,25 +46,13 @@ export default async function ReviewPage({
           <div className="p-8">
             <div className="mb-6">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                {reviewDataFromMongoDB.destinationName}
+                {reviewData.destinationName}
               </h1>
               <div className="flex items-center text-gray-600 space-x-4">
-                <span className="font-medium">
-                  {reviewDataFromMongoDB.userName}
-                </span>
+                <span className="font-medium">{userData.userName}</span>
                 <span>•</span>
-                <span>Visited: {reviewDataFromMongoDB.whenVisited}</span>
+                <span>Visited: {reviewData.whenVisited}</span>
               </div>
-            </div>
-
-            {/* Review Rating */}
-            <div className="mb-6 pb-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Rating
-              </h2>
-              <p className="text-lg text-gray-700">
-                {reviewDataFromMongoDB.review}
-              </p>
             </div>
 
             {/* Description */}
@@ -72,7 +61,7 @@ export default async function ReviewPage({
                 Description
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                {reviewDataFromMongoDB.description}
+                {reviewData.description}
               </p>
             </div>
 
@@ -82,17 +71,7 @@ export default async function ReviewPage({
                 Experience
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                {reviewDataFromMongoDB.experience}
-              </p>
-            </div>
-
-            {/* Famous Locations */}
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Famous Locations
-              </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {reviewDataFromMongoDB.famousLocations}
+                {reviewData.experience}
               </p>
             </div>
           </div>

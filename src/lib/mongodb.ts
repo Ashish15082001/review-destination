@@ -69,6 +69,7 @@ export async function insertReviewData(reviewData: Omit<ReviewData, "_id">) {
   // creating review document to be inserted
   const newReviewDataDocument: ReviewDataDocument = {
     ...reviewData,
+    userId: new ObjectId(reviewData.userId),
     _id: new ObjectId(),
   };
   const parseResult = ReviewDataDocumentSchema.safeParse(newReviewDataDocument);
@@ -95,6 +96,7 @@ export async function getReviewData(reviewId: string): Promise<ReviewData> {
   const reviewData: ReviewData = {
     ...reviewDataDocument,
     _id: reviewDataDocument._id.toString(),
+    userId: reviewDataDocument.userId.toString(),
   };
 
   const parseResult = ReviewDataSchema.safeParse(reviewData);
@@ -120,6 +122,7 @@ export async function getAllReviewsData(): Promise<ReviewData[]> {
     (reviewDataDocument) => ({
       ...reviewDataDocument,
       _id: reviewDataDocument._id.toString(),
+      userId: reviewDataDocument.userId.toString(),
     }),
   );
 

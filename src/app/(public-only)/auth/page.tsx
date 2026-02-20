@@ -1,6 +1,6 @@
 "use server";
 
-import AuthForm from "@/components/auth-form";
+import AuthForm from "@/components/auth-form/auth-form";
 import { AuthMode } from "@/lib/auth-mode";
 
 export default async function AuthPage({

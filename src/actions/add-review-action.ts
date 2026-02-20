@@ -1,13 +1,14 @@
 "use server";
 
 import { uploadImage } from "@/lib/cloudinary";
-import { insertReviewData } from "@/lib/mongodb";
+import { getUserDataUsingSession, insertReviewData } from "@/lib/mongodb";
 import {
   ReviewData,
   ReviewDataBrowser,
   ReviewDataBrowserSchema,
 } from "@/schema/review";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 const addReviewAction = async (
   prevData: AddReviewActionReturnType,
@@ -16,7 +17,7 @@ const addReviewAction = async (
   // Extract and type the form data
   const userName = formData.get("userName") as string;
   const destinationName = formData.get("destinationName") as string;
-  const destinationPhoto = formData.get("destinationPhoto") as File;
+  const destinationPhotos = formData.getAll("destinationPhoto") as File[];
   const whenVisited = formData.get("whenVisited") as string;
   const review = formData.get("review") as string;
   const description = formData.get("description") as string;
@@ -28,7 +29,7 @@ const addReviewAction = async (
   console.log({
     userName,
     destinationName,
-    destinationPhoto,
+    destinationPhotos,
     whenVisited,
     review,
     description,
@@ -40,7 +41,7 @@ const addReviewAction = async (
   const validationResult = ReviewDataBrowserSchema.safeParse({
     userName,
     destinationName,
-    destinationPhoto,
+    destinationPhotos,
     whenVisited,
     review,
     description,
@@ -57,7 +58,7 @@ const addReviewAction = async (
       destinationName: {
         value: destinationName,
       },
-      destinationPhoto: {},
+      destinationPhotos: {},
       whenVisited: {
         value: whenVisited,
       },
@@ -93,30 +94,40 @@ const addReviewAction = async (
   // Create review object with proper typing
   const reviewDataBrowser: ReviewDataBrowser = validationResult.data;
 
-  // Upload image to Cloudinary
-  const uploadResult = await uploadImage(reviewDataBrowser.destinationPhoto);
+  // Upload all images to Cloudinary
+  const uploadResults = await Promise.all(
+    reviewDataBrowser.destinationPhotos.map((photo) => uploadImage(photo)),
+  );
 
-  if (!uploadResult || !uploadResult.secure_url) {
+  if (uploadResults.some((r) => !r || !r.secure_url)) {
     if (returnValue.fields)
-      returnValue.fields.destinationPhoto.error =
-        "Image upload failed. Please try again.";
+      returnValue.fields.destinationPhotos.error =
+        "One or more image uploads failed. Please try again.";
     else
       returnValue.fields = {
-        destinationPhoto: { error: "Image upload failed. Please try again." },
+        destinationPhotos: {
+          error: "One or more image uploads failed. Please try again.",
+        },
       };
 
     return returnValue;
   }
 
+  const destinationPhotoUrls = uploadResults.map((r) => r.secure_url);
+
+  const userData = await getUserDataUsingSession();
+
+  if (!userData) {
+    throw new Error();
+  }
+
   await insertReviewData({
-    userName: reviewDataBrowser.userName,
+    userId: userData._id,
     destinationName: reviewDataBrowser.destinationName,
-    destinationPhotoUrl: uploadResult.secure_url,
+    destinationPhotoUrls,
     whenVisited: reviewDataBrowser.whenVisited,
-    review: reviewDataBrowser.review,
     description: reviewDataBrowser.description,
     experience: reviewDataBrowser.experience,
-    famousLocations: reviewDataBrowser.famousLocations,
     datePosted: new Date(),
   });
   revalidatePath("/reviews");

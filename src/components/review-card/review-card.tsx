@@ -1,20 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReviewLikeButton } from "./review-like-button";
-import { getUserDataUsingSession } from "@/lib/mongodb";
 import { ReviewData } from "@/schema/review";
+import { getUserDataByUserId } from "@/lib/mongodb";
+import { UserInfo } from "./user-info";
+import { Suspense } from "react";
+import { UserInfoSkeleton } from "./user-info.-skeleton";
 
-export async function ReviewCard({ review }: { review: ReviewData }) {
-  const userData = await getUserDataUsingSession();
-
+export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
   return (
-    <Link href={`/review/${review._id}`}>
+    <Link href={`/review/${reviewData._id}`}>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-[1.05] transition-all duration-300">
         {/* Destination Image */}
         <div className="relative h-60 w-full bg-gray-200">
           <Image
-            src={review.destinationPhotoUrl}
-            alt={review.destinationName}
+            src={reviewData.destinationPhotoUrls[0]}
+            alt={reviewData.destinationName}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -25,19 +26,16 @@ export async function ReviewCard({ review }: { review: ReviewData }) {
         <div className="p-6">
           {/* Destination Name */}
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {review.destinationName}
+            {reviewData.destinationName}
           </h2>
-
-          {/* Review Title */}
-          <h3 className="text-lg font-medium text-blue-400 mb-3">
-            {review.review}
-          </h3>
 
           {/* User and date posted on */}
           <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-            <span className="font-medium">{review.userName}</span>
+            <Suspense fallback={<UserInfoSkeleton />}>
+              <UserInfo userId={reviewData.userId} />
+            </Suspense>
             <span>
-              {new Date(review.datePosted)
+              {new Date(reviewData.datePosted)
                 .toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "long",
@@ -48,11 +46,11 @@ export async function ReviewCard({ review }: { review: ReviewData }) {
           </div>
 
           {/* Like button and count */}
-          <ReviewLikeButton
+          {/* <ReviewLikeButton
             userData={userData}
-            reviewId={review._id}
+            reviewId={reviewData._id}
             totalLikes={0}
-          />
+          /> */}
         </div>
       </div>
     </Link>

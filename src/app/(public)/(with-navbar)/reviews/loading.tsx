@@ -1,4 +1,4 @@
-import { ReviewCardSkeleton } from "@/components/review-card-skeleton";
+import { ReviewCardSkeleton } from "@/components/review-card/review-card-skeleton";
 
 export default function Loading() {
   return (

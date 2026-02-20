@@ -18,8 +18,8 @@ const dummyReviews = [
   {
     userName: "Emma Johnson",
     destinationName: "Paris, France",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34"],
     whenVisited: "June 2025",
     review:
       "An absolutely magical experience! The Eiffel Tower at sunset is breathtaking.",
@@ -34,8 +34,8 @@ const dummyReviews = [
   {
     userName: "Michael Chen",
     destinationName: "Tokyo, Japan",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf"],
     whenVisited: "March 2025",
     review:
       "A perfect blend of traditional culture and modern technology. Tokyo is truly unique!",
@@ -50,8 +50,8 @@ const dummyReviews = [
   {
     userName: "Sarah Martinez",
     destinationName: "Santorini, Greece",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff"],
     whenVisited: "September 2025",
     review:
       "The most stunning sunsets I've ever witnessed. Santorini is paradise on earth!",
@@ -66,8 +66,8 @@ const dummyReviews = [
   {
     userName: "James Wilson",
     destinationName: "Dubai, UAE",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c"],
     whenVisited: "November 2025",
     review:
       "Luxury and innovation at every corner. Dubai is a city of the future!",
@@ -82,8 +82,8 @@ const dummyReviews = [
   {
     userName: "Olivia Brown",
     destinationName: "New York City, USA",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9"],
     whenVisited: "October 2025",
     review:
       "The city that never sleeps lived up to its name! Non-stop energy and excitement.",
@@ -98,8 +98,8 @@ const dummyReviews = [
   {
     userName: "David Kim",
     destinationName: "Bali, Indonesia",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1537996194471-e657df975ab4"],
     whenVisited: "July 2025",
     review:
       "A tropical paradise with rich culture. Perfect for relaxation and adventure!",
@@ -114,8 +114,8 @@ const dummyReviews = [
   {
     userName: "Sophie Anderson",
     destinationName: "Rome, Italy",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1552832230-c0197dd311b5",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1552832230-c0197dd311b5"],
     whenVisited: "May 2025",
     review:
       "Walking through ancient history! Every corner tells a story thousands of years old.",
@@ -130,8 +130,8 @@ const dummyReviews = [
   {
     userName: "Alex Thompson",
     destinationName: "Machu Picchu, Peru",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1587595431973-160d0d94add1",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1587595431973-160d0d94add1"],
     whenVisited: "August 2025",
     review:
       "A bucket list destination that exceeded expectations! The ancient ruins are breathtaking.",
@@ -146,8 +146,8 @@ const dummyReviews = [
   {
     userName: "Isabella Garcia",
     destinationName: "Sydney, Australia",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9"],
     whenVisited: "January 2025",
     review:
       "Beautiful beaches, iconic landmarks, and friendly locals. Sydney has it all!",
@@ -162,8 +162,8 @@ const dummyReviews = [
   {
     userName: "Lucas Miller",
     destinationName: "Iceland",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1483347756197-71ef80e95f73",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1483347756197-71ef80e95f73"],
     whenVisited: "December 2024",
     review:
       "Nature's most dramatic landscapes! Seeing the Northern Lights was a dream come true.",
@@ -178,8 +178,8 @@ const dummyReviews = [
   {
     userName: "Mia Robinson",
     destinationName: "Barcelona, Spain",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1583422409516-2895a77efded",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1583422409516-2895a77efded"],
     whenVisited: "April 2025",
     review:
       "Gaudí's architecture is mind-blowing! Barcelona is vibrant, artistic, and full of life.",
@@ -194,8 +194,8 @@ const dummyReviews = [
   {
     userName: "Ryan O'Connor",
     destinationName: "Cape Town, South Africa",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1580060839134-75a5edca2e99",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1580060839134-75a5edca2e99"],
     whenVisited: "February 2025",
     review:
       "Stunning natural beauty meets vibrant culture. Table Mountain views are incredible!",
@@ -210,8 +210,8 @@ const dummyReviews = [
   {
     userName: "Emily White",
     destinationName: "London, England",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad"],
     whenVisited: "August 2024",
     review:
       "History, culture, and modern charm perfectly blended. London is endlessly fascinating!",
@@ -226,8 +226,8 @@ const dummyReviews = [
   {
     userName: "Daniel Lee",
     destinationName: "Maldives",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8"],
     whenVisited: "March 2026",
     review:
       "Pure luxury and tranquility. The crystal-clear waters and overwater villas are paradise!",
@@ -242,8 +242,8 @@ const dummyReviews = [
   {
     userName: "Hannah Scott",
     destinationName: "Cairo, Egypt",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1572252009286-268acec5ca0a",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1572252009286-268acec5ca0a"],
     whenVisited: "January 2026",
     review:
       "Standing before the pyramids was surreal! Ancient wonders that truly amaze.",
@@ -258,8 +258,8 @@ const dummyReviews = [
   {
     userName: "Christopher Davis",
     destinationName: "Amsterdam, Netherlands",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1534351590666-13e3e96b5017",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1534351590666-13e3e96b5017"],
     whenVisited: "September 2024",
     review:
       "Charming canals and rich culture. Biking around Amsterdam is the best way to explore!",
@@ -274,8 +274,8 @@ const dummyReviews = [
   {
     userName: "Zoe Martinez",
     destinationName: "Rio de Janeiro, Brazil",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1483729558449-99ef09a8c325",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1483729558449-99ef09a8c325"],
     whenVisited: "February 2025",
     review:
       "Vibrant energy and stunning beaches! Christ the Redeemer offers breathtaking views.",
@@ -290,8 +290,8 @@ const dummyReviews = [
   {
     userName: "Nathan Young",
     destinationName: "Singapore",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1525625293386-3f8f99389edd",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1525625293386-3f8f99389edd"],
     whenVisited: "December 2025",
     review:
       "A futuristic garden city! Clean, safe, and incredibly efficient with amazing food.",
@@ -306,8 +306,8 @@ const dummyReviews = [
   {
     userName: "Chloe Taylor",
     destinationName: "Prague, Czech Republic",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1541849546-216549ae216d",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1541849546-216549ae216d"],
     whenVisited: "October 2024",
     review:
       "A fairy-tale city with stunning Gothic architecture. Prague is incredibly romantic!",
@@ -322,8 +322,8 @@ const dummyReviews = [
   {
     userName: "Jack Harrison",
     destinationName: "Banff, Canada",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1503614472-8c93d56e92ce",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1503614472-8c93d56e92ce"],
     whenVisited: "July 2025",
     review:
       "Mountain paradise! The turquoise lakes and stunning peaks are unforgettable.",
@@ -338,8 +338,8 @@ const dummyReviews = [
   {
     userName: "Alex Rodriguez",
     destinationName: "Kyoto, Japan",
-    destinationPhotoUrl:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e",
+    destinationPhotoUrls: [
+      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e"],
     whenVisited: "January 2026",
     review:
       "A serene journey through ancient Japan. The temples and gardens are absolutely mesmerizing!",
