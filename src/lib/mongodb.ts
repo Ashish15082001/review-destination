@@ -82,15 +82,15 @@ export async function insertReviewData(reviewData: Omit<ReviewData, "_id">) {
   await collection.insertOne(parseResult.data);
 }
 
-export async function getReviewData(reviewId: string): Promise<ReviewData> {
+export async function getReviewData(
+  reviewId: string,
+): Promise<ReviewData | null> {
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
     _id: new ObjectId(reviewId),
   });
 
-  if (!reviewDataDocument) {
-    throw new Error("Review not found");
-  }
+  if (!reviewDataDocument) return null;
 
   // creating review data to be returned
   const reviewData: ReviewData = {
@@ -175,16 +175,14 @@ export async function getReviewLikeData({
   reviewId,
 }: {
   reviewId: string;
-}): Promise<ReviewLikeData> {
+}): Promise<ReviewLikeData | null> {
   const collection = await getLikesCollection();
 
   const reviewLikeDataDocument = await collection.findOne({
     _id: new ObjectId(reviewId),
   });
 
-  if (!reviewLikeDataDocument) {
-    throw new Error("Like data does not exist.");
-  }
+  if (!reviewLikeDataDocument) return null;
 
   // Convert DB shape → App shape
   const reviewLikeData: ReviewLikeData = {
@@ -221,9 +219,7 @@ export async function getUserDataByUserName({
   const collection = await getUsersCollection();
   const userDataDomument = await collection.findOne({ userName });
 
-  if (!userDataDomument) {
-    throw new Error("user not found");
-  }
+  if (!userDataDomument) return null;
 
   const userData: UserData = {
     ...userDataDomument,
@@ -249,9 +245,7 @@ export async function getUserDataByUserId({
     _id: new ObjectId(userId),
   });
 
-  if (!userDataDomument) {
-    throw new Error("user not found");
-  }
+  if (!userDataDomument) return null;
 
   const userData: UserData = {
     ...userDataDomument,
@@ -282,6 +276,7 @@ export async function registerNewUser(
   }
 
   const collection = await getUsersCollection();
+  await collection.insertOne(parseResult.data);
   return newUserDataDocumentId.toString();
 }
 
@@ -321,9 +316,7 @@ export async function getUserSessionDataFromMongoDB(
     _id: new ObjectId(sessionId),
   });
 
-  if (!userSessionDataDocument) {
-    throw new Error(`user session data does not exists.`);
-  }
+  if (!userSessionDataDocument) return null;
 
   const userSessionData: UserSessionData = {
     ...userSessionDataDocument,
@@ -342,12 +335,12 @@ export async function getUserSessionDataFromMongoDB(
 
 export async function insertUserSession(
   userSessionData: Omit<UserSessionData, "_id">,
-) {
+): Promise<string> {
   const collection = await getUsersSessionCollection();
   const userSessionDataDocumentId = new ObjectId();
   const userSessionDataDocument: UserSessionDataDocument = {
-    _id: new ObjectId(),
-    userId: userSessionDataDocumentId,
+    _id: userSessionDataDocumentId,
+    userId: new ObjectId(userSessionData.userId),
     expiresOn: userSessionData.expiresOn,
   };
 
@@ -359,9 +352,9 @@ export async function insertUserSession(
     throw new Error(`Invalid user session data: ${parseResult.error.message}`);
   }
 
-  const result = await collection.insertOne(parseResult.data);
+  await collection.insertOne(parseResult.data);
 
-  return userSessionDataDocumentId;
+  return userSessionDataDocumentId.toString();
 }
 
 export async function deleteUserSession(_id: string) {

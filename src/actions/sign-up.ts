@@ -13,6 +13,7 @@ const signUpUser = async (
   formData: FormData,
 ): Promise<SignUpUserReturnType> => {
   try {
+    console.log("signUpUser action-----------");
     // sign in user and return user data
 
     const userName = formData.get("userName") as string;
@@ -51,6 +52,7 @@ const signUpUser = async (
     }
 
     // check if user already exists
+
     const userData = await getUserDataByUserName({ userName });
 
     if (userData) {
