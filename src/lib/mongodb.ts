@@ -1,8 +1,4 @@
-import {
-  ReviewLikeData,
-  ReviewLikeDataDocument,
-  ReviewLikeDataSchema,
-} from "@/schema/reviewLike";
+import { LikeData, LikeDataDocument, LikeDataSchema } from "@/schema/like";
 import {
   ReviewData,
   ReviewDataDocument,
@@ -140,7 +136,7 @@ export async function getAllReviewsData(): Promise<ReviewData[]> {
 // ###################### like related functions ######################
 
 export async function getLikesCollection(): Promise<
-  Collection<ReviewLikeDataDocument>
+  Collection<LikeDataDocument>
 > {
   const db = await getDatabase();
   return db.collection("likes");
@@ -171,29 +167,29 @@ export async function insertLikeData({
   );
 }
 
-export async function getReviewLikeData({
+export async function getLikeData({
   reviewId,
 }: {
   reviewId: string;
-}): Promise<ReviewLikeData | null> {
+}): Promise<LikeData | null> {
   const collection = await getLikesCollection();
 
-  const reviewLikeDataDocument = await collection.findOne({
+  const LikeDataDocument = await collection.findOne({
     _id: new ObjectId(reviewId),
   });
 
-  if (!reviewLikeDataDocument) return null;
+  if (!LikeDataDocument) return null;
 
   // Convert DB shape → App shape
-  const reviewLikeData: ReviewLikeData = {
-    reviewId: reviewLikeDataDocument._id.toString(),
-    likes: reviewLikeDataDocument.likes.map((like) => ({
+  const LikeData: LikeData = {
+    reviewId: LikeDataDocument._id.toString(),
+    likes: LikeDataDocument.likes.map((like) => ({
       userId: like.userId.toString(),
       likedOn: like.likedOn,
     })),
   };
 
-  const parseResult = ReviewLikeDataSchema.safeParse(reviewLikeData);
+  const parseResult = LikeDataSchema.safeParse(LikeData);
 
   if (!parseResult.success) {
     throw new Error(`Invalid like data from DB: ${parseResult.error.message}`);

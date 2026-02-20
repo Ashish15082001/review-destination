@@ -1,7 +1,7 @@
 import z from "zod";
 import { ObjectId } from "mongodb";
 
-export const ReviewLikeDataDocumentSchema = z.object({
+export const LikeDataDocumentSchema = z.object({
   _id: z.instanceof(ObjectId), // reviewId
   likes: z.array(
     z.object({
@@ -11,7 +11,7 @@ export const ReviewLikeDataDocumentSchema = z.object({
   ),
 });
 
-export const ReviewLikeDataSchema = z.object({
+export const LikeDataSchema = z.object({
   reviewId: z.string(),
   likes: z.array(
     z.object({
@@ -21,7 +21,5 @@ export const ReviewLikeDataSchema = z.object({
   ),
 });
 
-export type ReviewLikeDataDocument = z.infer<
-  typeof ReviewLikeDataDocumentSchema
->;
-export type ReviewLikeData = z.infer<typeof ReviewLikeDataSchema>;
+export type LikeDataDocument = z.infer<typeof LikeDataDocumentSchema>;
+export type LikeData = z.infer<typeof LikeDataSchema>;
