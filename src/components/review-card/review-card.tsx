@@ -5,7 +5,7 @@ import { ReviewData } from "@/schema/review";
 import { getUserDataByUserId } from "@/lib/mongodb";
 import { UserInfo } from "./user-info";
 import { Suspense } from "react";
-import { UserInfoSkeleton } from "./user-info.-skeleton";
+import { UserInfoSkeleton } from "./user-info-skeleton";
 
 export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
   return (
