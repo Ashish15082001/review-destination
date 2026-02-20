@@ -8,8 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "ts-node --project tsconfig.scripts.json scripts/seed-dummy-data.ts",
-    "seed:comments": "ts-node --project tsconfig.scripts.json scripts/seed-comments.ts"
+    "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts"
   },
   "dependencies": {
     "cloudinary": "^2.9.0",
