@@ -11,7 +11,6 @@ const WhyReviewDestinationCard = ({
   title,
   description,
 }: WhyReviewDestinationCardProps) => {
-  console.log(animationType);
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
       <div className="w-full h-60 rounded-xl flex items-center justify-center mb-10">

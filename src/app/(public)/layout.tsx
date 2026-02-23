@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
+  console.log("############## rendering root layout (public) ##############");
   return (
     <html lang="en">
       <body

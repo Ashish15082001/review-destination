@@ -7,6 +7,8 @@ import Link from "next/link";
 export default async function Navbar() {
   const isUserAuthenticated = await isUserAthenticated();
 
+  console.log("rendering navbar, isUserAuthenticated = ", isUserAuthenticated);
+
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
       <div className="container mx-auto px-6 py-6 flex items-center justify-between">

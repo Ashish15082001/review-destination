@@ -1,3 +1,5 @@
+import "server-only";
+
 import {
   CommentData,
   CommentDataDocument,
@@ -31,6 +33,7 @@ import {
   UserSessionDataSchema,
 } from "@/schema/userSession";
 import { cache } from "react";
+import { cacheTag } from "next/cache";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
