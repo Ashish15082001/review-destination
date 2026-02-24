@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "react-transition-progress/next";
 
 export const metadata: Metadata = {
   title: "About | Review Destination",
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "Learn about Review Destination - your trusted platform for authentic travel reviews and destination guides.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}

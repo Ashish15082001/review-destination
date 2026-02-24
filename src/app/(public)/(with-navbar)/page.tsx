@@ -1,8 +1,8 @@
 import LottieAnimation from "@/components/lottie-animation";
 import WhyReviewDestinationCard from "@/components/why-review-destination-card";
-import Link from "next/link";
+import { Link } from "react-transition-progress/next";
 
-export default function LandingPage() {
+export default async function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}

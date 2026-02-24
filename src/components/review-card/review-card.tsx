@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "react-transition-progress/next";
 import { ReviewData } from "@/schema/review";
 import { UserInfo } from "./user-info";
 import { Suspense } from "react";
@@ -42,7 +42,7 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
               <UserInfo userId={reviewData.userId} />
             </Suspense>
             <span>
-              {new Date(reviewData.datePosted)
+              {reviewData.datePosted
                 .toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "long",
