@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/nav-bar/navbar";
-import { Suspense } from "react";
-import NavbarSkeleton from "@/components/nav-bar/nav-bar-skeleton";
 
 export const metadata: Metadata = {
   title: "Review Destination - Share Your Travel Experiences",
@@ -12,9 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <>
-      <Suspense fallback={<NavbarSkeleton />}>
-        <Navbar />
-      </Suspense>
+      <Navbar />
       {children}
     </>
   );

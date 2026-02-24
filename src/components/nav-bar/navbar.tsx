@@ -1,14 +1,9 @@
-"use server";
-
 import signOutUser from "@/actions/sign-out";
-import { isUserAthenticated } from "@/lib/isUserAthenticated";
 import { Link } from "react-transition-progress/next";
+import CheckAuth from "../check-auth/check-auth";
+import { Suspense } from "react";
 
 export default async function Navbar() {
-  const isUserAuthenticated = await isUserAthenticated();
-
-  console.log("rendering navbar, isUserAuthenticated = ", isUserAuthenticated);
-
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
       <div className="container mx-auto px-6 py-6 flex items-center justify-between">
@@ -33,38 +28,73 @@ export default async function Navbar() {
           >
             Reviews
           </Link>
-          <Link
-            href={isUserAuthenticated ? "/add-review" : "/auth?mode=signin"}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
-          >
-            Add Review
-          </Link>
-          {isUserAuthenticated && (
-            <Link
-              href="/profile"
-              className="text-gray-600 hover:text-gray-900 transition"
-            >
-              Profile
-            </Link>
-          )}
 
-          {isUserAuthenticated ? (
-            <form action={signOutUser}>
-              <button
-                type="submit"
+          <Suspense
+            fallback={
+              <div className="w-28 h-9 bg-gray-200 rounded-lg animate-pulse" />
+            }
+          >
+            <CheckAuth
+              isLoginRequired={true}
+              fallback={
+                <Link
+                  href={"/auth?mode=signin"}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+                >
+                  Add Review
+                </Link>
+              }
+            >
+              <Link
+                href={"/add-review"}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+              >
+                Add Review
+              </Link>
+            </CheckAuth>
+          </Suspense>
+
+          <Suspense
+            fallback={
+              <div className="w-14 h-5 bg-gray-200 rounded-md animate-pulse" />
+            }
+          >
+            <CheckAuth isLoginRequired={true}>
+              <Link
+                href="/profile"
                 className="text-gray-600 hover:text-gray-900 transition"
               >
-                Sign Out
-              </button>
-            </form>
-          ) : (
-            <Link
-              href="/auth?mode=signin"
-              className="text-gray-600 hover:text-gray-900 transition"
+                Profile
+              </Link>
+            </CheckAuth>
+          </Suspense>
+
+          <Suspense
+            fallback={
+              <div className="w-16 h-5 bg-gray-200 rounded-md animate-pulse" />
+            }
+          >
+            <CheckAuth
+              isLoginRequired={true}
+              fallback={
+                <form action={signOutUser}>
+                  <button
+                    type="submit"
+                    className="text-gray-600 hover:text-gray-900 transition"
+                  >
+                    Sign Out
+                  </button>
+                </form>
+              }
             >
-              Sign In
-            </Link>
-          )}
+              <Link
+                href="/auth?mode=signin"
+                className="text-gray-600 hover:text-gray-900 transition"
+              >
+                Sign In
+              </Link>
+            </CheckAuth>
+          </Suspense>
         </div>
       </div>
     </nav>
