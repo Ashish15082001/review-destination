@@ -1,4 +1,6 @@
 export default function Loading() {
+  console.log("/review/[id]/loading.tsx");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <main className="container mx-auto px-6 py-12">
