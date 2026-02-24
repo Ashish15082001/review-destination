@@ -33,7 +33,7 @@ import {
   UserSessionDataSchema,
 } from "@/schema/userSession";
 import { cache } from "react";
-import { cacheTag } from "next/cache";
+import { cacheTag, updateTag } from "next/cache";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -96,12 +96,16 @@ export async function insertReviewData(
   const collection = await getReviewsCollection();
   await collection.insertOne(parseResult.data);
 
+  updateTag("reviewsData");
+
   return newReviewDataDocument._id.toString();
 }
 
 export const getReviewData = cache(async function (
   reviewId: string,
 ): Promise<ReviewData | null> {
+  "use cache";
+
   console.log("getReviewData called with reviewId:", reviewId);
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
@@ -129,6 +133,10 @@ export const getReviewData = cache(async function (
 });
 
 export async function getAllReviewsData(): Promise<ReviewData[]> {
+  "use cache";
+
+  cacheTag("reviewsData");
+
   const collection = await getReviewsCollection();
   const reviewDataDocuments = await collection
     .find()
@@ -251,6 +259,11 @@ export async function getLikesDataByReviewId({
 }: {
   reviewId: string;
 }): Promise<LikeData[] | null> {
+  "use cache";
+  cacheTag(`likesData-${reviewId}`);
+
+  console.log("getLikesDataByReviewId called with reviewId:", reviewId);
+
   const collection = await getLikesCollection();
 
   const LikeDataDocuments = await collection
@@ -379,6 +392,9 @@ export async function getCommentsDataByReviewId({
 }: {
   reviewId: string;
 }): Promise<CommentData[] | null> {
+  "use cache";
+  cacheTag(`commentsData-${reviewId}`);
+
   const collection = await getCommentsCollection();
 
   const commentDataDocuments = await collection
@@ -447,6 +463,8 @@ export async function getUserDataByUserId({
 }: {
   userId: string;
 }): Promise<UserData | null> {
+  "use cache";
+  console.log("getUserDataByUserId called with userId:", userId);
   const collection = await getUsersCollection();
   const userDataDomument = await collection.findOne({
     _id: new ObjectId(userId),
@@ -517,6 +535,7 @@ export async function getUsersSessionCollection(): Promise<
 export async function getUserSessionDataFromMongoDB(
   sessionId: string,
 ): Promise<UserSessionData | null> {
+  "use cache";
   const userSessionsCollection = await getUsersSessionCollection();
 
   const userSessionDataDocument = await userSessionsCollection.findOne({

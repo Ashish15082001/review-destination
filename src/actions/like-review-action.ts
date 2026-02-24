@@ -1,6 +1,7 @@
 "use server";
 
 import { insertLikeData } from "@/lib/mongodb";
+import { updateTag } from "next/cache";
 
 export interface LikeReviewActionArgs {
   reviewId: string;
@@ -13,7 +14,7 @@ const likeReviewAction = async ({ reviewId, userId }: LikeReviewActionArgs) => {
     reviewId: reviewId,
     likedOn: new Date(),
   });
-  // revalidatePath(`/reviews`);
+  updateTag(`likesData-${reviewId}`);
 };
 
 export { likeReviewAction };

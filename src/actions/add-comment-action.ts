@@ -1,7 +1,7 @@
 "use server";
 
 import { getUserDataUsingSession, insertCommentData } from "@/lib/mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import z from "zod";
 
 const CommentFormSchema = z.object({
@@ -55,7 +55,7 @@ const addCommentAction = async (
     comment: validationResult.data.comment,
   });
 
-  revalidatePath(`/review/${reviewId}`);
+  updateTag(`commentsData-${reviewId}`);
 
   return { type: "success", fields: { comment: { value: "" } } };
 };

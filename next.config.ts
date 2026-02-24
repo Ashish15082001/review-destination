@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "100mb",
     },
   },
+  cacheComponents: true,
 };
 
 export default nextConfig;
