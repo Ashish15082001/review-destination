@@ -2,7 +2,7 @@
 
 import signOutUser from "@/actions/sign-out";
 import { isUserAthenticated } from "@/lib/isUserAthenticated";
-import Link from "next/link";
+import { Link } from "react-transition-progress/next";
 
 export default async function Navbar() {
   const isUserAuthenticated = await isUserAthenticated();

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/nav-bar/navbar";
 
 export default function Error({
   error,
