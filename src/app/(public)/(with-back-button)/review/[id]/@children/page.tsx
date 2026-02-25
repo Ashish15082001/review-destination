@@ -10,8 +10,7 @@ export default async function ReviewPage({
   params,
 }: PageProps<"/review/[id]">) {
   "use cache";
-  // const { id } = await params;
-  const { id } = { id: "699d5db4ce1bfe369284be45" }; // for testing
+  const { id } = await params;
   const reviewData = await getReviewData(id);
 
   if (!reviewData) {
