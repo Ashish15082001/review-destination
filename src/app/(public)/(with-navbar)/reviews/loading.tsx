@@ -1,6 +1,7 @@
 import { ReviewCardSkeleton } from "@/components/review-card/review-card-skeleton";
 
 export default function Loading() {
+  console.log("########################### Loading reviews...");
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
