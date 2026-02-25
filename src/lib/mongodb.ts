@@ -106,7 +106,8 @@ export const getReviewData = cache(async function (
 ): Promise<ReviewData | null> {
   "use cache";
 
-  console.log("getReviewData called with reviewId:", reviewId);
+  cacheTag(`reviewData-${reviewId}`);
+
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
     _id: new ObjectId(reviewId),
@@ -132,7 +133,7 @@ export const getReviewData = cache(async function (
   return parseResult.data;
 });
 
-export async function getAllReviewsData(): Promise<ReviewData[]> {
+export async function getReviewsData(): Promise<ReviewData[]> {
   "use cache";
 
   cacheTag("reviewsData");

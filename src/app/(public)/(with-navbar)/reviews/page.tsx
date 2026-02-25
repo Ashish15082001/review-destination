@@ -1,4 +1,4 @@
-import { getAllReviewsData } from "@/lib/mongodb";
+import { getReviewsData } from "@/lib/mongodb";
 import { ReviewCard } from "@/components/review-card/review-card";
 
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function ReviewsPage() {
-  const reviewsData = await getAllReviewsData();
+  const reviewsData = await getReviewsData();
 
   if (reviewsData.length === 0) {
     return (
@@ -44,8 +44,8 @@ export default async function ReviewsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviewsData.map((reviewData, index) => (
-            <ReviewCard key={index} reviewData={reviewData} />
+          {reviewsData.map((reviewData) => (
+            <ReviewCard key={reviewData._id} reviewData={reviewData} />
           ))}
         </div>
       </div>
