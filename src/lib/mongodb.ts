@@ -69,7 +69,9 @@ export async function getDatabase(): Promise<Db> {
   return client.db("review-destination");
 }
 
+// ############################################
 // ###################### reviews related functions ######################
+// ############################################
 
 export async function getReviewsCollection(): Promise<
   Collection<ReviewDataDocument>
@@ -164,7 +166,9 @@ export async function getReviewsData(): Promise<ReviewData[]> {
   return parseResult.data;
 }
 
+// ############################################
 // ###################### like related functions ######################
+// ############################################
 
 export async function getLikesCollection(): Promise<
   Collection<LikeDataDocument>
@@ -192,6 +196,8 @@ export async function insertLikeData(
 
   await collection.insertOne(parseResult.data);
 
+  updateTag(`likesData-${likeData.reviewId}`);
+
   return likeDataDocument._id.toString();
 }
 
@@ -200,6 +206,9 @@ export async function getLikeData({
 }: {
   likeId: string;
 }): Promise<LikeData | null> {
+  "use cache";
+  cacheTag(`likeData-${likeId}`);
+
   const collection = await getLikesCollection();
 
   const LikeDataDocument = await collection.findOne({
@@ -224,37 +233,6 @@ export async function getLikeData({
   return parseResult.data;
 }
 
-export async function getLikesData({
-  likeIds,
-}: {
-  likeIds: string[];
-}): Promise<LikeData[] | null> {
-  const collection = await getLikesCollection();
-
-  const LikeDataDocuments = await collection
-    .find({
-      _id: { $in: likeIds.map((id) => new ObjectId(id)) },
-    })
-    .toArray();
-
-  if (!LikeDataDocuments || LikeDataDocuments.length === 0) return null;
-
-  const LikeData: LikeData[] = LikeDataDocuments.map((LikeDataDocument) => ({
-    ...LikeDataDocument,
-    _id: LikeDataDocument._id.toString(),
-    reviewId: LikeDataDocument.reviewId.toString(),
-    likedBy: LikeDataDocument.likedBy.toString(),
-  }));
-
-  const parseResult = LikeDataSchema.array().safeParse(LikeData);
-
-  if (!parseResult.success) {
-    throw new Error(`Invalid like data from DB: ${parseResult.error.message}`);
-  }
-
-  return parseResult.data;
-}
-
 export async function getLikesDataByReviewId({
   reviewId,
 }: {
@@ -262,8 +240,6 @@ export async function getLikesDataByReviewId({
 }): Promise<LikeData[] | null> {
   "use cache";
   cacheTag(`likesData-${reviewId}`);
-
-  console.log("getLikesDataByReviewId called with reviewId:", reviewId);
 
   const collection = await getLikesCollection();
 
@@ -291,7 +267,9 @@ export async function getLikesDataByReviewId({
   return parseResult.data;
 }
 
+// ############################################
 // ###################### comment related functions ######################
+// ############################################
 
 export async function getCommentsCollection(): Promise<
   Collection<CommentDataDocument>
@@ -319,6 +297,8 @@ export async function insertCommentData(
 
   await collection.insertOne(parseResult.data);
 
+  updateTag(`commentsData-${commentData.reviewId}`);
+
   return commentDataDocument._id.toString();
 }
 
@@ -327,6 +307,9 @@ export async function getCommentData({
 }: {
   commentId: string;
 }): Promise<CommentData | null> {
+  "use cache";
+  cacheTag(`commentData-${commentId}`);
+
   const collection = await getCommentsCollection();
 
   const commentDataDocument = await collection.findOne({
@@ -353,47 +336,13 @@ export async function getCommentData({
   return parseResult.data;
 }
 
-export async function getCommentsData({
-  commentIds,
-}: {
-  commentIds: string[];
-}): Promise<CommentData[] | null> {
-  const collection = await getCommentsCollection();
-
-  const commentDataDocuments = await collection
-    .find({
-      _id: { $in: commentIds.map((id) => new ObjectId(id)) },
-    })
-    .toArray();
-
-  if (!commentDataDocuments || commentDataDocuments.length === 0) return null;
-
-  const commentsData: CommentData[] = commentDataDocuments.map(
-    (commentDataDocument) => ({
-      ...commentDataDocument,
-      _id: commentDataDocument._id.toString(),
-      reviewId: commentDataDocument.reviewId.toString(),
-      commentedBy: commentDataDocument.commentedBy.toString(),
-    }),
-  );
-
-  const parseResult = CommentDataSchema.array().safeParse(commentsData);
-
-  if (!parseResult.success) {
-    throw new Error(
-      `Invalid comment data from DB: ${parseResult.error.message}`,
-    );
-  }
-
-  return parseResult.data;
-}
-
-export async function getCommentsDataByReviewId({
+export const getCommentsDataByReviewId = cache(async function ({
   reviewId,
 }: {
   reviewId: string;
 }): Promise<CommentData[] | null> {
   "use cache";
+
   cacheTag(`commentsData-${reviewId}`);
 
   const collection = await getCommentsCollection();
@@ -424,9 +373,11 @@ export async function getCommentsDataByReviewId({
   }
 
   return parseResult.data;
-}
+});
 
+// ############################################
 // ###################### User related functions ######################
+// ############################################
 
 export async function getUsersCollection(): Promise<
   Collection<UserDataDocument>
@@ -440,6 +391,9 @@ export async function getUserDataByUserName({
 }: {
   userName: string;
 }): Promise<UserData | null> {
+  "use cache";
+  cacheTag(`userData-${userName}`);
+
   const collection = await getUsersCollection();
   const userDataDomument = await collection.findOne({ userName });
 
@@ -465,7 +419,8 @@ export async function getUserDataByUserId({
   userId: string;
 }): Promise<UserData | null> {
   "use cache";
-  console.log("getUserDataByUserId called with userId:", userId);
+  cacheTag(`userData-${userId}`);
+
   const collection = await getUsersCollection();
   const userDataDomument = await collection.findOne({
     _id: new ObjectId(userId),
@@ -524,7 +479,9 @@ export async function getUserDataUsingSession(): Promise<UserData | null> {
   return userData;
 }
 
+// ############################################
 // ###################### User Sessionrelated functions ######################
+// ############################################
 
 export async function getUsersSessionCollection(): Promise<
   Collection<UserSessionDataDocument>
@@ -537,6 +494,9 @@ export async function getUserSessionDataFromMongoDB(
   sessionId: string,
 ): Promise<UserSessionData | null> {
   "use cache";
+
+  cacheTag(`userSessionData-${sessionId}`);
+
   const userSessionsCollection = await getUsersSessionCollection();
 
   const userSessionDataDocument = await userSessionsCollection.findOne({
