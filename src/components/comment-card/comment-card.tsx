@@ -16,7 +16,7 @@ export function CommentCard({ commentData, commenterName }: CommentCardProps) {
 
       {/* Commented on date */}
       <p className="text-xs text-gray-400 mt-3">
-        {new Date(commentData.commentedOn)
+        {commentData.commentedOn
           .toLocaleDateString("en-GB", {
             day: "numeric",
             month: "long",
