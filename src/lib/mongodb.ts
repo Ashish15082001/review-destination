@@ -196,7 +196,7 @@ export async function insertLikeData(
 
   await collection.insertOne(parseResult.data);
 
-  updateTag(`likesData-${likeData.reviewId}`);
+  // updateTag(`likesData-${likeData.reviewId}`);
 
   return likeDataDocument._id.toString();
 }
