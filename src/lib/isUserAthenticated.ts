@@ -9,5 +9,5 @@ export async function isUserAthenticated() {
 
   console.log("sessionData = ", sessionData);
 
-  return sessionData ? true : false;
+  return sessionData?.value ? true : false;
 }
