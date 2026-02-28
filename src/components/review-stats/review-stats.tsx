@@ -1,9 +1,8 @@
-import Image from "next/image";
-import likedIcon from "@/icons/liked.svg";
 import {
   getLikesDataByReviewId,
   getCommentsDataByReviewId,
 } from "@/lib/mongodb";
+import { ReviewLikeButton } from "../review-card/review-like-button";
 
 export async function ReviewStats({ reviewId }: { reviewId: string }) {
   const [likesData, commentsData] = await Promise.all([
@@ -18,8 +17,7 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
     <>
       {/* Likes */}
       <div className="flex items-center gap-1 text-sm text-gray-500">
-        <Image src={likedIcon} alt="likes" width={16} height={16} />
-        <span>{totalLikes}</span>
+        <ReviewLikeButton reviewId={reviewId} totalLikes={totalLikes} />
       </div>
 
       {/* Comments */}
