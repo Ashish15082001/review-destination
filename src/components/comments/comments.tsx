@@ -7,7 +7,9 @@ export async function Comments({ reviewId }: { reviewId: string }) {
   if (!commentsData || commentsData.length === 0) {
     return (
       <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
-        <p className="text-gray-400 text-sm">No comments yet. Be the first to comment!</p>
+        <p className="text-gray-400 text-sm">
+          No comments yet. Be the first to comment!
+        </p>
       </div>
     );
   }
