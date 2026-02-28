@@ -16,26 +16,23 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
   return (
     <>
       {/* Likes */}
-      <div className="flex items-center gap-1 text-sm text-gray-500">
-        <ReviewLikeButton reviewId={reviewId} totalLikes={totalLikes} />
-      </div>
+      <ReviewLikeButton reviewId={reviewId} totalLikes={totalLikes} />
 
       {/* Comments */}
-      <div className="flex items-center gap-1 text-sm text-gray-500">
+      <div className="flex items-center gap-1.5 text-gray-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width={16}
-          height={16}
+          width={18}
+          height={18}
           viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          fill="currentColor"
+          stroke="none"
         >
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        <span>{totalComments}</span>
+        <span className="text-sm font-medium text-gray-600">
+          {totalComments}
+        </span>
       </div>
     </>
   );
