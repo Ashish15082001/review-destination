@@ -1,22 +1,36 @@
 import {
   getLikesDataByReviewId,
   getCommentsDataByReviewId,
+  getUserDataUsingSession,
 } from "@/lib/mongodb";
 import { ReviewLikeButton } from "../review-card/review-like-button";
 
 export async function ReviewStats({ reviewId }: { reviewId: string }) {
-  const [likesData, commentsData] = await Promise.all([
+  const [likesData, commentsData, userData] = await Promise.all([
     getLikesDataByReviewId({ reviewId }),
     getCommentsDataByReviewId({ reviewId }),
+    getUserDataUsingSession(),
   ]);
 
+  const currentUserData = userData?._id || null;
   const totalLikes = likesData?.length ?? 0;
   const totalComments = commentsData?.length ?? 0;
+
+  // Check if the current user has already liked the review
+  // We find like data for the current user by comparing the likedBy field with the currentUserData
+  // If current user has liked the review, currentUserLikeData will contain that like data, otherwise it will be undefined
+  const currentUserLikeData = likesData?.find(
+    (like) => like.likedBy === currentUserData,
+  );
 
   return (
     <>
       {/* Likes */}
-      <ReviewLikeButton reviewId={reviewId} totalLikes={totalLikes} />
+      <ReviewLikeButton
+        reviewId={reviewId}
+        totalLikes={totalLikes}
+        currentUserLikeData={currentUserLikeData}
+      />
 
       {/* Comments */}
       <div className="flex items-center gap-1.5 text-gray-400">

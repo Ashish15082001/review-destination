@@ -34,6 +34,7 @@ import {
 } from "@/schema/userSession";
 import { cache } from "react";
 import { cacheTag, updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -179,7 +180,7 @@ export async function getLikesCollection(): Promise<
 
 export async function insertLikeData(
   likeData: Omit<LikeData, "_id">,
-): Promise<string> {
+): Promise<LikeDataDocument> {
   const collection = await getLikesCollection();
   const likeDataDocument: LikeDataDocument = {
     ...likeData,
@@ -196,9 +197,9 @@ export async function insertLikeData(
 
   await collection.insertOne(parseResult.data);
 
-  // updateTag(`likesData-${likeData.reviewId}`);
+  revalidateTag(`likesData-${likeData.reviewId}`, "max");
 
-  return likeDataDocument._id.toString();
+  return parseResult.data;
 }
 
 export async function getLikeData({
@@ -265,6 +266,23 @@ export async function getLikesDataByReviewId({
   }
 
   return parseResult.data;
+}
+
+export async function deleteLikeData({
+  likeId,
+  reviewId,
+}: {
+  likeId: string;
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getLikesCollection();
+  const result = await collection.deleteOne({
+    _id: new ObjectId(likeId),
+  });
+
+  revalidateTag(`likesData-${reviewId}`, "max");
+
+  return result.deletedCount > 0;
 }
 
 // ############################################

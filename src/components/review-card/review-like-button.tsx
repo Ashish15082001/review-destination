@@ -1,64 +1,78 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import { LikeData } from "@/schema/like";
+import { useOptimistic, useState, useTransition } from "react";
+import { set } from "zod";
 
 interface ReviewLikeButtonProps {
   reviewId: string;
+  currentUserLikeData?: LikeData; // prop to indicate if the current user has already liked the review
   totalLikes: number;
 }
 
 export function ReviewLikeButton({
   reviewId,
+  currentUserLikeData,
   totalLikes,
 }: ReviewLikeButtonProps) {
-  const [optimisticLikes, addOptimisticLike] = useOptimistic(
-    totalLikes,
-    (prev, like: number) => {
-      console.log("Optimistic update: ", prev, like);
-      return prev + like;
-    },
-  );
-  const [isPending, startTransition] = useTransition();
+  const [optimisticLikes, setOptimisticLike] = useState(totalLikes);
+  const [optimisticCurrentUserLikeData, setOptimisticCurrentUserLikeData] =
+    useState<LikeData | undefined>(currentUserLikeData);
 
-  const handlePostLike = async () => {
-    if (isPending) return; // Prevent multiple clicks while the action is pending
+  const handleToggleLike = async () => {
+    if (optimisticCurrentUserLikeData) {
+      setOptimisticCurrentUserLikeData(undefined); // Clear the optimistic like data to reflect the unliked state
+      setOptimisticLike((prev) => prev - 1); // Decrement the optimistic like count
 
-    // Optimistically update the UI
-    startTransition(() => {
-      addOptimisticLike(1);
-    });
+      try {
+        await fetch("/api/feedback/like-unlike", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reviewId,
+            likeId: optimisticCurrentUserLikeData._id,
+          }), // Use the like ID from the optimistic data
+        });
+      } catch (error) {
+        console.error("Error unliking the review:", error);
 
-    try {
-      // Send the like action to the server
-      await fetch("/api/feeback/like", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ reviewId }), // Replace "123" with actual user ID
-      });
-    } catch (error) {
-      console.error("Error liking the review:", error);
-      // Optionally, you can revert the optimistic update here if the request fails
-      startTransition(() => {
-        addOptimisticLike(-1);
-      });
+        setOptimisticLike((prev) => prev + 1);
+        setOptimisticCurrentUserLikeData(currentUserLikeData);
+      }
+    } else {
+      // Like
+
+      try {
+        const response = await fetch("/api/feedback/like-unlike", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reviewId }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const newLikeData: LikeData = data.likeData; // Assuming the API returns the new like data in this format
+        setOptimisticCurrentUserLikeData(newLikeData);
+        setOptimisticLike((prev) => prev + 1);
+      } catch (error) {
+        console.error("Error liking the review:", error);
+        setOptimisticLike((prev) => prev - 1);
+        setOptimisticCurrentUserLikeData(undefined);
+      }
     }
   };
-
-  console.log(
-    "Rendering ReviewLikeButton with optimisticLikes:",
-    optimisticLikes,
-  );
 
   return (
     <div className="flex items-center gap-1.5">
       <button
         onClick={(event) => {
           event.stopPropagation();
-          handlePostLike();
+          handleToggleLike();
         }}
-        className="flex items-center text-pink-500 hover:text-pink-600 transition-colors"
+        className={`flex items-center transition-colors cursor-pointer ${optimisticCurrentUserLikeData ? "text-red-500" : "text-gray-400 hover:text-gray-600"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
