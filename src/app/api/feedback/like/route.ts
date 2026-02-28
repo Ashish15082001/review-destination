@@ -25,13 +25,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await insertLikeData({
+    const likeData = await insertLikeData({
       likedBy: userData._id,
       reviewId: reviewId,
       likedOn: new Date(),
     });
 
-    return NextResponse.json({ error: false, message: null }, { status: 200 });
+    return NextResponse.json(
+      { error: false, message: null, likeData },
+      { status: 200 },
+    );
   } catch (error: any) {
     return NextResponse.json(
       { error: true, message: `Failed to like the review: ${error.message}` },

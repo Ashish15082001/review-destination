@@ -180,7 +180,7 @@ export async function getLikesCollection(): Promise<
 
 export async function insertLikeData(
   likeData: Omit<LikeData, "_id">,
-): Promise<LikeDataDocument> {
+): Promise<LikeData> {
   const collection = await getLikesCollection();
   const likeDataDocument: LikeDataDocument = {
     ...likeData,
@@ -199,7 +199,12 @@ export async function insertLikeData(
 
   revalidateTag(`likesData-${likeData.reviewId}`, "max");
 
-  return parseResult.data;
+  return {
+    ...likeDataDocument,
+    _id: likeDataDocument._id.toString(),
+    reviewId: likeDataDocument.reviewId.toString(),
+    likedBy: likeDataDocument.likedBy.toString(),
+  };
 }
 
 export async function getLikeData({
