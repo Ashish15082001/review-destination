@@ -6,9 +6,9 @@ export async function Comments({ reviewId }: { reviewId: string }) {
 
   if (!commentsData || commentsData.length === 0) {
     return (
-      <p className="text-gray-500 text-sm">
-        No comments yet. Be the first to comment!
-      </p>
+      <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+        <p className="text-gray-400 text-sm">No comments yet. Be the first to comment!</p>
+      </div>
     );
   }
 
@@ -22,7 +22,7 @@ export async function Comments({ reviewId }: { reviewId: string }) {
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {commentsWithUsers.map(({ commentData, commenterName }) => (
         <CommentCard
           key={commentData._id}
