@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <Suspense>
-      <CheckAuth isLoginRequired={true}>{children}</CheckAuth>
+      <CheckAuth visibility="private-only">{children}</CheckAuth>
     </Suspense>
   );
 }

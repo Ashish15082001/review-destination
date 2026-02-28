@@ -18,13 +18,13 @@ export default function Navbar() {
         <div className="flex items-center space-x-6">
           <Link
             href="/about"
-            className="text-gray-600 hover:text-gray-900 transition"
+            className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
           >
             About
           </Link>
           <Link
             href="/reviews"
-            className="text-gray-600 hover:text-gray-900 transition"
+            className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
           >
             Reviews
           </Link>
@@ -35,11 +35,11 @@ export default function Navbar() {
             }
           >
             <CheckAuth
-              isLoginRequired={true}
+              visibility={"private-only"}
               fallback={
                 <Link
                   href={"/auth?mode=signin"}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all cursor-pointer"
                 >
                   Add Review
                 </Link>
@@ -47,7 +47,7 @@ export default function Navbar() {
             >
               <Link
                 href={"/add-review"}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all cursor-pointer"
               >
                 Add Review
               </Link>
@@ -59,10 +59,10 @@ export default function Navbar() {
               <div className="w-14 h-5 bg-gray-200 rounded-md animate-pulse" />
             }
           >
-            <CheckAuth isLoginRequired={true}>
+            <CheckAuth visibility={"private-only"}>
               <Link
                 href="/profile"
-                className="text-gray-600 hover:text-gray-900 transition"
+                className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
               >
                 Profile
               </Link>
@@ -75,24 +75,24 @@ export default function Navbar() {
             }
           >
             <CheckAuth
-              isLoginRequired={true}
+              visibility={"private-only"}
               fallback={
-                <form action={signOutUser}>
-                  <button
-                    type="submit"
-                    className="text-gray-600 hover:text-gray-900 transition"
-                  >
-                    Sign Out
-                  </button>
-                </form>
+                <Link
+                  href="/auth?mode=signin"
+                  className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
+                >
+                  Sign In
+                </Link>
               }
             >
-              <Link
-                href="/auth?mode=signin"
-                className="text-gray-600 hover:text-gray-900 transition"
-              >
-                Sign In
-              </Link>
+              <form action={signOutUser}>
+                <button
+                  type="submit"
+                  className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </form>
             </CheckAuth>
           </Suspense>
         </div>
