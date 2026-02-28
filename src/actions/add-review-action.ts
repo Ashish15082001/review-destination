@@ -10,24 +10,35 @@ import {
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
+/**
+ * Server action to add a new destination review.
+ *
+ * First verifies the user is authenticated via their session, then validates the form data
+ * (destination name, photos, visit date, description, experience) using Zod, uploads destination
+ * photos to Cloudinary, inserts the review into the database, and revalidates the `/reviews` page cache.
+ *
+ * @param prevData - The previous action state (used by `useActionState`).
+ * @param formData - The form data containing `destinationName`, `destinationPhoto` (files),
+ *   `whenVisited`, `description`, and `experience`.
+ * @returns An object indicating success or error, along with field-level validation messages.
+ * @throws {Error} If the user is not authenticated.
+ */
 const addReviewAction = async (
   prevData: AddReviewActionReturnType,
   formData: FormData,
 ): Promise<AddReviewActionReturnType> => {
+  const userData = await getUserDataUsingSession();
+
+  if (!userData) {
+    throw new Error("User is not authenticated.");
+  }
+
   // Extract and type the form data
   const destinationName = formData.get("destinationName") as string;
   const destinationPhotos = formData.getAll("destinationPhoto") as File[];
   const whenVisited = formData.get("whenVisited") as string;
   const description = formData.get("description") as string;
   const experience = formData.get("experience") as string;
-
-  console.log({
-    destinationName,
-    destinationPhotos,
-    whenVisited,
-    description,
-    experience,
-  });
 
   // Validate form data with Zod
   const validationResult = ReviewDataBrowserSchema.safeParse({
@@ -96,12 +107,6 @@ const addReviewAction = async (
   }
 
   const destinationPhotoUrls = uploadResults.map((r) => r.secure_url);
-
-  const userData = await getUserDataUsingSession();
-
-  if (!userData) {
-    throw new Error();
-  }
 
   await insertReviewData({
     userId: userData._id,

@@ -4,6 +4,16 @@ import { getUserDataByUserName, insertUserSession } from "@/lib/mongodb";
 import { SignInUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 
+/**
+ * Server action to sign in an existing user.
+ *
+ * Validates credentials using Zod, looks up the user by username, verifies the password,
+ * creates a new session (expires in 7 days), and sets the `sessionId` cookie.
+ *
+ * @param prevData - The previous action state (used by `useActionState`).
+ * @param formData - The form data containing `userName` and `password`.
+ * @returns An object indicating success or error, with a welcome message or field-level validation errors.
+ */
 const signInUser = async (
   prevData: SignInUserReturnType,
   formData: FormData,

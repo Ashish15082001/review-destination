@@ -12,10 +12,27 @@ const CommentFormSchema = z.object({
   reviewId: z.string().min(1, "Review ID is required"),
 });
 
+/**
+ * Server action to add a comment to a review.
+ *
+ * First verifies the user is authenticated via their session, then validates the comment text
+ * and review ID using Zod, inserts the comment into the database, and revalidates the comments cache.
+ *
+ * @param prevData - The previous action state (used by `useActionState`).
+ * @param formData - The form data containing `comment` (string) and `reviewId` (string).
+ * @returns An object indicating success or error, along with field-level validation messages.
+ * @throws {Error} If the user is not authenticated.
+ */
 const addCommentAction = async (
   prevData: AddCommentActionReturnType,
   formData: FormData,
 ): Promise<AddCommentActionReturnType> => {
+  const userData = await getUserDataUsingSession();
+
+  if (!userData) {
+    throw new Error("User not authenticated");
+  }
+
   const comment = formData.get("comment") as string;
   const reviewId = formData.get("reviewId") as string;
 
@@ -40,12 +57,6 @@ const addCommentAction = async (
     });
 
     return returnValue;
-  }
-
-  const userData = await getUserDataUsingSession();
-
-  if (!userData) {
-    throw new Error("User not authenticated");
   }
 
   await insertCommentData({

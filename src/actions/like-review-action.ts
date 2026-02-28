@@ -8,6 +8,16 @@ export interface LikeReviewActionArgs {
   userId: string;
 }
 
+/**
+ * Server action to toggle a like on a review.
+ *
+ * Inserts a like record into the database for the given user and review,
+ * then revalidates the likes cache for that review.
+ *
+ * @param params - Object containing `reviewId` and `userId`.
+ * @param params.reviewId - The ID of the review to like.
+ * @param params.userId - The ID of the user liking the review.
+ */
 const likeReviewAction = async ({ reviewId, userId }: LikeReviewActionArgs) => {
   await insertLikeData({
     likedBy: userId,
