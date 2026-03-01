@@ -11,6 +11,7 @@
     "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.9.0",
     "framer-motion": "^12.34.3",
     "lottie-react": "^2.4.1",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
