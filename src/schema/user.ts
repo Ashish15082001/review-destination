@@ -4,26 +4,27 @@ import { ObjectId } from "mongodb";
 const BaseUserFields = {
   userName: z.string().min(1, "User name is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.email("Invalid email address"),
 };
 
 export const SignInUserDataFromBrowserSchema = z.object({
-  userName: BaseUserFields.userName,
+  email: BaseUserFields.email,
   password: BaseUserFields.password,
 });
 
 export const SignUpUserDataFromBrowserSchema = z.object({
   userName: BaseUserFields.userName,
+  email: BaseUserFields.email,
   password: BaseUserFields.password,
-  // confirmPassword: z.string(),
+  confirmPassword: z
+    .string()
+    .min(6, "Confirm password must be at least 6 characters"),
 });
-// .refine((data) => data.password === data.confirmPassword, {
-//   message: "Passwords do not match",
-//   path: ["confirmPassword"],
-// });
 
 export const UserDataDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   userName: z.string(),
+  email: z.email(),
   password: z.string(),
   registeredAt: z.date(),
 });

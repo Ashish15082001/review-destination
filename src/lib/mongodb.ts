@@ -109,7 +109,7 @@ export const getReviewData = cache(async function (
 ): Promise<ReviewData | null> {
   "use cache";
 
-  cacheTag(`reviewData-${reviewId}`);
+  cacheTag(`reviewData-reviewId-${reviewId}`);
 
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
@@ -409,16 +409,16 @@ export async function getUsersCollection(): Promise<
   return db.collection("users");
 }
 
-export async function getUserDataByUserName({
-  userName,
+export async function getUserDataByEmail({
+  email,
 }: {
-  userName: string;
+  email: string;
 }): Promise<UserData | null> {
   "use cache";
-  cacheTag(`userData-${userName}`);
+  cacheTag(`userData-email-${email}`);
 
   const collection = await getUsersCollection();
-  const userDataDomument = await collection.findOne({ userName });
+  const userDataDomument = await collection.findOne({ email });
 
   if (!userDataDomument) return null;
 
@@ -442,7 +442,7 @@ export async function getUserDataByUserId({
   userId: string;
 }): Promise<UserData | null> {
   "use cache";
-  cacheTag(`userData-${userId}`);
+  cacheTag(`userData-userId-${userId}`);
 
   const collection = await getUsersCollection();
   const userDataDomument = await collection.findOne({
@@ -494,6 +494,9 @@ export async function getUserDataUsingSession(): Promise<UserData | null> {
   const userSessionData = await getUserSessionDataFromMongoDB(sessionId);
 
   if (!userSessionData || !userSessionData.userId) return null;
+
+  // Reject expired sessions
+  if (new Date(userSessionData.expiresOn) < new Date()) return null;
 
   const userData = await getUserDataByUserId({
     userId: userSessionData.userId,
