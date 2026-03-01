@@ -1,8 +1,9 @@
 "use server";
 
-import { getUserDataByUserName, insertUserSession } from "@/lib/mongodb";
+import { getUserDataByEmail, insertUserSession } from "@/lib/mongodb";
 import { SignInUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
+import bcrypt from "bcrypt";
 
 /**
  * Server action to sign in an existing user.
@@ -21,23 +22,23 @@ const signInUser = async (
   try {
     // sign in user and return user data
 
-    const userName = formData.get("userName") as string;
+    const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     // Validate form data with Zod
     const validationResult = SignInUserDataFromBrowserSchema.safeParse({
-      userName,
+      email,
       password,
     });
 
     const returnValue: SignInUserReturnType = {
       type: validationResult.success ? "success" : "error",
       fields: {
-        userName: {
-          value: userName,
+        email: {
+          value: email,
         },
         password: {
-          value: password,
+          value: "", // never echo passwords back to the client
         },
       },
     };
@@ -56,21 +57,22 @@ const signInUser = async (
       return returnValue;
     }
 
-    const userData = await getUserDataByUserName({ userName });
+    const userData = await getUserDataByEmail({ email });
 
     if (!userData) {
       returnValue.type = "error";
       returnValue.fields = {
         ...returnValue.fields,
-        userName: {
-          ...returnValue.fields?.userName,
-          error: "User does not exist.",
+        email: {
+          ...returnValue.fields?.email,
+          error: "No account found with this email.",
         },
       };
       return returnValue;
     }
 
-    if (userData.password !== password) {
+    const passwordMatch = await bcrypt.compare(password, userData.password);
+    if (!passwordMatch) {
       returnValue.type = "error";
       returnValue.fields = {
         ...returnValue.fields,
@@ -92,19 +94,18 @@ const signInUser = async (
     sessionCookie.set("sessionId", sessionData.toString(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
 
     returnValue.type = "success";
-    returnValue.message = `Welcome back, ${userName}!`;
+    returnValue.message = `Welcome back, ${userData.userName}!`;
     return returnValue;
   } catch (error: any) {
     console.error("Error in signInUser:", error);
     return {
       type: "error",
-      message:
-        error.message ||
-        "An unexpected error occurred. Please try again later.",
+      message: "An unexpected error occurred. Please try again later.",
     };
   }
 };

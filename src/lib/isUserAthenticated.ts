@@ -2,12 +2,20 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { getUserSessionDataFromMongoDB } from "./mongodb";
 
 export async function isUserAthenticated() {
-  //  return if user is authenticated or not
-  const sessionData = (await cookies()).get("sessionId");
+  const sessionCookie = await cookies();
+  const sessionId = sessionCookie.get("sessionId")?.value;
 
-  console.log("sessionData = ", sessionData);
+  if (!sessionId) return false;
 
-  return sessionData?.value ? true : false;
+  const sessionData = await getUserSessionDataFromMongoDB(sessionId);
+
+  if (!sessionData) return false;
+
+  // Reject expired sessions
+  if (new Date(sessionData.expiresOn) < new Date()) return false;
+
+  return true;
 }

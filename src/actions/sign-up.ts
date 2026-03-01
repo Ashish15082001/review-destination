@@ -1,22 +1,23 @@
 "use server";
 
 import {
-  getUserDataByUserName,
+  getUserDataByEmail,
   insertUserSession,
   registerNewUser,
 } from "@/lib/mongodb";
 import { SignUpUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
+import bcrypt from "bcrypt";
 
 /**
  * Server action to register a new user.
  *
- * Validates credentials using Zod, checks that the username is not already taken,
+ * Validates credentials using Zod, checks that the email is not already taken,
  * registers the user in the database, creates a new session (expires in 7 days),
  * and sets the `sessionId` cookie.
  *
  * @param prevData - The previous action state (used by `useActionState`).
- * @param formData - The form data containing `userName` and `password`.
+ * @param formData - The form data containing `email`, `password`, `confirmPassword`, and `userName`.
  * @returns An object indicating success or error, with a welcome message or field-level validation errors.
  */
 const signUpUser = async (
@@ -24,16 +25,24 @@ const signUpUser = async (
   formData: FormData,
 ): Promise<SignUpUserReturnType> => {
   try {
-    console.log("signUpUser action-----------");
-    // sign in user and return user data
-
     const userName = formData.get("userName") as string;
+    const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    console.log("Received form data:", {
+      userName,
+      email,
+      password,
+      confirmPassword,
+    });
 
     // Validate form data with Zod
     const validationResult = SignUpUserDataFromBrowserSchema.safeParse({
       userName,
+      email,
       password,
+      confirmPassword,
     });
 
     const returnValue: SignUpUserReturnType = {
@@ -42,11 +51,29 @@ const signUpUser = async (
         userName: {
           value: userName,
         },
+        email: {
+          value: email,
+        },
         password: {
-          value: password,
+          value: "",
+        },
+        confirmPassword: {
+          value: "",
         },
       },
     };
+
+    if (password !== confirmPassword) {
+      returnValue.type = "error";
+      returnValue.fields = {
+        ...returnValue.fields,
+        confirmPassword: {
+          ...returnValue.fields?.confirmPassword,
+          error: "Passwords do not match",
+        },
+      };
+      return returnValue;
+    }
 
     if (!validationResult.success) {
       validationResult.error.issues.forEach((issue) => {
@@ -62,27 +89,27 @@ const signUpUser = async (
       return returnValue;
     }
 
-    // check if user already exists
+    // check if email already exists
+    const existingUserByEmail = await getUserDataByEmail({ email });
 
-    const userData = await getUserDataByUserName({ userName });
-
-    if (userData) {
+    if (existingUserByEmail) {
       returnValue.type = "error";
-      if (!returnValue.fields)
-        returnValue.fields = {
-          userName: {
-            value: userName,
-          },
-        };
-      returnValue.fields.userName.error =
-        "Username already exists. Please choose another.";
-
+      returnValue.fields = {
+        ...returnValue.fields,
+        email: {
+          ...returnValue.fields?.email,
+          error: "Invalid credentials. Please try again.",
+        },
+      };
       return returnValue;
     }
 
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     const registeredUserId = await registerNewUser({
       userName,
-      password,
+      email,
+      password: hashedPassword,
       registeredAt: new Date(),
     });
 
@@ -96,7 +123,8 @@ const signUpUser = async (
     sessionCookie.set("sessionId", sessionData.toString(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
 
     returnValue.type = "success";
@@ -105,9 +133,7 @@ const signUpUser = async (
   } catch (error: any) {
     return {
       type: "error",
-      message:
-        error.message ||
-        "An unexpected error occurred. Please try again later.",
+      message: "An unexpected error occurred. Please try again later.",
     };
   }
 };
