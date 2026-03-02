@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts"
+    "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts",
+    "seed:dummy": "ts-node --project tsconfig.scripts.json scripts/seed-dummy.ts",
+    "seed:large": "ts-node --project tsconfig.scripts.json scripts/seed-large.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
