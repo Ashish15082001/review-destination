@@ -1,4 +1,4 @@
-import { isUserAthenticated } from "@/lib/isUserAthenticated";
+import { checkIfUserIsAuthenticated } from "@/lib/checkIfUserIsAuthenticated";
 import { redirect } from "next/navigation";
 
 /**
@@ -22,7 +22,7 @@ export default async function CheckAuth({
   fallback?: React.ReactNode;
   visibility: "public-only" | "private-only" | "public";
 }) {
-  const isUserAuthenticated = await isUserAthenticated();
+  const isUserAuthenticated = await checkIfUserIsAuthenticated();
 
   // If visibility is private-only and user is not authenticated, show fallback if provided, otherwise redirect to sign-in page
   if (visibility === "private-only" && !isUserAuthenticated) {

@@ -1,10 +1,7 @@
-// import "server-only";
-"use server";
-
 import { cookies } from "next/headers";
 import { getUserSessionDataFromMongoDB } from "./mongodb";
 
-export async function isUserAthenticated() {
+export async function checkIfUserIsAuthenticated() {
   const sessionCookie = await cookies();
   const sessionId = sessionCookie.get("sessionId")?.value;
 
