@@ -28,6 +28,7 @@ export function ReviewLikeButton({
       return;
     }
 
+    // remove like if it already exists
     if (optimisticCurrentUserLikeData) {
       setOptimisticCurrentUserLikeData(undefined); // Clear the optimistic like data to reflect the unliked state
       setOptimisticLike((prev) => prev - 1); // Decrement the optimistic like count
@@ -48,8 +49,7 @@ export function ReviewLikeButton({
         setOptimisticCurrentUserLikeData(currentUserLikeData);
       }
     } else {
-      // Like
-
+      // add like if it doesn't exist
       try {
         const response = await fetch("/api/like-review", {
           method: "POST",

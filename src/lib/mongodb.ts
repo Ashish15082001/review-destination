@@ -320,8 +320,12 @@ export async function insertCommentData(
     _id: new ObjectId(),
     reviewId: new ObjectId(commentData.reviewId),
     commentedBy: new ObjectId(commentData.commentedBy),
-    idsOfUsersWhoLiked: [],
-    idsOfUsersWhoDisliked: [],
+    idsOfUsersWhoDisliked: commentData.idsOfUsersWhoDisliked.map(
+      (userId) => new ObjectId(userId),
+    ),
+    idsOfUsersWhoLiked: commentData.idsOfUsersWhoLiked.map(
+      (userId) => new ObjectId(userId),
+    ),
     replyCommentId: undefined,
   };
 

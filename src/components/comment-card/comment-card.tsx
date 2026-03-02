@@ -1,8 +1,10 @@
 import { CommentData } from "@/schema/comment";
+import { CommentActions } from "../comment-actions/comment-actions";
 
 interface CommentCardProps {
   commentData: CommentData;
   commenterName: string;
+  currentUserId: string | null;
 }
 
 function getRelativeTime(date: Date): string {
@@ -27,7 +29,11 @@ function getRelativeTime(date: Date): string {
   });
 }
 
-export function CommentCard({ commentData, commenterName }: CommentCardProps) {
+export function CommentCard({
+  commentData,
+  commenterName,
+  currentUserId,
+}: CommentCardProps) {
   const initials = commenterName.slice(0, 2).toUpperCase();
   const relativeTime = getRelativeTime(commentData.commentedOn);
 
@@ -67,34 +73,10 @@ export function CommentCard({ commentData, commenterName }: CommentCardProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-4 mt-3">
-          <button className="flex items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors text-xs cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
-              <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
-            </svg>
-          </button>
-          <button className="flex items-center gap-1 text-gray-400 hover:text-red-500 transition-colors text-xs cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z" />
-              <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
-            </svg>
-          </button>
+          <CommentActions
+            commentData={commentData}
+            currentUserId={currentUserId}
+          />
           <button className="text-xs text-gray-400 hover:text-blue-500 transition-colors font-medium cursor-pointer">
             Reply
           </button>

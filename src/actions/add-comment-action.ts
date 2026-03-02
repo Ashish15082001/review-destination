@@ -64,6 +64,8 @@ const addCommentAction = async (
     commentedBy: userData._id,
     commentedOn: new Date(),
     comment: validationResult.data.comment,
+    idsOfUsersWhoLiked: [],
+    idsOfUsersWhoDisliked: [],
   });
 
   updateTag(`commentsData-${reviewId}`);

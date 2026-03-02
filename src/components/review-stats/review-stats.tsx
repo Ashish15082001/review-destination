@@ -3,7 +3,7 @@ import {
   getCommentsDataByReviewId,
   getUserDataUsingSession,
 } from "@/lib/mongodb";
-import { ReviewLikeButton } from "../review-card/review-like-button";
+import { ReviewLikeButton } from "../review-like-button/review-like-button";
 
 export async function ReviewStats({ reviewId }: { reviewId: string }) {
   const [likesData, commentsData, userData] = await Promise.all([
