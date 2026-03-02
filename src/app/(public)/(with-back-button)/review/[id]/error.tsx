@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "@/components/nav-bar/navbar";
+// import Navbar from "@/components/nav-bar/navbar";
 
 export default function Error({
   error,
@@ -12,7 +12,7 @@ export default function Error({
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <main className="container mx-auto px-6 py-12">
         <div className="max-w-2xl mx-auto text-center">

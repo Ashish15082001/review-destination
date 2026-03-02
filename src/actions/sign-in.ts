@@ -20,8 +20,6 @@ const signInUser = async (
   formData: FormData,
 ): Promise<SignInUserReturnType> => {
   try {
-    // sign in user and return user data
-
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
