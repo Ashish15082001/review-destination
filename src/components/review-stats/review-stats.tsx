@@ -13,8 +13,8 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
   ]);
 
   const currentUserData = userData?._id || null;
-  const totalLikes = likesData?.length ?? 0;
-  const totalComments = commentsData?.length ?? 0;
+  const totalLikes = likesData.length;
+  const totalComments = commentsData.length;
 
   // Check if the current user has already liked the review
   // We find like data for the current user by comparing the likedBy field with the currentUserData

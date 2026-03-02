@@ -33,8 +33,7 @@ import {
   UserSessionDataSchema,
 } from "@/schema/userSession";
 import { cache } from "react";
-import { cacheTag, updateTag } from "next/cache";
-import { revalidateTag } from "next/cache";
+import { cacheTag, revalidateTag } from "next/cache";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -99,7 +98,7 @@ export async function insertReviewData(
   const collection = await getReviewsCollection();
   await collection.insertOne(parseResult.data);
 
-  updateTag("reviewsData");
+  revalidateTag("reviewsData", "max");
 
   return newReviewDataDocument._id.toString();
 }
@@ -109,7 +108,7 @@ export const getReviewData = cache(async function (
 ): Promise<ReviewData | null> {
   "use cache";
 
-  cacheTag(`reviewData-reviewId-${reviewId}`);
+  cacheTag(`reviewData-${reviewId}`);
 
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
@@ -197,7 +196,7 @@ export async function insertLikeData(
 
   await collection.insertOne(parseResult.data);
 
-  revalidateTag(`likesData-${likeData.reviewId}`, "max");
+  revalidateTag(`likesData-reviewId-${likeData.reviewId}`, "max");
 
   return {
     ...likeDataDocument,
@@ -243,9 +242,9 @@ export async function getLikesDataByReviewId({
   reviewId,
 }: {
   reviewId: string;
-}): Promise<LikeData[] | null> {
+}): Promise<LikeData[]> {
   "use cache";
-  cacheTag(`likesData-${reviewId}`);
+  cacheTag(`likesData-reviewId-${reviewId}`);
 
   const collection = await getLikesCollection();
 
@@ -255,7 +254,7 @@ export async function getLikesDataByReviewId({
     })
     .toArray();
 
-  if (!LikeDataDocuments || LikeDataDocuments.length === 0) return null;
+  if (!LikeDataDocuments || LikeDataDocuments.length === 0) return [];
 
   const LikeData: LikeData[] = LikeDataDocuments.map((LikeDataDocument) => ({
     ...LikeDataDocument,
@@ -285,7 +284,7 @@ export async function deleteLikeData({
     _id: new ObjectId(likeId),
   });
 
-  revalidateTag(`likesData-${reviewId}`, "max");
+  revalidateTag(`likesData-reviewId-${reviewId}`, "max");
 
   return result.deletedCount > 0;
 }
@@ -310,6 +309,9 @@ export async function insertCommentData(
     _id: new ObjectId(),
     reviewId: new ObjectId(commentData.reviewId),
     commentedBy: new ObjectId(commentData.commentedBy),
+    idsOfUsersWhoLiked: [],
+    idsOfUsersWhoUnliked: [],
+    replyCommentId: undefined,
   };
 
   const parseResult = CommentDataDocumentSchema.safeParse(commentDataDocument);
@@ -320,7 +322,7 @@ export async function insertCommentData(
 
   await collection.insertOne(parseResult.data);
 
-  updateTag(`commentsData-${commentData.reviewId}`);
+  revalidateTag(`commentsData-reviewId-${commentData.reviewId}`, "max");
 
   return commentDataDocument._id.toString();
 }
@@ -346,6 +348,15 @@ export async function getCommentData({
     _id: commentDataDocument._id.toString(),
     reviewId: commentDataDocument.reviewId.toString(),
     commentedBy: commentDataDocument.commentedBy.toString(),
+    idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map((userId) =>
+      userId.toString(),
+    ),
+    idsOfUsersWhoUnliked: commentDataDocument.idsOfUsersWhoUnliked.map(
+      (userId) => userId.toString(),
+    ),
+    replyCommentId: commentDataDocument.replyCommentId
+      ? commentDataDocument.replyCommentId.toString()
+      : undefined,
   };
 
   const parseResult = CommentDataSchema.safeParse(commentData);
@@ -363,10 +374,10 @@ export const getCommentsDataByReviewId = cache(async function ({
   reviewId,
 }: {
   reviewId: string;
-}): Promise<CommentData[] | null> {
+}): Promise<CommentData[]> {
   "use cache";
 
-  cacheTag(`commentsData-${reviewId}`);
+  cacheTag(`commentsData-reviewId-${reviewId}`);
 
   const collection = await getCommentsCollection();
 
@@ -376,7 +387,7 @@ export const getCommentsDataByReviewId = cache(async function ({
     })
     .toArray();
 
-  if (!commentDataDocuments || commentDataDocuments.length === 0) return null;
+  if (!commentDataDocuments || commentDataDocuments.length === 0) return [];
 
   const commentsData: CommentData[] = commentDataDocuments.map(
     (commentDataDocument) => ({
@@ -384,6 +395,15 @@ export const getCommentsDataByReviewId = cache(async function ({
       _id: commentDataDocument._id.toString(),
       reviewId: commentDataDocument.reviewId.toString(),
       commentedBy: commentDataDocument.commentedBy.toString(),
+      idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map((userId) =>
+        userId.toString(),
+      ),
+      idsOfUsersWhoUnliked: commentDataDocument.idsOfUsersWhoUnliked.map(
+        (userId) => userId.toString(),
+      ),
+      replyCommentId: commentDataDocument.replyCommentId
+        ? commentDataDocument.replyCommentId.toString()
+        : undefined,
     }),
   );
 
@@ -418,13 +438,13 @@ export async function getUserDataByEmail({
   cacheTag(`userData-email-${email}`);
 
   const collection = await getUsersCollection();
-  const userDataDomument = await collection.findOne({ email });
+  const userDataDocument = await collection.findOne({ email });
 
-  if (!userDataDomument) return null;
+  if (!userDataDocument) return null;
 
   const userData: UserData = {
-    ...userDataDomument,
-    _id: userDataDomument._id.toString(),
+    ...userDataDocument,
+    _id: userDataDocument._id.toString(),
   };
 
   const parseResult = UserDataSchema.safeParse(userData);
@@ -445,15 +465,15 @@ export async function getUserDataByUserId({
   cacheTag(`userData-userId-${userId}`);
 
   const collection = await getUsersCollection();
-  const userDataDomument = await collection.findOne({
+  const userDataDocument = await collection.findOne({
     _id: new ObjectId(userId),
   });
 
-  if (!userDataDomument) return null;
+  if (!userDataDocument) return null;
 
   const userData: UserData = {
-    ...userDataDomument,
-    _id: userDataDomument._id.toString(),
+    ...userDataDocument,
+    _id: userDataDocument._id.toString(),
   };
 
   const parseResult = UserDataSchema.safeParse(userData);
@@ -476,7 +496,7 @@ export async function registerNewUser(
   const parseResult = UserDataDocumentSchema.safeParse(newUserDataDocument);
 
   if (!parseResult.success) {
-    throw new Error(`Invalid review data: ${parseResult.error.message}`);
+    throw new Error(`Invalid user data: ${parseResult.error.message}`);
   }
 
   const collection = await getUsersCollection();
@@ -570,11 +590,10 @@ export async function insertUserSession(
   return userSessionDataDocumentId.toString();
 }
 
-export async function deleteUserSession(_id: string) {
+export async function deleteUserSession(_id: string): Promise<boolean> {
   const collection = await getUsersSessionCollection();
   const result = await collection.deleteOne({
     _id: new ObjectId(_id),
   });
-
   return result.deletedCount > 0;
 }

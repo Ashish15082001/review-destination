@@ -7,6 +7,11 @@ export const CommentDataDocumentSchema = z.object({
   commentedBy: z.instanceof(ObjectId),
   commentedOn: z.date(),
   comment: z.string(),
+  replyCommentId: z.instanceof(ObjectId).optional(),
+  // array of ObjectIds representing users who liked the comment
+  idsOfUsersWhoLiked: z.array(z.instanceof(ObjectId)),
+  // array of ObjectIds representing users who unliked the comment
+  idsOfUsersWhoUnliked: z.array(z.instanceof(ObjectId)),
 });
 
 export const CommentDataSchema = z.object({
@@ -15,6 +20,11 @@ export const CommentDataSchema = z.object({
   commentedBy: z.string(),
   commentedOn: z.date(),
   comment: z.string(),
+  replyCommentId: z.string().optional(),
+  // array of strings representing user IDs who liked the comment
+  idsOfUsersWhoLiked: z.array(z.string()),
+  // array of strings representing user IDs who unliked the comment
+  idsOfUsersWhoUnliked: z.array(z.string()),
 });
 
 export type CommentDataDocument = z.infer<typeof CommentDataDocumentSchema>;
