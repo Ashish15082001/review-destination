@@ -135,6 +135,63 @@ export const getReviewData = cache(async function (
   return parseResult.data;
 });
 
+export async function getReviewsDataByUserId(
+  userId: string,
+): Promise<ReviewData[]> {
+  const collection = await getReviewsCollection();
+
+  const reviewDataDocuments = await collection
+    .find({ userId: new ObjectId(userId) })
+    .sort({ datePosted: -1 })
+    .toArray();
+
+  const reviewsData: ReviewData[] = reviewDataDocuments.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+    userId: doc.userId.toString(),
+  }));
+
+  const parseResult = ReviewDataSchema.array().safeParse(reviewsData);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid reviews data from DB: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
+}
+
+export async function getReviewsByIds(
+  reviewIds: string[],
+): Promise<ReviewData[]> {
+  if (reviewIds.length === 0) return [];
+
+  const collection = await getReviewsCollection();
+  const objectIds = reviewIds.map((id) => new ObjectId(id));
+
+  const reviewDataDocuments = await collection
+    .find({ _id: { $in: objectIds } })
+    .sort({ datePosted: -1 })
+    .toArray();
+
+  const reviewsData: ReviewData[] = reviewDataDocuments.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+    userId: doc.userId.toString(),
+  }));
+
+  const parseResult = ReviewDataSchema.array().safeParse(reviewsData);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid reviews data from DB: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
+}
+
 export async function getReviewsData({
   pageSize = 10,
   cursor,
@@ -554,6 +611,9 @@ export async function getUserDataByEmail({
   const userData: UserData = {
     ...userDataDocument,
     _id: userDataDocument._id.toString(),
+    savedReviewesIds: userDataDocument.savedReviewesIds.map((id) =>
+      id.toString(),
+    ),
   };
 
   const parseResult = UserDataSchema.safeParse(userData);
@@ -583,6 +643,9 @@ export async function getUserDataByUserId({
   const userData: UserData = {
     ...userDataDocument,
     _id: userDataDocument._id.toString(),
+    savedReviewesIds: userDataDocument.savedReviewesIds.map((id) =>
+      id.toString(),
+    ),
   };
 
   const parseResult = UserDataSchema.safeParse(userData);
@@ -632,6 +695,126 @@ export async function getUserDataUsingSession(): Promise<UserData | null> {
   });
 
   return userData;
+}
+
+export interface UserStats {
+  reviews: {
+    /** Total reviews posted by the current user */
+    posted: number;
+    /** Total reviews the current user has liked */
+    likedByMe: number;
+    /** Total likes received on the current user's reviews */
+    likesReceived: number;
+  };
+  comments: {
+    /** Total comments posted by the current user */
+    posted: number;
+    /** Total comments received on the current user's reviews */
+    receivedOnMyReviews: number;
+    /** Total likes the current user has given to comments */
+    likesGivenByMe: number;
+    /** Total dislikes the current user has given to comments */
+    dislikesGivenByMe: number;
+    /** Total likes received on the current user's comments */
+    likesReceived: number;
+    /** Total dislikes received on the current user's comments */
+    dislikesReceived: number;
+  };
+}
+
+export async function getUserStats(): Promise<UserStats | null> {
+  const userData = await getUserDataUsingSession();
+
+  if (!userData) return null;
+
+  const userId = new ObjectId(userData._id);
+
+  const [likesCollection, commentsCollection, reviewsCollection] =
+    await Promise.all([
+      getLikesCollection(),
+      getCommentsCollection(),
+      getReviewsCollection(),
+    ]);
+
+  const postedReviews = await reviewsCollection
+    .find({ userId }, { projection: { _id: 1 } })
+    .toArray();
+  const postedReviewObjectIds = postedReviews.map((r) => r._id);
+
+  const [
+    totalReviewsLikedByMe,
+    totalLikesMyReviewsGot,
+    totalCommentsPosted,
+    totalCommentsReceivedOnMyReviews,
+    totalCommentLikesMadeByMe,
+    totalCommentDislikesMadeByMe,
+    myCommentsReactionsAggregation,
+  ] = await Promise.all([
+    // Total reviews liked by me
+    likesCollection.countDocuments({ likedBy: userId }),
+
+    // Total likes my reviews got
+    postedReviewObjectIds.length > 0
+      ? likesCollection.countDocuments({
+          reviewId: { $in: postedReviewObjectIds },
+        })
+      : Promise.resolve(0),
+
+    // Total comments I posted
+    commentsCollection.countDocuments({ commentedBy: userId }),
+
+    // Total comments received on my reviews
+    postedReviewObjectIds.length > 0
+      ? commentsCollection.countDocuments({
+          reviewId: { $in: postedReviewObjectIds },
+        })
+      : Promise.resolve(0),
+
+    // Total likes I gave to comments
+    commentsCollection.countDocuments({ idsOfUsersWhoLiked: userId }),
+
+    // Total dislikes I gave to comments
+    commentsCollection.countDocuments({ idsOfUsersWhoDisliked: userId }),
+
+    // Aggregate total likes & dislikes received on my comments
+    commentsCollection
+      .aggregate<{ totalLikesReceived: number; totalDislikesReceived: number }>(
+        [
+          { $match: { commentedBy: userId } },
+          {
+            $group: {
+              _id: null,
+              totalLikesReceived: { $sum: { $size: "$idsOfUsersWhoLiked" } },
+              totalDislikesReceived: {
+                $sum: { $size: "$idsOfUsersWhoDisliked" },
+              },
+            },
+          },
+        ],
+      )
+      .toArray(),
+  ]);
+
+  const myCommentsReactions = myCommentsReactionsAggregation[0] ?? {
+    totalLikesReceived: 0,
+    totalDislikesReceived: 0,
+  };
+
+  return {
+    reviews: {
+      posted: postedReviewObjectIds.length,
+      likedByMe: totalReviewsLikedByMe,
+      likesReceived: totalLikesMyReviewsGot,
+    },
+    comments: {
+      posted: totalCommentsPosted,
+      receivedOnMyReviews: totalCommentsReceivedOnMyReviews,
+      likesGivenByMe: totalCommentLikesMadeByMe,
+      dislikesGivenByMe: totalCommentDislikesMadeByMe,
+      likesReceived: myCommentsReactions.totalLikesReceived,
+      dislikesReceived: myCommentsReactions.totalDislikesReceived,
+    },
+  };
 }
 
 // ############################################

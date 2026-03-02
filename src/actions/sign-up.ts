@@ -111,6 +111,7 @@ const signUpUser = async (
       email,
       password: hashedPassword,
       registeredAt: new Date(),
+      savedReviewesIds: [],
     });
 
     const sessionData = await insertUserSession({

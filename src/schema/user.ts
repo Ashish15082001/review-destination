@@ -27,10 +27,12 @@ export const UserDataDocumentSchema = z.object({
   email: z.email(),
   password: z.string(),
   registeredAt: z.date(),
+  savedReviewesIds: z.array(z.instanceof(ObjectId)),
 });
 
 export const UserDataSchema = UserDataDocumentSchema.extend({
   _id: z.string(),
+  savedReviewesIds: z.array(z.string()),
 });
 
 export interface SignInUserDataFromBrowser extends z.infer<

@@ -50,7 +50,7 @@ export function CommentCard({
   const avatarColor = colors[colorIndex];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-4 flex gap-3">
+    <div className="p-4 flex gap-3">
       {/* Avatar */}
       <div
         className={`w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center text-white text-sm font-bold flex-shrink-0 select-none`}
