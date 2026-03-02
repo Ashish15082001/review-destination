@@ -135,15 +135,26 @@ export const getReviewData = cache(async function (
   return parseResult.data;
 });
 
-export async function getReviewsData(): Promise<ReviewData[]> {
+export async function getReviewsData({
+  pageSize = 10,
+  cursor,
+}: {
+  pageSize?: number;
+  // objectId string of the last review from the previous page, used for pagination.
+  cursor?: string;
+}): Promise<ReviewData[]> {
   "use cache";
 
   cacheTag("reviewsData");
 
   const collection = await getReviewsCollection();
+
+  const query = cursor ? { _id: { $lt: new ObjectId(cursor) } } : {};
+
   const reviewDataDocuments = await collection
-    .find()
+    .find(query)
     .sort({ datePosted: -1 })
+    .limit(pageSize)
     .toArray();
 
   // creating reviews data to be returned
@@ -310,7 +321,7 @@ export async function insertCommentData(
     reviewId: new ObjectId(commentData.reviewId),
     commentedBy: new ObjectId(commentData.commentedBy),
     idsOfUsersWhoLiked: [],
-    idsOfUsersWhoUnliked: [],
+    idsOfUsersWhoDisliked: [],
     replyCommentId: undefined,
   };
 
@@ -351,7 +362,7 @@ export async function getCommentData({
     idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map((userId) =>
       userId.toString(),
     ),
-    idsOfUsersWhoUnliked: commentDataDocument.idsOfUsersWhoUnliked.map(
+    idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
       (userId) => userId.toString(),
     ),
     replyCommentId: commentDataDocument.replyCommentId
@@ -398,7 +409,7 @@ export const getCommentsDataByReviewId = cache(async function ({
       idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map((userId) =>
         userId.toString(),
       ),
-      idsOfUsersWhoUnliked: commentDataDocument.idsOfUsersWhoUnliked.map(
+      idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
         (userId) => userId.toString(),
       ),
       replyCommentId: commentDataDocument.replyCommentId
@@ -417,6 +428,100 @@ export const getCommentsDataByReviewId = cache(async function ({
 
   return parseResult.data;
 });
+
+export async function addLikeToComment({
+  commentId,
+  userId,
+  reviewId,
+}: {
+  commentId: string;
+  userId: string;
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getCommentsCollection();
+  const result = await collection.updateOne(
+    { _id: new ObjectId(commentId) },
+    {
+      $addToSet: { idsOfUsersWhoLiked: new ObjectId(userId) },
+      $pull: { idsOfUsersWhoDisliked: new ObjectId(userId) },
+    },
+  );
+
+  revalidateTag(`commentData-${commentId}`, "max");
+  revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+
+  return result.modifiedCount > 0;
+}
+
+export async function removeLikeFromComment({
+  commentId,
+  userId,
+  reviewId,
+}: {
+  commentId: string;
+  userId: string;
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getCommentsCollection();
+  const result = await collection.updateOne(
+    { _id: new ObjectId(commentId) },
+    {
+      $pull: { idsOfUsersWhoLiked: new ObjectId(userId) },
+    },
+  );
+
+  revalidateTag(`commentData-${commentId}`, "max");
+  revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+
+  return result.modifiedCount > 0;
+}
+
+export async function addDislikeToComment({
+  commentId,
+  userId,
+  reviewId,
+}: {
+  commentId: string;
+  userId: string;
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getCommentsCollection();
+  const result = await collection.updateOne(
+    { _id: new ObjectId(commentId) },
+    {
+      $addToSet: { idsOfUsersWhoDisliked: new ObjectId(userId) },
+      $pull: { idsOfUsersWhoLiked: new ObjectId(userId) },
+    },
+  );
+
+  revalidateTag(`commentData-${commentId}`, "max");
+  revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+
+  return result.modifiedCount > 0;
+}
+
+export async function removeDislikeFromComment({
+  commentId,
+  userId,
+  reviewId,
+}: {
+  commentId: string;
+  userId: string;
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getCommentsCollection();
+  const result = await collection.updateOne(
+    { _id: new ObjectId(commentId) },
+    {
+      $pull: { idsOfUsersWhoDisliked: new ObjectId(userId) },
+    },
+  );
+
+  revalidateTag(`commentData-${commentId}`, "max");
+  revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+
+  return result.modifiedCount > 0;
+}
 
 // ############################################
 // ###################### User related functions ######################

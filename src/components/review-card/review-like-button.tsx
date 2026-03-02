@@ -1,31 +1,39 @@
 "use client";
 
 import { LikeData } from "@/schema/like";
-import { useOptimistic, useState, useTransition } from "react";
-import { set } from "zod";
+import { UserData } from "@/schema/user";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface ReviewLikeButtonProps {
   reviewId: string;
-  currentUserLikeData?: LikeData; // prop to indicate if the current user has already liked the review
   totalLikes: number;
+  currentUserLikeData?: LikeData; // prop to indicate if the current user has already liked the review
+  currentUserData: UserData | null; // Pass the entire current user data to the like button (null if not logged in)
 }
 
 export function ReviewLikeButton({
   reviewId,
-  currentUserLikeData,
   totalLikes,
+  currentUserLikeData,
+  currentUserData,
 }: ReviewLikeButtonProps) {
   const [optimisticLikes, setOptimisticLike] = useState(totalLikes);
   const [optimisticCurrentUserLikeData, setOptimisticCurrentUserLikeData] =
     useState<LikeData | undefined>(currentUserLikeData);
 
   const handleToggleLike = async () => {
+    if (currentUserData === null) {
+      toast("Please log in to like the review.");
+      return;
+    }
+
     if (optimisticCurrentUserLikeData) {
       setOptimisticCurrentUserLikeData(undefined); // Clear the optimistic like data to reflect the unliked state
       setOptimisticLike((prev) => prev - 1); // Decrement the optimistic like count
 
       try {
-        await fetch("/api/feedback/like-unlike", {
+        await fetch("/api/like-review", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -43,7 +51,7 @@ export function ReviewLikeButton({
       // Like
 
       try {
-        const response = await fetch("/api/feedback/like-unlike", {
+        const response = await fetch("/api/like-review", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reviewId }),

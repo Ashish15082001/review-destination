@@ -26,7 +26,7 @@ export default async function CheckAuth({
 
   // If visibility is private-only and user is not authenticated, show fallback if provided, otherwise redirect to sign-in page
   if (visibility === "private-only" && !isUserAuthenticated) {
-    if (fallback) {
+    if (fallback || fallback === null) {
       return fallback;
     }
     return redirect("/auth?mode=signin");
@@ -34,7 +34,7 @@ export default async function CheckAuth({
 
   // If visibility is public-only and user is authenticated, show fallback if provided, otherwise redirect to home page
   if (visibility === "public-only" && isUserAuthenticated) {
-    if (fallback) {
+    if (fallback || fallback === null) {
       return fallback;
     }
 

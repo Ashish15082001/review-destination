@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
+import { Fragment } from "react/jsx-runtime";
 
 export const metadata: Metadata = {
   title: "Review Destination - Share Your Travel Experiences",
@@ -8,5 +10,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   console.log("############## rendering root layout (public) ##############");
-  return children;
+  return (
+    <Fragment>
+      {children}
+
+      <Toaster />
+    </Fragment>
+  );
 }

@@ -59,7 +59,7 @@ export default function Navbar() {
               <div className="w-14 h-5 bg-gray-200 rounded-md animate-pulse" />
             }
           >
-            <CheckAuth visibility={"private-only"}>
+            <CheckAuth visibility={"private-only"} fallback={null}>
               <Link
                 href="/profile"
                 className="text-gray-600 hover:text-gray-900 transition cursor-pointer"

@@ -12,7 +12,7 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
     getUserDataUsingSession(),
   ]);
 
-  const currentUserData = userData?._id || null;
+  const currentUserData = userData;
   const totalLikes = likesData.length;
   const totalComments = commentsData.length;
 
@@ -20,7 +20,7 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
   // We find like data for the current user by comparing the likedBy field with the currentUserData
   // If current user has liked the review, currentUserLikeData will contain that like data, otherwise it will be undefined
   const currentUserLikeData = likesData?.find(
-    (like) => like.likedBy === currentUserData,
+    (like) => like.likedBy === currentUserData?._id,
   );
 
   return (
@@ -30,6 +30,7 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
         reviewId={reviewId}
         totalLikes={totalLikes}
         currentUserLikeData={currentUserLikeData}
+        currentUserData={currentUserData}
       />
 
       {/* Comments */}

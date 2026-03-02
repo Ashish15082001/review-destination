@@ -4,6 +4,7 @@ import { getReviewData, getUserDataByUserId } from "@/lib/mongodb";
 import { ReviewStats } from "@/components/review-stats/review-stats";
 import { Comments } from "@/components/comments/comments";
 import { CommentForm } from "@/components/comment-form/comment-form";
+import CheckAuth from "@/components/check-auth/check-auth";
 
 export default async function ReviewPage({
   params,
@@ -62,20 +63,6 @@ export default async function ReviewPage({
                   </p>
                 </div>
               </div>
-              <button className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors cursor-pointer">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                >
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                </svg>
-                Save Trip
-              </button>
             </div>
 
             {/* Title */}
@@ -125,21 +112,44 @@ export default async function ReviewPage({
 
         {/* Join the Conversation */}
         <div className="mb-5">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#3b82f6"
-              strokeWidth="2"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            Join the conversation
-          </h2>
-          <CommentForm reviewId={id} />
+          <CheckAuth
+            visibility="private-only"
+            fallback={
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="2"
+                >
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Comments
+              </h2>
+            }
+          >
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                strokeWidth="2"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              Join the conversation
+            </h2>
+          </CheckAuth>
+
+          <CheckAuth visibility="private-only" fallback={null}>
+            <CommentForm reviewId={id} />
+          </CheckAuth>
         </div>
 
         {/* Comments */}

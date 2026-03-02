@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     return NextResponse.json(
-      { error: true, message: `Failed to like the review: ${error.message}` },
+      { error: true, message: `Failed to like the review` },
       { status: 500 },
     );
   }
@@ -75,7 +75,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: false, message: null }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: true, message: `Failed to unlike the review: ${error.message}` },
+      { error: true, message: `Failed to unlike the review` },
       { status: 500 },
     );
   }

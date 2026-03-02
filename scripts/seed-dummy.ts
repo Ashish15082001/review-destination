@@ -762,7 +762,7 @@ async function seedDummy() {
           commentedOn: getRandomDate(6),
           comment: commentPool[poolIdx % commentPool.length],
           idsOfUsersWhoLiked: [] as ObjectId[],
-          idsOfUsersWhoUnliked: [] as ObjectId[],
+          idsOfUsersWhoDisliked: [] as ObjectId[],
         };
         poolIdx++;
         return comment;

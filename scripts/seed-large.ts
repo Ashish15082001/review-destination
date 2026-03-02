@@ -896,7 +896,7 @@ async function seedLarge() {
       commentedOn: Date;
       comment: string;
       idsOfUsersWhoLiked: ObjectId[];
-      idsOfUsersWhoUnliked: ObjectId[];
+      idsOfUsersWhoDisliked: ObjectId[];
     }> = [];
 
     let commentPoolIdx = 0;
@@ -929,7 +929,7 @@ async function seedLarge() {
           commentedOn: getRandomDate(randomInt(1, 12)),
           comment: commentPool[commentPoolIdx % commentPool.length],
           idsOfUsersWhoLiked: [],
-          idsOfUsersWhoUnliked: [],
+          idsOfUsersWhoDisliked: [],
         });
         commentPoolIdx++;
       }
