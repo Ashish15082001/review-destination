@@ -1,7 +1,6 @@
 "use server";
 
 import { getUserDataUsingSession, insertCommentData } from "@/lib/mongodb";
-import { revalidatePath, updateTag } from "next/cache";
 import z from "zod";
 
 const CommentFormSchema = z.object({
@@ -15,68 +14,94 @@ const CommentFormSchema = z.object({
 /**
  * Server action to add a comment to a review.
  *
- * First verifies the user is authenticated via their session, then validates the comment text
- * and review ID using Zod, inserts the comment into the database, and revalidates the comments cache.
+ * Retrieves the authenticated user from the session. If unauthenticated, returns an error
+ * immediately without touching the database. Extracts `comment` and `reviewId` from the
+ * form data, validates both fields with Zod (comment: 1–500 chars, reviewId: non-empty),
+ * and returns field-level validation errors on failure. On success, inserts the comment
+ * document into the database (with empty like/dislike arrays and the current timestamp),
+ * then invalidates the `commentsData-{reviewId}` cache tag so the comment list refreshes.
  *
- * @param prevData - The previous action state (used by `useActionState`).
- * @param formData - The form data containing `comment` (string) and `reviewId` (string).
- * @returns An object indicating success or error, along with field-level validation messages.
- * @throws {Error} If the user is not authenticated.
+ * @param prevData - The previous action state passed automatically by `useActionState`.
+ * @param formData - Form data expected to contain:
+ *   - `comment` {string} — The comment text (1–500 characters).
+ *   - `reviewId` {string} — The ID of the review being commented on.
+ * @returns A promise resolving to {@link AddCommentActionReturnType} with:
+ *   - `type` — `"success"` if the comment was saved, `"error"` otherwise.
+ *   - `message` — A human-readable summary of the outcome.
+ *   - `fields` — Per-field values and validation error messages (comment field is always included).
+ *     On success the comment `value` is reset to `""` to clear the form.
  */
 const addCommentAction = async (
   prevData: AddCommentActionReturnType,
   formData: FormData,
 ): Promise<AddCommentActionReturnType> => {
-  const userData = await getUserDataUsingSession();
+  try {
+    const userData = await getUserDataUsingSession();
 
-  if (!userData) {
-    throw new Error("User not authenticated");
-  }
+    if (!userData)
+      return {
+        type: "error",
+        message: "You must be logged in to add a comment.",
+      };
 
-  const comment = formData.get("comment") as string;
-  const reviewId = formData.get("reviewId") as string;
+    const comment = formData.get("comment") as string;
+    const reviewId = formData.get("reviewId") as string;
 
-  const validationResult = CommentFormSchema.safeParse({ comment, reviewId });
+    const validationResult = CommentFormSchema.safeParse({ comment, reviewId });
 
-  const returnValue: AddCommentActionReturnType = {
-    type: validationResult.success ? "success" : "error",
-    fields: {
-      comment: { value: comment },
-    },
-  };
+    const returnValue: AddCommentActionReturnType = {
+      type: validationResult.success ? "success" : "error",
+      message: validationResult.success
+        ? "Comment added successfully"
+        : "Failed to add comment. Please try again.",
+      fields: {
+        comment: { value: comment },
+      },
+    };
 
-  if (!validationResult.success) {
-    validationResult.error.issues.forEach((issue) => {
-      const fieldName = issue.path[0];
-      if (returnValue.fields)
-        returnValue.fields[fieldName] = {
-          ...returnValue.fields[fieldName],
-          error: issue.message,
-        };
-      else returnValue.fields = { [fieldName]: { error: issue.message } };
+    if (!validationResult.success) {
+      validationResult.error.issues.forEach((issue) => {
+        const fieldName = issue.path[0];
+        if (returnValue.fields)
+          returnValue.fields[fieldName] = {
+            ...returnValue.fields[fieldName],
+            error: issue.message,
+          };
+        else returnValue.fields = { [fieldName]: { error: issue.message } };
+      });
+
+      return returnValue;
+    }
+
+    const validatedCommentData = validationResult.data;
+
+    await insertCommentData({
+      reviewId: validatedCommentData.reviewId,
+      commentedBy: userData._id,
+      commentedOn: new Date(),
+      comment: validatedCommentData.comment,
+      idsOfUsersWhoLiked: [],
+      idsOfUsersWhoDisliked: [],
     });
 
-    return returnValue;
+    return {
+      type: "success",
+      message: "Comment added successfully",
+      fields: { comment: { value: "" } },
+    };
+  } catch (error) {
+    return {
+      type: "error",
+      message: "An unexpected error occurred. Please try again later.",
+    };
   }
-
-  await insertCommentData({
-    reviewId: validationResult.data.reviewId,
-    commentedBy: userData._id,
-    commentedOn: new Date(),
-    comment: validationResult.data.comment,
-    idsOfUsersWhoLiked: [],
-    idsOfUsersWhoDisliked: [],
-  });
-
-  updateTag(`commentsData-${reviewId}`);
-
-  return { type: "success", fields: { comment: { value: "" } } };
 };
 
 export { addCommentAction };
 
 export interface AddCommentActionReturnType {
   type?: "success" | "error";
+  message?: string;
   fields?: Record<
     PropertyKey,
     {

@@ -31,6 +31,9 @@ const signInUser = async (
 
     const returnValue: SignInUserReturnType = {
       type: validationResult.success ? "success" : "error",
+      message: validationResult.success
+        ? "Credentials look good. Attempting to sign you in..."
+        : "Failed to sign in. Please check the form for errors and try again.",
       fields: {
         email: {
           value: email,
@@ -59,26 +62,15 @@ const signInUser = async (
 
     if (!userData) {
       returnValue.type = "error";
-      returnValue.fields = {
-        ...returnValue.fields,
-        email: {
-          ...returnValue.fields?.email,
-          error: "No account found with this email.",
-        },
-      };
+      returnValue.message = "No account found with that email address.";
       return returnValue;
     }
 
     const passwordMatch = await bcrypt.compare(password, userData.password);
+
     if (!passwordMatch) {
       returnValue.type = "error";
-      returnValue.fields = {
-        ...returnValue.fields,
-        password: {
-          ...returnValue.fields?.password,
-          error: "Incorrect password.",
-        },
-      };
+      returnValue.message = "Incorrect password.";
       return returnValue;
     }
 
@@ -99,8 +91,7 @@ const signInUser = async (
     returnValue.type = "success";
     returnValue.message = `Welcome back, ${userData.userName}!`;
     return returnValue;
-  } catch (error: any) {
-    console.error("Error in signInUser:", error);
+  } catch (error) {
     return {
       type: "error",
       message: "An unexpected error occurred. Please try again later.",

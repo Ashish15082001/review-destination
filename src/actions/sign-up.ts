@@ -30,13 +30,6 @@ const signUpUser = async (
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
-    console.log("Received form data:", {
-      userName,
-      email,
-      password,
-      confirmPassword,
-    });
-
     // Validate form data with Zod
     const validationResult = SignUpUserDataFromBrowserSchema.safeParse({
       userName,
@@ -131,7 +124,7 @@ const signUpUser = async (
     returnValue.type = "success";
     returnValue.message = `Welcome ${userName}!`;
     return returnValue;
-  } catch (error: any) {
+  } catch (error) {
     return {
       type: "error",
       message: "An unexpected error occurred. Please try again later.",

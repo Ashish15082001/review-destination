@@ -6,7 +6,10 @@ export const CommentDataDocumentSchema = z.object({
   reviewId: z.instanceof(ObjectId),
   commentedBy: z.instanceof(ObjectId),
   commentedOn: z.date(),
-  comment: z.string(),
+  comment: z
+    .string()
+    .min(1, "Comment cannot be empty")
+    .max(500, "Comment must be at most 500 characters"),
   replyCommentId: z.instanceof(ObjectId).optional(),
   // array of ObjectIds representing users who liked the comment
   idsOfUsersWhoLiked: z.array(z.instanceof(ObjectId)),
@@ -19,7 +22,10 @@ export const CommentDataSchema = z.object({
   reviewId: z.string(),
   commentedBy: z.string(),
   commentedOn: z.date(),
-  comment: z.string(),
+  comment: z
+    .string()
+    .min(1, "Comment cannot be empty")
+    .max(500, "Comment must be at most 500 characters"),
   replyCommentId: z.string().optional(),
   // array of strings representing user IDs who liked the comment
   idsOfUsersWhoLiked: z.array(z.string()),
