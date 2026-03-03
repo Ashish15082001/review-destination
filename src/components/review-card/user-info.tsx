@@ -30,7 +30,7 @@ export async function UserInfo({
         <span className="text-sm font-semibold text-gray-900">
           {userData.userName}
         </span>
-        <span className="text-xs text-blue-500 tracking-wide">{date}</span>
+        <span className="text-xs text-[#853853] tracking-wide">{date}</span>
       </div>
     </div>
   );

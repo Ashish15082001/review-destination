@@ -234,6 +234,38 @@ export async function getReviewsData({
   return parseResult.data;
 }
 
+export async function getMostRecentReviews(): Promise<ReviewData[]> {
+  "use cache";
+
+  cacheTag("reviewsData");
+
+  const collection = await getReviewsCollection();
+
+  const reviewDataDocuments = await collection
+    .find({})
+    .sort({ datePosted: -1 })
+    .limit(4)
+    .toArray();
+
+  const reviewsData: ReviewData[] = reviewDataDocuments.map(
+    (reviewDataDocument) => ({
+      ...reviewDataDocument,
+      _id: reviewDataDocument._id.toString(),
+      userId: reviewDataDocument.userId.toString(),
+    }),
+  );
+
+  const parseResult = ReviewDataSchema.array().safeParse(reviewsData);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid reviews data from DB: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
+}
+
 // ############################################
 // ###################### like related functions ######################
 // ############################################

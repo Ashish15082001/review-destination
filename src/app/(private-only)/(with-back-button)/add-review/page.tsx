@@ -34,7 +34,7 @@ export default function AddReviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-[#F3F4F4]">
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-8">Add Your Travel Review</h1>
 
@@ -59,7 +59,7 @@ export default function AddReviewPage() {
                     ? (state.fields.destinationName.value as string)
                     : ""
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#853853]/50 focus:border-[#853853]"
                 placeholder="e.g., Paris, Tokyo, New York"
               />
 
@@ -87,7 +87,7 @@ export default function AddReviewPage() {
                     ? (state.fields.whenVisited.value as string)
                     : ""
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#853853]/50 focus:border-[#853853]"
               />
 
               {/* error message */}
@@ -114,7 +114,7 @@ export default function AddReviewPage() {
                     accept="image/*"
                     onChange={handleFileChange}
                     multiple
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#853853]/50 focus:border-[#853853] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#853853]/10 file:text-[#853853] hover:file:bg-[#853853]/20"
                   />
 
                   {/* error message */}
@@ -164,7 +164,7 @@ export default function AddReviewPage() {
                     ? (state.fields.description.value as string)
                     : ""
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#853853]/50 focus:border-[#853853] resize-vertical"
                 placeholder="Provide a brief description of the destination"
               />
 
@@ -192,7 +192,7 @@ export default function AddReviewPage() {
                     ? (state.fields.experience.value as string)
                     : ""
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#853853]/50 focus:border-[#853853] resize-vertical"
                 placeholder="Share your detailed experience, what you loved, tips for other travelers, etc."
               />
 
@@ -223,7 +223,7 @@ export default function AddReviewPage() {
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-md font-semibold hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="flex-1 bg-[#853853] text-white py-3 px-6 rounded-md font-semibold hover:bg-[#612D53] transition-colors focus:ring-2 focus:ring-[#853853]/50 focus:ring-offset-2"
               disabled={isPending}
             >
               {isPending ? "Submitting..." : "Submit Review"}

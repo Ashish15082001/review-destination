@@ -46,7 +46,7 @@ export default function Error({
         <div className="space-y-3">
           <button
             onClick={() => reset()}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+            className="w-full bg-[#853853] hover:bg-[#612D53] text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
           >
             Try again
           </button>

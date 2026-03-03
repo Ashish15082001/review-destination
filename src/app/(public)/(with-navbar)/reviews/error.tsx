@@ -35,13 +35,13 @@ export default function ReviewsError({
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={reset}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="px-6 py-3 bg-[#853853] text-white rounded-lg hover:bg-[#612D53] transition-colors font-semibold"
           >
             Try Again
           </button>
           <Link
             href="/"
-            className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold"
+            className="px-6 py-3 border-2 border-[#853853] text-[#853853] rounded-lg hover:bg-[#853853]/5 transition-colors font-semibold"
           >
             Go to Home
           </Link>

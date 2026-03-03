@@ -11,7 +11,7 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#F3F4F4]">
       {/* <Navbar /> */}
 
       <main className="container mx-auto px-6 py-12">
@@ -56,13 +56,13 @@ export default function Error({
             <div className="flex items-center justify-center space-x-4">
               <button
                 onClick={reset}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="bg-gradient-to-r from-[#853853] to-[#612D53] text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
               >
                 Try Again
               </button>
               <Link
                 href="/reviews"
-                className="bg-white text-gray-800 px-6 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-purple-500 transition-all"
+                className="bg-white text-gray-800 px-6 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-[#853853] transition-all"
               >
                 Back to Reviews
               </Link>

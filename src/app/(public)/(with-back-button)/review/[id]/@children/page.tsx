@@ -54,7 +54,7 @@ export default async function ReviewPage({
                 {/* Author Row */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0 select-none">
+                    <div className="w-10 h-10 rounded-full bg-[#853853] flex items-center justify-center text-white text-sm font-bold flex-shrink-0 select-none">
                       {initials}
                     </div>
                     <div>

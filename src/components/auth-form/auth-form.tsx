@@ -44,15 +44,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         <div className="relative z-10 flex flex-col justify-between p-16 w-full">
           {/* Logo */}
           <div className="flex items-center gap-3 text-white">
-            <div className="size-10 bg-amber-400 rounded-xl flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-6 text-stone-900"
-              >
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-              </svg>
+            <div className="size-10 bg-[#853853] rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-2xl leading-none">
+                explore
+              </span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight">
               Review Destination
@@ -95,15 +90,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         <div className="w-full max-w-md space-y-8">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="size-8 bg-amber-400 rounded-lg flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-5 text-stone-900"
-              >
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-              </svg>
+            <div className="size-8 bg-[#853853] rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-xl leading-none text-white">
+                explore
+              </span>
             </div>
             <h2 className="text-xl font-bold tracking-tight">
               Review Destination
@@ -134,7 +124,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   Username
                 </label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors pointer-events-none">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -154,7 +144,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                         : ""
                     }
                     placeholder="your_username"
-                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all placeholder:text-slate-400"
+                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                   />
                 </div>
                 {state.fields?.userName?.error && (
@@ -174,7 +164,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 Email
               </label>
               <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors pointer-events-none">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -194,7 +184,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                       : ""
                   }
                   placeholder="you@example.com"
-                  className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all placeholder:text-slate-400"
+                  className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                 />
               </div>
               {state.fields?.email?.error && (
@@ -216,14 +206,14 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 {isSignIn && (
                   <a
                     href="#"
-                    className="text-sm font-semibold text-amber-500 hover:text-amber-400 transition-colors"
+                    className="text-sm font-semibold text-[#853853] hover:text-[#612D53] transition-colors"
                   >
                     Forgot Password?
                   </a>
                 )}
               </div>
               <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors pointer-events-none">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -243,7 +233,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                       : ""
                   }
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all placeholder:text-slate-400"
+                  className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                 />
                 <button
                   type="button"
@@ -288,7 +278,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   Confirm Password
                 </label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors pointer-events-none">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -303,7 +293,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all placeholder:text-slate-400"
+                    className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                   />
                   <button
                     type="button"
@@ -364,7 +354,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-amber-400 hover:bg-amber-300 disabled:bg-slate-300 disabled:text-slate-500 text-stone-900 font-bold py-4 rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-amber-400/20 cursor-pointer"
+              className="w-full bg-[#853853] hover:bg-[#612D53] disabled:bg-slate-300 disabled:text-slate-500 text-white font-bold py-4 rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-[#853853]/20 cursor-pointer"
             >
               {isPending
                 ? isSignIn
@@ -383,7 +373,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 New here?{" "}
                 <Link
                   href="/auth?mode=sign-up"
-                  className="text-amber-500 font-bold hover:underline"
+                  className="text-[#853853] font-bold hover:underline"
                 >
                   Create an account
                 </Link>
@@ -393,7 +383,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 Already have an account?{" "}
                 <Link
                   href="/auth?mode=sign-in"
-                  className="text-amber-500 font-bold hover:underline"
+                  className="text-[#853853] font-bold hover:underline"
                 >
                   Log in
                 </Link>

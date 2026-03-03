@@ -26,7 +26,7 @@ export default function ProfileError({ error, reset }: ErrorProps) {
         <div className="flex gap-2">
           <button
             onClick={() => reset()}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-[#853853] text-white rounded hover:bg-[#612D53] transition-colors"
           >
             Try again
           </button>

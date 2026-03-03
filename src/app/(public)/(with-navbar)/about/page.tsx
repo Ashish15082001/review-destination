@@ -9,13 +9,13 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <main className="min-h-screen bg-[#F3F4F4]">
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="inline-block px-4 py-2 bg-blue-100 rounded-full text-blue-700 font-semibold text-sm">
+              <div className="inline-block px-4 py-2 bg-[#853853]/10 rounded-full text-[#853853] font-semibold text-sm">
                 🌟 Welcome to
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900">
@@ -33,13 +33,13 @@ export default function AboutPage() {
               <div className="flex gap-4">
                 <Link
                   href="/reviews"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                  className="px-6 py-3 bg-[#853853] text-white rounded-lg hover:bg-[#612D53] transition-colors font-semibold"
                 >
                   Explore Reviews
                 </Link>
                 <Link
                   href="/add-review"
-                  className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold"
+                  className="px-6 py-3 border-2 border-[#853853] text-[#853853] rounded-lg hover:bg-[#853853]/5 transition-colors font-semibold"
                 >
                   Add Your Review
                 </Link>
@@ -47,12 +47,12 @@ export default function AboutPage() {
             </div>
             <div className="relative">
               <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#853853] to-[#612D53] flex items-center justify-center">
                   <div className="text-white text-6xl">🌍</div>
                 </div>
               </div>
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-yellow-400 rounded-full blur-3xl opacity-50"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-blue-400 rounded-full blur-3xl opacity-50"></div>
+              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#853853]/40 rounded-full blur-3xl opacity-50"></div>
             </div>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function AboutPage() {
             What We Offer
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
+            <div className="p-6 rounded-xl bg-[#853853]/5 border border-[#853853]/20">
               <div className="text-4xl mb-4">📝</div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Authentic Reviews
@@ -76,7 +76,7 @@ export default function AboutPage() {
                 your next destination.
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
+            <div className="p-6 rounded-xl bg-gradient-to-br from-[#612D53]/5 to-[#612D53]/10 border border-[#612D53]/20">
               <div className="text-4xl mb-4">🗺️</div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Destination Guides
@@ -131,14 +131,14 @@ export default function AboutPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-[#F3F4F4]">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">
             Why Choose Us
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+              <div className="flex-shrink-0 w-12 h-12 bg-[#853853] rounded-lg flex items-center justify-center text-white text-xl font-bold">
                 ✓
               </div>
               <div>
@@ -152,7 +152,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+              <div className="flex-shrink-0 w-12 h-12 bg-[#612D53] rounded-lg flex items-center justify-center text-white text-xl font-bold">
                 ✓
               </div>
               <div>
@@ -181,7 +181,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+              <div className="flex-shrink-0 w-12 h-12 bg-[#612D53] rounded-lg flex items-center justify-center text-white text-xl font-bold">
                 ✓
               </div>
               <div>
@@ -206,13 +206,13 @@ export default function AboutPage() {
           </h2>
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div className="space-y-2">
-              <div className="text-5xl font-bold text-blue-600">500+</div>
+              <div className="text-5xl font-bold text-[#853853]">500+</div>
               <div className="text-gray-600 font-semibold">
                 Destinations Reviewed
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-5xl font-bold text-purple-600">1000+</div>
+              <div className="text-5xl font-bold text-[#612D53]">1000+</div>
               <div className="text-gray-600 font-semibold">User Reviews</div>
             </div>
             <div className="space-y-2">
@@ -222,7 +222,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-5xl font-bold text-orange-600">5K+</div>
+              <div className="text-5xl font-bold text-[#612D53]">5K+</div>
               <div className="text-gray-600 font-semibold">Active Users</div>
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function AboutPage() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+      <section className="py-20 px-4 bg-gradient-to-r from-[#853853] to-[#612D53] text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Start Your Journey Today</h2>
           <p className="text-xl mb-8 opacity-90">
@@ -240,13 +240,13 @@ export default function AboutPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/reviews"
-              className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
+              className="px-6 py-3 bg-white text-[#853853] rounded-lg hover:bg-gray-100 transition-colors font-semibold"
             >
               Browse Destinations
             </Link>
             <Link
               href="/add-review"
-              className="px-6 py-3 bg-transparent border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition-colors font-semibold"
+              className="px-6 py-3 bg-transparent border-2 border-white text-white rounded-lg hover:bg-white hover:text-[#853853] transition-colors font-semibold"
             >
               Write a Review
             </Link>

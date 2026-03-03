@@ -34,8 +34,8 @@ export default async function ReviewsPage() {
               key={cat}
               className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all cursor-pointer ${
                 i === 0
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                  ? "bg-[#853853] text-white border-[#853853] shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-[#853853] hover:text-[#853853]"
               }`}
             >
               {cat}
@@ -56,7 +56,7 @@ export default async function ReviewsPage() {
               {/* Background map icon */}
               <div className="absolute inset-0 flex items-center justify-center opacity-20">
                 <span
-                  className="material-symbols-outlined select-none text-[#0d7ff2]"
+                  className="material-symbols-outlined select-none text-[#853853]"
                   style={{ fontSize: 200 }}
                 >
                   map
@@ -65,7 +65,7 @@ export default async function ReviewsPage() {
               {/* Foreground icons */}
               <div className="relative z-10 flex flex-col items-center">
                 <span
-                  className="material-symbols-outlined text-[#0d7ff2]/60 mb-2"
+                  className="material-symbols-outlined text-[#853853]/60 mb-2"
                   style={{ fontSize: 120 }}
                 >
                   person_pin_circle
@@ -100,8 +100,8 @@ export default async function ReviewsPage() {
               href="/add-review"
               className="group relative inline-flex items-center gap-3 text-white px-10 py-5 rounded-2xl text-lg font-extrabold transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
               style={{
-                backgroundColor: "#0d7ff2",
-                boxShadow: "0 20px 40px rgba(13,127,242,0.25)",
+                backgroundColor: "#853853",
+                boxShadow: "0 20px 40px rgba(133,56,83,0.25)",
               }}
             >
               <span className="material-symbols-outlined text-2xl">
@@ -112,11 +112,11 @@ export default async function ReviewsPage() {
               <span className="absolute -top-3 -right-3 flex h-6 w-6">
                 <span
                   className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                  style={{ backgroundColor: "#0d7ff2" }}
+                  style={{ backgroundColor: "#853853" }}
                 />
                 <span
                   className="relative inline-flex rounded-full h-6 w-6 border-2 border-white"
-                  style={{ backgroundColor: "#0d7ff2" }}
+                  style={{ backgroundColor: "#853853" }}
                 />
               </span>
             </Link>
@@ -126,7 +126,7 @@ export default async function ReviewsPage() {
               <a
                 href="/about"
                 className="hover:underline"
-                style={{ color: "#0d7ff2" }}
+                style={{ color: "#853853" }}
               >
                 Browse our destination guides
               </a>

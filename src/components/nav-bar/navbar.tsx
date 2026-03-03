@@ -5,73 +5,48 @@ import { Suspense } from "react";
 
 export default function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
-      <div className="container mx-auto px-6 py-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">RD</span>
-          </div>
-          <span className="text-2xl font-bold text-gray-800">
-            Review Destination
+    <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-[#853853]/10 px-6 py-4 lg:px-20 bg-white">
+      {/* Logo */}
+      <Link href="/" className="flex items-center gap-3">
+        <div className="size-8 flex items-center justify-center bg-[#853853] rounded-lg text-white">
+          <span className="material-symbols-outlined text-xl leading-none">
+            explore
           </span>
-        </Link>
-        <div className="flex items-center space-x-6">
-          <Link
-            href="/about"
-            className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
-          >
-            About
-          </Link>
+        </div>
+        <span className="text-[#2C2C2C] text-xl font-bold leading-tight tracking-tight">
+          Review Destination
+        </span>
+      </Link>
+
+      {/* Right side */}
+      <div className="flex flex-1 justify-end gap-8 items-center">
+        {/* Nav links */}
+        <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/reviews"
-            className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
+            className="text-[#2C2C2C] text-sm font-semibold hover:text-[#853853] transition-colors"
           >
-            Reviews
+            Explore Reviews
           </Link>
 
-          <Suspense
-            fallback={
-              <div className="w-28 h-9 bg-gray-200 rounded-lg animate-pulse" />
-            }
-          >
-            <CheckAuth
-              visibility={"private-only"}
-              fallback={
-                <Link
-                  href={"/auth?mode=signin"}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all cursor-pointer"
-                >
-                  Add Review
-                </Link>
-              }
-            >
-              <Link
-                href={"/add-review"}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all cursor-pointer"
-              >
-                Add Review
-              </Link>
-            </CheckAuth>
-          </Suspense>
-
-          <Suspense
-            fallback={
-              <div className="w-14 h-5 bg-gray-200 rounded-md animate-pulse" />
-            }
-          >
+          <Suspense fallback={null}>
             <CheckAuth visibility={"private-only"} fallback={null}>
               <Link
                 href="/profile"
-                className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
+                className="text-[#2C2C2C] text-sm font-semibold hover:text-[#853853] transition-colors"
               >
                 Profile
               </Link>
             </CheckAuth>
           </Suspense>
+        </nav>
 
+        {/* Action buttons */}
+        <div className="flex gap-3">
+          {/* Ghost login / sign-out button */}
           <Suspense
             fallback={
-              <div className="w-16 h-5 bg-gray-200 rounded-md animate-pulse" />
+              <div className="w-20 h-10 bg-[#F3F4F4] rounded-lg animate-pulse" />
             }
           >
             <CheckAuth
@@ -79,7 +54,7 @@ export default function Navbar() {
               fallback={
                 <Link
                   href="/auth?mode=signin"
-                  className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
+                  className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#F3F4F4] text-[#2C2C2C] text-sm font-bold border border-[#853853]/10 hover:border-[#853853]/30 transition-all"
                 >
                   Sign In
                 </Link>
@@ -88,15 +63,41 @@ export default function Navbar() {
               <form action={signOutUser}>
                 <button
                   type="submit"
-                  className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
+                  className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#F3F4F4] text-[#2C2C2C] text-sm font-bold border border-[#853853]/10 hover:border-[#853853]/30 transition-all"
                 >
                   Sign Out
                 </button>
               </form>
             </CheckAuth>
           </Suspense>
+
+          {/* Primary add-review / get-started button */}
+          <Suspense
+            fallback={
+              <div className="w-28 h-10 bg-[#853853]/20 rounded-lg animate-pulse" />
+            }
+          >
+            <CheckAuth
+              visibility={"private-only"}
+              fallback={
+                <Link
+                  href="/auth?mode=signin"
+                  className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#853853] text-white text-sm font-bold hover:bg-[#612D53] transition-all shadow-md"
+                >
+                  Get Started
+                </Link>
+              }
+            >
+              <Link
+                href="/add-review"
+                className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#853853] text-white text-sm font-bold hover:bg-[#612D53] transition-all shadow-md"
+              >
+                Add Review
+              </Link>
+            </CheckAuth>
+          </Suspense>
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

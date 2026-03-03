@@ -148,7 +148,7 @@ export function CommentActions({
         onClick={handleLike}
         aria-label={hasLiked ? "Remove like" : "Add like"}
         className={`flex items-center gap-1 transition-colors cursor-pointer ${
-          hasLiked ? "text-blue-500" : "text-gray-400 hover:text-blue-500"
+          hasLiked ? "text-[#853853]" : "text-gray-400 hover:text-[#853853]"
         }`}
       >
         <svg

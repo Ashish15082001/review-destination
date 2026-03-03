@@ -36,13 +36,13 @@ export default function AboutError({
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={reset}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="px-6 py-3 bg-[#853853] text-white rounded-lg hover:bg-[#612D53] transition-colors font-semibold"
           >
             Try Again
           </button>
           <Link
             href="/reviews"
-            className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold"
+            className="px-6 py-3 border-2 border-[#853853] text-[#853853] rounded-lg hover:bg-[#853853]/5 transition-colors font-semibold"
           >
             Go to Home
           </Link>
@@ -54,19 +54,19 @@ export default function AboutError({
           </h2>
           <ul className="text-left text-gray-700 space-y-2">
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 font-bold">•</span>
+              <span className="text-[#853853] font-bold">•</span>
               <span>Try refreshing the page or clicking "Try Again"</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 font-bold">•</span>
+              <span className="text-[#853853] font-bold">•</span>
               <span>Check your internet connection</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 font-bold">•</span>
+              <span className="text-[#853853] font-bold">•</span>
               <span>Return to the home page and try again later</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-blue-600 font-bold">•</span>
+              <span className="text-[#853853] font-bold">•</span>
               <span>Contact support if the problem persists</span>
             </li>
           </ul>

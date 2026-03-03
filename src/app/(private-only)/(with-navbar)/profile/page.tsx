@@ -48,16 +48,16 @@ export default async function ProfilePage({ searchParams }: PageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F3F4F4]">
       <div className="mx-auto max-w-5xl">
         {/* ── Cover Banner ────────────────────────────────────────── */}
-        <div className="relative h-52 md:h-64 w-full overflow-hidden md:rounded-b-2xl bg-gradient-to-br from-amber-400 via-orange-300 to-yellow-200 shadow-lg">
+        <div className="relative h-52 md:h-64 w-full overflow-hidden md:rounded-b-2xl bg-gradient-to-br from-[#853853] to-[#612D53] shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
 
         {/* ── Avatar + Name ────────────────────────────────────────── */}
         <div className="-mt-14 relative z-10 flex flex-col items-center px-4">
-          <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0">
+          <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#853853] to-[#612D53] flex items-center justify-center shrink-0">
             <span className="text-4xl md:text-5xl font-bold text-white select-none">
               {initials}
             </span>
@@ -109,7 +109,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xl font-bold text-amber-500">
+                    <p className="text-xl font-bold text-[#853853]">
                       {formatCount(userStats.reviews.posted)}
                     </p>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
@@ -117,7 +117,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
                     </p>
                   </div>
                   <div>
-                    <p className="text-xl font-bold text-amber-500">
+                    <p className="text-xl font-bold text-[#853853]">
                       {formatCount(userData.savedReviewesIds.length)}
                     </p>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
@@ -243,7 +243,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
               href="/profile?tab=my-reviews"
               className={`pb-4 border-b-2 text-sm font-bold flex items-center gap-2 transition-colors ${
                 activeTab === "my-reviews"
-                  ? "border-amber-400 text-slate-900"
+                  ? "border-[#853853] text-slate-900"
                   : "border-transparent text-slate-400 hover:text-slate-700"
               }`}
             >
@@ -266,7 +266,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
               href="/profile?tab=saved"
               className={`pb-4 border-b-2 text-sm font-bold flex items-center gap-2 transition-colors ${
                 activeTab === "saved"
-                  ? "border-amber-400 text-slate-900"
+                  ? "border-[#853853] text-slate-900"
                   : "border-transparent text-slate-400 hover:text-slate-700"
               }`}
             >

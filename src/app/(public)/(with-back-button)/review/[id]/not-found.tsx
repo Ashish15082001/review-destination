@@ -3,16 +3,16 @@ import Navbar from "@/components/nav-bar/navbar";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#F3F4F4]">
       <Navbar />
 
       <main className="container mx-auto px-6 py-12">
         <div className="max-w-2xl mx-auto text-center">
           <div className="bg-white rounded-2xl shadow-xl p-12">
             {/* 404 Icon */}
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-[#853853]/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
-                className="w-10 h-10 text-purple-500"
+                className="w-10 h-10 text-[#853853]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -39,13 +39,13 @@ export default function NotFound() {
             <div className="flex items-center justify-center space-x-4">
               <Link
                 href="/reviews"
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="bg-gradient-to-r from-[#853853] to-[#612D53] text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
               >
                 Browse All Reviews
               </Link>
               <Link
                 href="/"
-                className="bg-white text-gray-800 px-8 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-purple-500 transition-all"
+                className="bg-white text-gray-800 px-8 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-[#853853] transition-all"
               >
                 Go Home
               </Link>

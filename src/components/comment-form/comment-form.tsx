@@ -76,7 +76,7 @@ export function CommentForm({ reviewId }: CommentFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="bg-blue-500 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="bg-[#853853] text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-[#612D53] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             {isPending ? "Posting..." : "Post Comment"}
           </button>
