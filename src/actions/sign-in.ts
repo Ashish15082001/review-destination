@@ -31,9 +31,6 @@ const signInUser = async (
 
     const returnValue: SignInUserReturnType = {
       type: validationResult.success ? "success" : "error",
-      message: validationResult.success
-        ? "Credentials look good. Attempting to sign you in..."
-        : "Failed to sign in. Please check the form for errors and try again.",
       fields: {
         email: {
           value: email,

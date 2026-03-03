@@ -6,6 +6,8 @@ import { useActionState, useEffect, useState } from "react";
 import { AuthMode } from "@/lib/auth-mode";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import FormError from "../validation-message/field-error";
+import FormMessage from "../validation-message/form-message";
 
 const HERO_IMAGE_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBcWYScyAD8p7n2j-QA5BDProOkVx_o6_dPuKCtHr_hiMvrj_lORu8NfvMDcRsUesHo7oRCs_je75AUzF7uq219XuUq97SlRrCNuUGUpGJCd5aJ6sUT0G7wVqydxdKK-9hH9UP-TABwffICNE9CL6PFIP37olzAsJkkY8A4eQ_jqyt2SDouy3RlvdM2YrHUjtdWbsJlgQ1Id9n_-kaKYyZb24k0jtUagHrgZta-kv7XDsVD2HtNN7paHDBzu4TSb0rXg61J1eG1UO0t";
@@ -147,11 +149,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                   />
                 </div>
-                {state.fields?.userName?.error && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {state.fields.userName.error}
-                  </p>
-                )}
+                <FormError error={state.fields?.userName?.error} />
               </div>
             )}
 
@@ -187,11 +185,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                 />
               </div>
-              {state.fields?.email?.error && (
-                <p className="text-sm text-red-500 mt-1">
-                  {state.fields.email.error}
-                </p>
-              )}
+              <FormError error={state.fields?.email?.error} />
             </div>
 
             {/* Password */}
@@ -261,11 +255,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   )}
                 </button>
               </div>
-              {state.fields?.password?.error && (
-                <p className="text-sm text-red-500 mt-1">
-                  {state.fields.password.error}
-                </p>
-              )}
+              <FormError error={state.fields?.password?.error} />
             </div>
 
             {/* Confirm Password – sign-up only */}
@@ -321,34 +311,15 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     )}
                   </button>
                 </div>
-                {state.fields?.confirmPassword?.error && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {state.fields.confirmPassword.error}
-                  </p>
-                )}
+                <FormError error={state.fields?.confirmPassword?.error} />
               </div>
             )}
 
             {/* Global message */}
-            {state.message && (
-              <div
-                className={`rounded-xl p-4 ${
-                  state.type === "success"
-                    ? "bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800"
-                    : "bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800"
-                }`}
-              >
-                <p
-                  className={`text-sm ${
-                    state.type === "success"
-                      ? "text-green-700 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  {state.message}
-                </p>
-              </div>
-            )}
+            <FormMessage
+              type={state.type === "error" ? "error" : "success"}
+              message={state.message}
+            />
 
             {/* Submit */}
             <button
@@ -392,7 +363,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           </p>
 
           {/* Footer links */}
-          <div className="flex justify-center gap-6 pt-4">
+          {/* <div className="flex justify-center gap-6 pt-4">
             <a
               href="#"
               className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
@@ -411,7 +382,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             >
               Help Center
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
