@@ -8,6 +8,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import FormError from "../validation-message/field-error";
 import FormMessage from "../validation-message/form-message";
+import RotatingText from "../RotatingText";
 
 const HERO_IMAGE_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBcWYScyAD8p7n2j-QA5BDProOkVx_o6_dPuKCtHr_hiMvrj_lORu8NfvMDcRsUesHo7oRCs_je75AUzF7uq219XuUq97SlRrCNuUGUpGJCd5aJ6sUT0G7wVqydxdKK-9hH9UP-TABwffICNE9CL6PFIP37olzAsJkkY8A4eQ_jqyt2SDouy3RlvdM2YrHUjtdWbsJlgQ1Id9n_-kaKYyZb24k0jtUagHrgZta-kv7XDsVD2HtNN7paHDBzu4TSb0rXg61J1eG1UO0t";
@@ -59,7 +60,44 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           {/* Headline */}
           <div className="max-w-md">
             <h1 className="text-6xl font-extrabold text-white leading-tight mb-6">
-              {isSignIn ? "Welcome Back, Explorer!" : "Join the Community!"}
+              {isSignIn ? (
+                <>
+                  <span>Welcome Back,</span>
+                  <RotatingText
+                    texts={[
+                      "Explorer!",
+                      "Traveller!",
+                      "Adventurer!",
+                      "Globetrotter!",
+                    ]}
+                    mainClassName="px-2 sm:px-2 md:px-3 bg-white text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
+                    staggerFrom={"last"}
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-120%" }}
+                    staggerDuration={0.025}
+                    splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    rotationInterval={4000}
+                  />
+                </>
+              ) : (
+                <>
+                  <span>Join the </span>{" "}
+                  <RotatingText
+                    mainClassName="px-2 sm:px-2 md:px-3 bg-white text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
+                    texts={["Adventure!", "Journey!", "Community!"]}
+                    staggerFrom={"last"}
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-120%" }}
+                    staggerDuration={0.025}
+                    splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    rotationInterval={4000}
+                  />
+                </>
+              )}
             </h1>
             <p className="text-xl text-white/90 font-medium">
               {isSignIn

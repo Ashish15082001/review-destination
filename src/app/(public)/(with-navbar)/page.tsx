@@ -1,33 +1,18 @@
-import LottieAnimation from "@/components/lottie-animation";
-import WhyReviewDestinationCard from "@/components/why-review-destination-card";
+import LottieAnimation from "@/components/lottie-animation/lottie-animation";
+import FeatureCard from "@/components/feature-card/feature-card";
 import { Link } from "react-transition-progress/next";
-import { ReviewCard } from "@/components/review-card/review-card";
-import { ReviewCardSkeleton } from "@/components/review-card/review-card-skeleton";
-import { getMostRecentReviews } from "@/lib/mongodb";
-import { Suspense } from "react";
-
-async function RecentReviews() {
-  const reviews = await getMostRecentReviews();
-  return (
-    <>
-      {reviews.map((review) => (
-        <ReviewCard key={review._id} reviewData={review} />
-      ))}
-    </>
-  );
-}
+import Silk from "@/components/Silk";
+import RecentReviewsSection from "@/components/recent-reviews/recent-reviews-section";
 
 export default async function LandingPage() {
   return (
     <div className="min-h-screen bg-[#F3F4F4]">
       {/* ── Hero ── */}
-      <section
-        className="relative flex min-h-[680px] w-full flex-col items-center justify-center p-6 text-center overflow-hidden bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(133,56,83,0.72), rgba(97,45,83,0.80)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1800&auto=format&fit=crop')",
-        }}
-      >
+      <section className="relative flex min-h-[680px] w-full flex-col items-center justify-center p-6 text-center overflow-hidden">
+        <div className="absolute inset-0">
+          <Silk speed={5} scale={1} color="#7B7481" noiseIntensity={1.5} />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#853853]/60 to-[#612D53]/70" />
         <div className="flex flex-col gap-8 max-w-4xl z-10">
           <h1 className="text-white text-5xl font-extrabold leading-tight tracking-tight lg:text-7xl drop-shadow-2xl">
             Review. Plan. Explore.
@@ -65,17 +50,17 @@ export default async function LandingPage() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          <WhyReviewDestinationCard
+          <FeatureCard
             animationType="customerReview"
             title="Browse Reviews"
             description="Explore a public feed of authentic travel experiences and hidden gems shared by real people."
           />
-          <WhyReviewDestinationCard
+          <FeatureCard
             animationType="deliveryLocation"
             title="Any Destination"
             description="From hidden gems to popular tourist spots, share reviews for any destination around the world."
           />
-          <WhyReviewDestinationCard
+          <FeatureCard
             animationType="creativeTeam"
             title="Plan & Save"
             description="Bookmark your favourite destinations and create custom itineraries for your future travels."
@@ -84,33 +69,7 @@ export default async function LandingPage() {
       </section>
 
       {/* ── Recent Reviews ── */}
-      <section className="px-6 lg:px-20 py-20">
-        <div className="flex items-center justify-between mb-12 max-w-7xl mx-auto">
-          <h2 className="text-neutral-800 text-3xl font-bold tracking-tight">
-            Recent Stories from the Community
-          </h2>
-          <Link
-            href="/reviews"
-            className="text-[#853853] font-bold flex items-center gap-1 hover:underline shrink-0"
-          >
-            View all →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-          <Suspense
-            fallback={
-              <>
-                <ReviewCardSkeleton />
-                <ReviewCardSkeleton />
-                <ReviewCardSkeleton />
-                <ReviewCardSkeleton />
-              </>
-            }
-          >
-            <RecentReviews />
-          </Suspense>
-        </div>
-      </section>
+      <RecentReviewsSection />
 
       {/* ── How It Works ── */}
       <section className="px-6 lg:px-20 py-20 bg-white">
@@ -160,20 +119,26 @@ export default async function LandingPage() {
 
       {/* ── CTA Banner ── */}
       <section className="px-6 lg:px-20 py-20 text-center">
-        <div className="bg-gradient-to-r from-[#853853] to-[#612D53] rounded-3xl p-16 text-white max-w-5xl mx-auto shadow-2xl">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Share Your Journey?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join our community of travelers and start sharing your experiences
-            today.
-          </p>
-          <Link
-            href="/add-review"
-            className="inline-block bg-white text-[#853853] px-10 py-4 rounded-xl text-lg font-bold hover:shadow-2xl transition-all hover:-translate-y-1"
-          >
-            Write Your First Review
-          </Link>
+        <div className="relative overflow-hidden rounded-3xl p-16 text-white max-w-5xl mx-auto shadow-2xl">
+          <div className="absolute inset-0">
+            <Silk speed={5} scale={1} color="#7B7481" noiseIntensity={1.5} />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#853853]/80 to-[#612D53]/80" />
+          <div className="relative z-10">
+            <h2 className="text-4xl font-bold mb-6">
+              Ready to Share Your Journey?
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              Join our community of travelers and start sharing your experiences
+              today.
+            </p>
+            <Link
+              href="/add-review"
+              className="inline-block bg-white text-[#853853] px-10 py-4 rounded-xl text-lg font-bold hover:shadow-2xl transition-all hover:-translate-y-1"
+            >
+              Write Your First Review
+            </Link>
+          </div>
         </div>
       </section>
 
