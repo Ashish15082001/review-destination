@@ -67,7 +67,7 @@ export function CommentCard({
           <span className="text-xs text-gray-400">{relativeTime}</span>
         </div>
 
-        <p className="text-sm text-gray-600 italic leading-relaxed">
+        <p className={`text-sm text-gray-600 leading-relaxed `}>
           {commentData.comment}
         </p>
 
