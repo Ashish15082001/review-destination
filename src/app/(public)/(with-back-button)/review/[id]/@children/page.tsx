@@ -5,6 +5,7 @@ import { ReviewStats } from "@/components/review-stats/review-stats";
 import { Comments } from "@/components/comments/comments";
 import { CommentForm } from "@/components/comment-form/comment-form";
 import CheckAuth from "@/components/check-auth/check-auth";
+import { UserAvatar } from "@/components/user-avatar/user-avatar";
 
 export default async function ReviewPage({
   params,
@@ -22,7 +23,6 @@ export default async function ReviewPage({
     notFound();
   }
 
-  const initials = userData.userName.slice(0, 2).toUpperCase();
   const formattedDate = reviewData.datePosted.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -54,9 +54,10 @@ export default async function ReviewPage({
                 {/* Author Row */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#853853] flex items-center justify-center text-white text-sm font-bold flex-shrink-0 select-none">
-                      {initials}
-                    </div>
+                    <UserAvatar
+                      userName={userData.userName}
+                      className="bg-[#853853]"
+                    />
                     <div>
                       <p className="text-sm font-semibold text-gray-900">
                         {userData.userName}

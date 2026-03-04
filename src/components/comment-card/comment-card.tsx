@@ -1,5 +1,6 @@
 import { CommentData } from "@/schema/comment";
 import { CommentActions } from "../comment-actions/comment-actions";
+import { UserAvatar } from "../user-avatar/user-avatar";
 
 interface CommentCardProps {
   commentData: CommentData;
@@ -34,7 +35,6 @@ export function CommentCard({
   commenterName,
   currentUserId,
 }: CommentCardProps) {
-  const initials = commenterName.slice(0, 2).toUpperCase();
   const relativeTime = getRelativeTime(commentData.commentedOn);
 
   // generate a consistent color from the name
@@ -52,11 +52,7 @@ export function CommentCard({
   return (
     <div className="p-4 flex gap-3">
       {/* Avatar */}
-      <div
-        className={`w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center text-white text-sm font-bold flex-shrink-0 select-none`}
-      >
-        {initials}
-      </div>
+      <UserAvatar userName={commenterName} className={avatarColor} />
 
       {/* Content */}
       <div className="flex-1 min-w-0">
