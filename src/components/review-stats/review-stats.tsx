@@ -29,7 +29,7 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
       <ReviewLikeButton
         reviewId={reviewId}
         totalLikes={totalLikes}
-        currentUserLikeData={currentUserLikeData}
+        likeId={currentUserLikeData?._id} // Pass the like ID if the user has liked the review
         currentUserData={currentUserData}
       />
 

@@ -288,6 +288,16 @@ export async function insertLikeData(
     likedBy: new ObjectId(likeData.likedBy),
   };
 
+  // make sure that current user hasn't already liked the review by checking if there's an existing like document with the same reviewId and likedBy
+  const existingLike = await collection.findOne({
+    reviewId: likeDataDocument.reviewId,
+    likedBy: likeDataDocument.likedBy,
+  });
+
+  if (existingLike) {
+    throw new Error("User has already liked this review");
+  }
+
   const parseResult = LikeDataDocumentSchema.safeParse(likeDataDocument);
 
   if (!parseResult.success) {

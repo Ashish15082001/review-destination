@@ -139,13 +139,7 @@ export default async function ReviewPage({
               </div>
             </CheckAuth>
 
-            {/* Comments */}
-            <div className="bg-white rounded-2xl shadow-md p-6">
-              <h2 className="text-base font-semibold text-gray-900 mb-4">
-                Comments
-              </h2>
-              <Comments reviewId={id} />
-            </div>
+            <Comments reviewId={id} />
           </div>
         </div>
       </div>
