@@ -33,7 +33,7 @@ export function CommentActions({
 
   const handleLike = async () => {
     if (!currentUserId) {
-      toast("Please log in to like a comment.");
+      toast("Please log in to interact.");
       return;
     }
 
@@ -90,7 +90,7 @@ export function CommentActions({
 
   const handleDislike = async () => {
     if (!currentUserId) {
-      toast("Please log in to dislike a comment.");
+      toast("Please log in to interact.");
       return;
     }
 

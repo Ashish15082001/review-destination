@@ -10,7 +10,7 @@ export default async function LandingPage() {
       {/* ── Hero ── */}
       <section className="relative flex min-h-[680px] w-full flex-col items-center justify-center p-6 text-center overflow-hidden">
         <div className="absolute inset-0">
-          <Silk speed={5} scale={1} color="#7B7481" noiseIntensity={1.5} />
+          <Silk speed={10} scale={1} color="#7B7481" noiseIntensity={1.5} />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-[#853853]/60 to-[#612D53]/70" />
         <div className="flex flex-col gap-8 max-w-4xl z-10">
@@ -39,31 +39,34 @@ export default async function LandingPage() {
       </section>
 
       {/* ── Core Features ── */}
-      <section className="px-6 lg:px-20 py-20 bg-white">
-        <div className="flex flex-col gap-4 mb-16 text-center items-center">
-          <h2 className="text-neutral-800 text-3xl font-bold lg:text-4xl">
+      <section className="px-6 lg:px-20 py-20 bg-[#F3F4F4]">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-neutral-800 mb-4">
             Why Review Destination?
           </h2>
-          <div className="h-1.5 w-20 bg-[#853853] rounded-full" />
-          <p className="text-neutral-500 text-lg max-w-2xl">
+          <div className="h-1.5 w-16 bg-[#853853] rounded-full mx-auto mb-6" />
+          <p className="text-lg text-neutral-500 max-w-2xl mx-auto">
             Everything you need to plan your next adventure with confidence.
+            Join a community of explorers sharing real insights.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
           <FeatureCard
             animationType="customerReview"
             title="Browse Reviews"
-            description="Explore a public feed of authentic travel experiences and hidden gems shared by real people."
+            description="Explore a public feed of authentic travel experiences and hidden gems shared by real people. Get the truth before you book."
           />
-          <FeatureCard
-            animationType="deliveryLocation"
-            title="Any Destination"
-            description="From hidden gems to popular tourist spots, share reviews for any destination around the world."
-          />
+          <div className="md:translate-y-4">
+            <FeatureCard
+              animationType="deliveryLocation"
+              title="Any Destination"
+              description="From hidden gems to popular tourist spots, share reviews for any destination around the world. No city is too small."
+            />
+          </div>
           <FeatureCard
             animationType="creativeTeam"
             title="Plan & Save"
-            description="Bookmark your favourite destinations and create custom itineraries for your future travels."
+            description="Bookmark your favourite destinations and create custom itineraries for your future travels. Collaborative planning made easy."
           />
         </div>
       </section>
@@ -121,7 +124,7 @@ export default async function LandingPage() {
       <section className="px-6 lg:px-20 py-20 text-center">
         <div className="relative overflow-hidden rounded-3xl p-16 text-white max-w-5xl mx-auto shadow-2xl">
           <div className="absolute inset-0">
-            <Silk speed={5} scale={1} color="#7B7481" noiseIntensity={1.5} />
+            <Silk speed={10} scale={1} color="#7B7481" noiseIntensity={1.5} />
           </div>
           <div className="absolute inset-0 bg-gradient-to-r from-[#853853]/80 to-[#612D53]/80" />
           <div className="relative z-10">
