@@ -192,13 +192,21 @@ export async function getReviewsByIds(
   return parseResult.data;
 }
 
+export async function getReviewsCount(): Promise<number> {
+  "use cache";
+
+  cacheTag("reviewsData");
+
+  const collection = await getReviewsCollection();
+  return collection.countDocuments({});
+}
+
 export async function getReviewsData({
   pageSize = 10,
-  cursor,
+  page = 1,
 }: {
   pageSize?: number;
-  // objectId string of the last review from the previous page, used for pagination.
-  cursor?: string;
+  page?: number;
 }): Promise<ReviewData[]> {
   "use cache";
 
@@ -206,11 +214,10 @@ export async function getReviewsData({
 
   const collection = await getReviewsCollection();
 
-  const query = cursor ? { _id: { $lt: new ObjectId(cursor) } } : {};
-
   const reviewDataDocuments = await collection
-    .find(query)
+    .find({})
     .sort({ datePosted: -1 })
+    .skip((page - 1) * pageSize)
     .limit(pageSize)
     .toArray();
 

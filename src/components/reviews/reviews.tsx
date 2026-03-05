@@ -1,38 +1,48 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { ReviewData } from "@/schema/review";
-import { ReviewCard } from "@/components/review-card/review-card";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Link } from "react-transition-progress/next";
 
 const PAGE_SIZE = 10;
 
 interface ReviewsProps {
-  initialReviewsData: ReviewData[];
+  children: React.ReactNode;
+  total: number;
+  currentPage: number;
+  count: number;
 }
 
-export function Reviews({ initialReviewsData }: ReviewsProps) {
-  const [reviews, setReviews] = useState<ReviewData[]>(initialReviewsData);
-  const [hasMore, setHasMore] = useState(
-    initialReviewsData.length === PAGE_SIZE,
-  );
+export function Reviews({ children, total, currentPage, count }: ReviewsProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const cursor = reviews.length > 0 ? reviews[reviews.length - 1]._id : null;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  function loadMore() {
-    if (!cursor || isPending) return;
+  function goToPage(page: number) {
+    if (page === currentPage || isPending) return;
 
-    startTransition(async () => {
-      const res = await fetch(`/api/reviews?cursor=${cursor}`);
-      const data: { reviewsData: ReviewData[] } = await res.json();
-
-      setReviews((prev) => [...prev, ...data.reviewsData]);
-      setHasMore(data.reviewsData.length === PAGE_SIZE);
+    startTransition(() => {
+      router.replace(`?page=${page}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
-  if (reviews.length === 0) {
+  function getPageNumbers(): (number | "...")[] {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages: (number | "...")[] = [1];
+    if (currentPage > 3) pages.push("...");
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (currentPage < totalPages - 2) pages.push("...");
+    pages.push(totalPages);
+    return pages;
+  }
+
+  if (total === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         {/* Illustration container */}
@@ -128,58 +138,90 @@ export function Reviews({ initialReviewsData }: ReviewsProps) {
       {/* Review count */}
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-gray-500">
-          Showing{" "}
-          <span className="font-semibold text-gray-800">{reviews.length}</span>{" "}
-          travel {reviews.length === 1 ? "story" : "stories"}
+          Showing <span className="font-semibold text-gray-800">{count}</span>{" "}
+          of <span className="font-semibold text-gray-800">{total}</span> travel{" "}
+          {total === 1 ? "story" : "stories"}
         </p>
+        {totalPages > 1 && (
+          <p className="text-sm text-gray-500">
+            Page{" "}
+            <span className="font-semibold text-gray-800">{currentPage}</span>{" "}
+            of <span className="font-semibold text-gray-800">{totalPages}</span>
+          </p>
+        )}
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {reviews.map((reviewData) => (
-          <ReviewCard key={reviewData._id} reviewData={reviewData} />
-        ))}
+        {children}
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-12">
-        {hasMore ? (
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1 mt-12">
+          {/* Previous */}
           <button
-            onClick={loadMore}
-            disabled={isPending}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold border-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-            style={{
-              borderColor: "#853853",
-              color: isPending ? "#853853" : "#fff",
-              backgroundColor: isPending ? "transparent" : "#853853",
-            }}
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1 || isPending}
+            aria-label="Previous page"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border-2 text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            style={{ borderColor: "#853853", color: "#853853" }}
           >
-            {isPending ? (
-              <>
-                <span
-                  className="inline-block h-4 w-4 rounded-full border-2 border-t-transparent animate-spin"
-                  style={{
-                    borderColor: "#853853",
-                    borderTopColor: "transparent",
-                  }}
-                />
-                Loading…
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-base">
-                  expand_more
-                </span>
-                Load More
-              </>
-            )}
+            <span className="material-symbols-outlined text-base">
+              chevron_left
+            </span>
           </button>
-        ) : (
-          <p className="text-sm text-slate-400 font-medium">
-            You&apos;ve reached the end of the trail.
-          </p>
-        )}
-      </div>
+
+          {/* Page numbers */}
+          {getPageNumbers().map((page, idx) =>
+            page === "..." ? (
+              <span
+                key={`ellipsis-${idx}`}
+                className="inline-flex items-center justify-center w-9 h-9 text-sm text-slate-400 select-none"
+              >
+                …
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => goToPage(page as number)}
+                disabled={isPending}
+                aria-label={`Go to page ${page}`}
+                aria-current={page === currentPage ? "page" : undefined}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-lg border-2 text-sm font-semibold transition-all disabled:cursor-not-allowed cursor-pointer"
+                style={
+                  page === currentPage
+                    ? {
+                        backgroundColor: "#853853",
+                        borderColor: "#853853",
+                        color: "#fff",
+                      }
+                    : {
+                        borderColor: "#d1d5db",
+                        color: "#374151",
+                        backgroundColor: "transparent",
+                      }
+                }
+              >
+                {page}
+              </button>
+            ),
+          )}
+
+          {/* Next */}
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages || isPending}
+            aria-label="Next page"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border-2 text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            style={{ borderColor: "#853853", color: "#853853" }}
+          >
+            <span className="material-symbols-outlined text-base">
+              chevron_right
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
