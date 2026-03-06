@@ -2,6 +2,7 @@ import signOutUser from "@/actions/sign-out";
 import { Link } from "react-transition-progress/next";
 import CheckAuth from "../check-auth/check-auth";
 import { Suspense } from "react";
+import { AuthMode } from "@/lib/auth-mode";
 
 export default function Navbar() {
   return (
@@ -49,17 +50,7 @@ export default function Navbar() {
               <div className="w-20 h-10 bg-[#F3F4F4] rounded-lg animate-pulse" />
             }
           >
-            <CheckAuth
-              visibility={"private-only"}
-              fallback={
-                <Link
-                  href="/auth?mode=signin"
-                  className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#F3F4F4] text-[#2C2C2C] text-sm font-bold border border-[#853853]/10 hover:border-[#853853]/30 transition-all"
-                >
-                  Sign In
-                </Link>
-              }
-            >
+            <CheckAuth visibility={"private-only"} fallback={null}>
               <form action={signOutUser}>
                 <button
                   type="submit"
@@ -81,7 +72,7 @@ export default function Navbar() {
               visibility={"private-only"}
               fallback={
                 <Link
-                  href="/auth?mode=signin"
+                  href={`/auth?mode=${AuthMode.SIGN_IN}`}
                   className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#853853] text-white text-sm font-bold hover:bg-[#612D53] transition-all shadow-md"
                 >
                   Get Started

@@ -1,4 +1,10 @@
-import { Inter, Roboto_Mono, Homemade_Apple, Nunito } from "next/font/google";
+import {
+  Inter,
+  Roboto_Mono,
+  Homemade_Apple,
+  Nunito,
+  Noto_Sans,
+} from "next/font/google";
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -20,4 +26,10 @@ export const nunito = Nunito({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-nunito",
+});
+
+export const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-noto-sans",
 });

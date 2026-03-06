@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { ProgressBar, ProgressBarProvider } from "react-transition-progress";
-import { inter } from "@/components/fonts/fonts";
+import { notoSans } from "@/fonts/fonts";
 
 export const metadata: Metadata = {
   title: "Review Destination - Share Your Travel Experiences",
@@ -22,7 +22,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
       </head>
-      <body className={`antialiased ${inter.className}`}>
+      <body className={`antialiased ${notoSans.className}`}>
         <ProgressBarProvider>
           {/* I.e. using Tailwind CSS to show the progress bar with custom styling */}
           <ProgressBar className="fixed z-60 h-2 shadow-lg shadow-sky-500/20 bg-sky-500 top-0" />

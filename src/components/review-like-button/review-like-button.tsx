@@ -97,6 +97,7 @@ export function ReviewLikeButton({
       <button
         onClick={(event) => {
           event.stopPropagation();
+          event.nativeEvent.stopImmediatePropagation();
 
           if (currentUserData === null) {
             toast("Please log in to interact.");

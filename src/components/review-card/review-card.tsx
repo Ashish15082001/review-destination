@@ -17,10 +17,7 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
     .toUpperCase();
 
   return (
-    <Link
-      href={`/review/${reviewData._id}`}
-      className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col"
-    >
+    <div className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
       {/* Destination Image */}
       <div className="relative h-52 w-full bg-gray-200 shrink-0 overflow-hidden">
         <Image
@@ -42,7 +39,7 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
         </div>
 
         {/* Description Excerpt */}
-        <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">
+        <p className={`text-sm text-gray-500 line-clamp-2 mb-4 flex-1`}>
           {reviewData.description}
         </p>
 
@@ -53,8 +50,15 @@ export async function ReviewCard({ reviewData }: { reviewData: ReviewData }) {
               <ReviewStats reviewId={reviewData._id} />
             </Suspense>
           </div>
+
+          <Link
+            href={`/review/${reviewData._id}`}
+            className="text-sm font-medium text-blue-500 hover:text-blue-700 transition-colors"
+          >
+            View →
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
