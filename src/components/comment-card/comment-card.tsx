@@ -73,9 +73,6 @@ export function CommentCard({
             commentData={commentData}
             currentUserId={currentUserId}
           />
-          <button className="text-xs text-gray-400 hover:text-[#853853] transition-colors font-medium cursor-pointer">
-            Reply
-          </button>
         </div>
       </div>
     </div>

@@ -1,6 +1,10 @@
 "use server";
 
-import { getUserDataUsingSession, insertCommentData } from "@/lib/mongodb";
+import {
+  addReplyToComment,
+  getUserDataUsingSession,
+  insertCommentData,
+} from "@/lib/mongodb";
 import z from "zod";
 
 const CommentFormSchema = z.object({
@@ -9,6 +13,7 @@ const CommentFormSchema = z.object({
     .min(1, "Comment cannot be empty")
     .max(500, "Comment must be at most 500 characters"),
   reviewId: z.string().min(1, "Review ID is required"),
+  parentCommentId: z.string().optional(),
 });
 
 /**
@@ -25,6 +30,7 @@ const CommentFormSchema = z.object({
  * @param formData - Form data expected to contain:
  *   - `comment` {string} — The comment text (1–500 characters).
  *   - `reviewId` {string} — The ID of the review being commented on.
+ *   - `parentCommentId` {string} — Optional ID of the comment being replied to.
  * @returns A promise resolving to {@link AddCommentActionReturnType} with:
  *   - `type` — `"success"` if the comment was saved, `"error"` otherwise.
  *   - `message` — A human-readable summary of the outcome.
@@ -46,6 +52,7 @@ const addCommentAction = async (
 
     const comment = formData.get("comment") as string;
     const reviewId = formData.get("reviewId") as string;
+    const parentCommentId = formData.get("parentCommentId") as string;
 
     const validationResult = CommentFormSchema.safeParse({ comment, reviewId });
 
@@ -75,13 +82,20 @@ const addCommentAction = async (
 
     const validatedCommentData = validationResult.data;
 
-    await insertCommentData({
+    const insertedCommentId = await insertCommentData({
       reviewId: validatedCommentData.reviewId,
       commentedBy: userData._id,
       commentedOn: new Date(),
       comment: validatedCommentData.comment,
+      repliesIds: [],
       idsOfUsersWhoLiked: [],
       idsOfUsersWhoDisliked: [],
+    });
+
+    await addReplyToComment({
+      parentCommentId,
+      replyCommentId: insertedCommentId,
+      reviewId,
     });
 
     return {

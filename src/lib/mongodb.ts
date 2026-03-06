@@ -431,7 +431,7 @@ export async function insertCommentData(
     idsOfUsersWhoLiked: commentData.idsOfUsersWhoLiked.map(
       (userId) => new ObjectId(userId),
     ),
-    replyCommentId: undefined,
+    repliesIds: commentData.repliesIds?.map((id) => new ObjectId(id)) || [],
   };
 
   const parseResult = CommentDataDocumentSchema.safeParse(commentDataDocument);
@@ -474,9 +474,8 @@ export async function getCommentData({
     idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
       (userId) => userId.toString(),
     ),
-    replyCommentId: commentDataDocument.replyCommentId
-      ? commentDataDocument.replyCommentId.toString()
-      : undefined,
+    repliesIds:
+      commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
   };
 
   const parseResult = CommentDataSchema.safeParse(commentData);
@@ -521,9 +520,8 @@ export const getCommentsDataByReviewId = cache(async function ({
       idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
         (userId) => userId.toString(),
       ),
-      replyCommentId: commentDataDocument.replyCommentId
-        ? commentDataDocument.replyCommentId.toString()
-        : undefined,
+      repliesIds:
+        commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
     }),
   );
 
@@ -627,6 +625,29 @@ export async function removeDislikeFromComment({
   );
 
   revalidateTag(`commentData-${commentId}`, "max");
+  revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+
+  return result.modifiedCount > 0;
+}
+
+export async function addReplyToComment({
+  parentCommentId,
+  replyCommentId,
+  reviewId,
+}: {
+  parentCommentId: string;
+  replyCommentId: string;
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getCommentsCollection();
+  const result = await collection.updateOne(
+    { _id: new ObjectId(parentCommentId) },
+    {
+      $addToSet: { repliesIds: new ObjectId(replyCommentId) },
+    },
+  );
+
+  revalidateTag(`commentData-${parentCommentId}`, "max");
   revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
 
   return result.modifiedCount > 0;

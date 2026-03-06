@@ -8,11 +8,27 @@ import { useActionState, useEffect, useRef } from "react";
 
 interface CommentFormProps {
   reviewId: string;
+  /**
+   * When provided, this form acts as a reply to the comment with the given ID
+   * rather than a top-level comment on the review.
+   */
+  parentCommentId?: string;
 }
 
 const initialState: AddCommentActionReturnType = {};
 
-export function CommentForm({ reviewId }: CommentFormProps) {
+/**
+ * Renders a form for submitting a comment on a review.
+ *
+ * When `parentCommentId` is provided the form acts as a reply to an existing
+ * comment rather than a new top-level comment on the review. The textarea is
+ * cleared on successful submission via an uncontrolled ref.
+ *
+ * @param reviewId - The ID of the review being commented on.
+ * @param parentCommentId - Optional ID of the comment being replied to.
+ *   When supplied, the submitted comment is treated as a reply.
+ */
+export function CommentForm({ reviewId, parentCommentId }: CommentFormProps) {
   const [state, formAction, isPending] = useActionState(
     addCommentAction,
     initialState,
@@ -57,6 +73,11 @@ export function CommentForm({ reviewId }: CommentFormProps) {
               placeholder="Share your thoughts on this journey..."
               defaultValue={state.fields?.comment?.value ?? ""}
               className="w-full text-sm text-gray-700 placeholder-gray-400 resize-none focus:outline-none"
+            />
+            <input
+              type="hidden"
+              name="parentCommentId"
+              value={parentCommentId ?? ""}
             />
             {/* validation error */}
             {state.fields?.comment?.error && (
