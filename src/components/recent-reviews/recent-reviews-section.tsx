@@ -20,7 +20,7 @@ export default function RecentReviewsSection() {
     <section className="px-6 lg:px-20 py-20">
       <div className="flex items-center justify-between mb-12 max-w-7xl mx-auto">
         <h2 className="text-neutral-800 text-3xl font-bold tracking-tight">
-          Recent Stories from the Community
+          Recent Stories from the other travelers
         </h2>
         <Link
           href="/reviews"

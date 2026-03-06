@@ -21,6 +21,7 @@ export function ReviewLikeButton({
 }: ReviewLikeButtonProps) {
   const [optimisticLikes, setOptimisticLike] = useState(totalLikes);
   const [optimisticLikeId, setOptimisticLikeId] = useState(likeId);
+  const [isProcessing, setIsProcessing] = useState(false); // To prevent multiple rapid clicks
   const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   // If already liked on mount, jump to frame 100 (end of liked state)
@@ -43,10 +44,13 @@ export function ReviewLikeButton({
   };
 
   const handleToggleLike = async () => {
+    if (isProcessing) return; // Prevent action if already processing
     if (currentUserData === null) {
       toast("Please log in to like the review.");
       return;
     }
+
+    setIsProcessing(true);
 
     // remove like if it already exists
     if (optimisticLikeId !== undefined) {
@@ -90,6 +94,8 @@ export function ReviewLikeButton({
         handleDecreamentLike();
       }
     }
+
+    setIsProcessing(false);
   };
 
   return (
