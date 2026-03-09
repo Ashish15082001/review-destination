@@ -35,5 +35,12 @@ export const CommentDataSchema = z.object({
   idsOfUsersWhoDisliked: z.array(z.string()),
 });
 
+export const CommentDataWithCommenterNameSchema = CommentDataSchema.extend({
+  commenterName: z.string(),
+});
+
 export type CommentDataDocument = z.infer<typeof CommentDataDocumentSchema>;
 export type CommentData = z.infer<typeof CommentDataSchema>;
+export type CommentDataWithCommenterName = z.infer<
+  typeof CommentDataWithCommenterNameSchema
+>;

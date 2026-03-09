@@ -1,18 +1,90 @@
-import {
-  getCommentsDataByReviewId,
-  getUserDataByUserId,
-  getUserDataUsingSession,
-} from "@/lib/mongodb";
+"use client";
+
 import { CommentCard } from "@/components/comment-card/comment-card";
+import { UserData } from "@/schema/user";
+import { CommentDataWithCommenterName } from "@/schema/comment";
+import { useEffect, useState } from "react";
 
-export async function Comments({ reviewId }: { reviewId: string }) {
-  const commentsData = await getCommentsDataByReviewId({ reviewId });
-  const currentUserData = await getUserDataUsingSession();
+export function Comments({
+  isParentComment = false,
+  commentIds,
+  reviewUserData,
+  currentUserData,
+}: {
+  isParentComment?: boolean;
+  commentIds: string[];
+  reviewUserData: UserData;
+  currentUserData: UserData | null;
+}) {
+  const [commentsDataWithCommenterName, setCommentsDataWithCommenterName] =
+    useState<CommentDataWithCommenterName[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!commentsData || commentsData.length === 0) {
+  useEffect(() => {
+    async function fetchCommentsData() {
+      try {
+        const response = await fetch(
+          `/api/comments-with-commenter-name-by-commentIds?${commentIds
+            .map((id) => `commentIds=${id}`)
+            .join("&")}`,
+        );
+        const responseData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            responseData.error || "Failed to fetch comments data",
+          );
+        }
+
+        if (response.ok) {
+          setCommentsDataWithCommenterName(responseData.commentsData);
+        }
+      } catch (error) {
+        console.error("Error fetching comments data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchCommentsData();
+  }, [commentIds]);
+
+  if (isLoading) {
+    if (isParentComment)
+      return (
+        <div className="bg-white rounded-2xl shadow-md p-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">
+            Comments
+          </h2>
+
+          <p className="text-gray-400 text-sm text-center">
+            Loading comments...
+          </p>
+        </div>
+      );
+
     return (
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-4">Comments</h2>
+      <div className="p-6">
+        <p className="text-gray-400 text-sm text-center">Loading comments...</p>
+      </div>
+    );
+  }
+
+  if (commentsDataWithCommenterName.length === 0) {
+    if (isParentComment)
+      return (
+        <div className="bg-white rounded-2xl shadow-md p-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">
+            Comments
+          </h2>
+          <p className="text-gray-400 text-sm text-center">
+            No comments yet. Be the first to comment!
+          </p>
+        </div>
+      );
+
+    return (
+      <div className="p-6">
         <p className="text-gray-400 text-sm text-center">
           No comments yet. Be the first to comment!
         </p>
@@ -20,24 +92,29 @@ export async function Comments({ reviewId }: { reviewId: string }) {
     );
   }
 
-  const commentsWithUsers = await Promise.all(
-    commentsData.map(async (commentData) => {
-      const userData = await getUserDataByUserId({
-        userId: commentData.commentedBy,
-      });
-      return { commentData, commenterName: userData?.userName ?? "Unknown" };
-    }),
-  );
+  if (isParentComment)
+    return (
+      <div className="flex flex-col gap-3 bg-white rounded-2xl shadow-md p-6">
+        <h2 className="text-base font-semibold text-gray-900 mb-4">Comments</h2>
+        {commentsDataWithCommenterName.map((commentDataWithCommenterName) => (
+          <CommentCard
+            key={commentDataWithCommenterName._id}
+            commentData={commentDataWithCommenterName}
+            reviewUserData={reviewUserData}
+            currentUserData={currentUserData}
+          />
+        ))}
+      </div>
+    );
 
   return (
-    <div className="flex flex-col gap-3 bg-white rounded-2xl shadow-md p-6">
-      <h2 className="text-base font-semibold text-gray-900 mb-4">Comments</h2>
-      {commentsWithUsers.map(({ commentData, commenterName }) => (
+    <div className="border-l border-gray-300 ml-4 pl-4">
+      {commentsDataWithCommenterName.map((commentDataWithCommenterName) => (
         <CommentCard
-          key={commentData._id}
-          commentData={commentData}
-          commenterName={commenterName}
-          currentUserId={currentUserData?._id ?? null}
+          key={commentDataWithCommenterName._id}
+          commentData={commentDataWithCommenterName}
+          reviewUserData={reviewUserData}
+          currentUserData={currentUserData}
         />
       ))}
     </div>

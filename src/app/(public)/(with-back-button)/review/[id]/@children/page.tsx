@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getReviewData, getUserDataByUserId } from "@/lib/mongodb";
+import {
+  getCommentsDataByReviewId,
+  getReviewData,
+  getUserDataByUserId,
+  getUserDataUsingSession,
+} from "@/lib/mongodb";
 import { ReviewStats } from "@/components/review-stats/review-stats";
 import { Comments } from "@/components/comments/comments";
 import { CommentForm } from "@/components/comment-form/comment-form";
@@ -12,14 +17,18 @@ export default async function ReviewPage({
 }: PageProps<"/review/[id]">) {
   const { id } = await params;
   const reviewData = await getReviewData(id);
+  const commentsData = await getCommentsDataByReviewId({ reviewId: id });
 
   if (!reviewData) {
     notFound();
   }
 
-  const userData = await getUserDataByUserId({ userId: reviewData.userId });
+  const reviewUserData = await getUserDataByUserId({
+    userId: reviewData.userId,
+  });
+  const currentUserData = await getUserDataUsingSession();
 
-  if (!userData) {
+  if (!reviewUserData) {
     notFound();
   }
 
@@ -55,12 +64,12 @@ export default async function ReviewPage({
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <UserAvatar
-                      userName={userData.userName}
+                      userName={reviewUserData.userName}
                       className="bg-[#853853]"
                     />
                     <div>
                       <p className="text-sm font-semibold text-gray-900">
-                        {userData.userName}
+                        {reviewUserData.userName}
                       </p>
                       <p className="text-xs text-gray-500">
                         {formattedDate} &bull; Visited: {reviewData.whenVisited}
@@ -116,7 +125,7 @@ export default async function ReviewPage({
           </div>
 
           {/* Right column: Join the Conversation + Comments */}
-          <div className="mt-5 lg:mt-0 lg:w-120">
+          <div className="mt-5 lg:mt-0 lg:w-140">
             {/* Join the Conversation */}
             <CheckAuth visibility="private-only" fallback={null}>
               <div className="mb-5">
@@ -139,7 +148,12 @@ export default async function ReviewPage({
               </div>
             </CheckAuth>
 
-            <Comments reviewId={id} />
+            <Comments
+              isParentComment={true}
+              commentIds={commentsData.map((comment) => comment._id)}
+              reviewUserData={reviewUserData}
+              currentUserData={currentUserData}
+            />
           </div>
         </div>
       </div>

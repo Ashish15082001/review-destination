@@ -4,6 +4,8 @@ import {
   CommentDataDocument,
   CommentDataDocumentSchema,
   CommentDataSchema,
+  CommentDataWithCommenterName,
+  CommentDataWithCommenterNameSchema,
 } from "@/schema/comment";
 import {
   LikeData,
@@ -33,6 +35,7 @@ import {
 } from "@/schema/userSession";
 import { cache } from "react";
 import { cacheTag, revalidateTag } from "next/cache";
+import { safeParse } from "zod";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -489,6 +492,63 @@ export async function getCommentData({
   return parseResult.data;
 }
 
+export async function getCommentsDataWithCommenterNameByCommentIds({
+  commentIds,
+}: {
+  commentIds: string[];
+}): Promise<CommentDataWithCommenterName[]> {
+  const collection = await getCommentsCollection();
+
+  const commentDataDocuments = await collection
+    .find({
+      _id: { $in: commentIds.map((id) => new ObjectId(id)) },
+    })
+    .toArray();
+
+  if (!commentDataDocuments || commentDataDocuments.length === 0) return [];
+
+  const commenterIds = commentDataDocuments.map((commentDataDocument) =>
+    commentDataDocument.commentedBy.toString(),
+  );
+
+  const commentersData = await getUserDataByUserIds({
+    userIds: commenterIds,
+  });
+
+  const commentsDataWithCommenterName: CommentDataWithCommenterName[] =
+    commentDataDocuments.map((commentDataDocument) => ({
+      ...commentDataDocument,
+      _id: commentDataDocument._id.toString(),
+      reviewId: commentDataDocument.reviewId.toString(),
+      commentedBy: commentDataDocument.commentedBy.toString(),
+      idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map((userId) =>
+        userId.toString(),
+      ),
+      idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
+        (userId) => userId.toString(),
+      ),
+      repliesIds:
+        commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+      commenterName:
+        commentersData.find(
+          (userData) =>
+            userData._id === commentDataDocument.commentedBy.toString(),
+        )?.userName ?? "Unknown",
+    }));
+
+  const parseResult = CommentDataWithCommenterNameSchema.array().safeParse(
+    commentsDataWithCommenterName,
+  );
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid comment data from DB: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
+}
+
 export const getCommentsDataByReviewId = cache(async function ({
   reviewId,
 }: {
@@ -535,6 +595,105 @@ export const getCommentsDataByReviewId = cache(async function ({
 
   return parseResult.data;
 });
+
+export const getCommentsDataWithCommenterNameByReviewId = cache(
+  async function ({
+    reviewId,
+  }: {
+    reviewId: string;
+  }): Promise<CommentDataWithCommenterName[]> {
+    "use cache";
+
+    cacheTag(`commentsDataWithCommenterName-reviewId-${reviewId}`);
+
+    const collection = await getCommentsCollection();
+
+    const commentDataDocuments = await collection
+      .find({
+        reviewId: new ObjectId(reviewId),
+      })
+      .toArray();
+
+    if (!commentDataDocuments || commentDataDocuments.length === 0) return [];
+
+    const commenterIds = commentDataDocuments.map((commentDataDocument) =>
+      commentDataDocument.commentedBy.toString(),
+    );
+
+    const commentersData = await getUserDataByUserIds({
+      userIds: commenterIds,
+    });
+
+    const commentsDataWithCommenterName: CommentDataWithCommenterName[] =
+      commentDataDocuments.map((commentDataDocument) => ({
+        ...commentDataDocument,
+        _id: commentDataDocument._id.toString(),
+        reviewId: commentDataDocument.reviewId.toString(),
+        commentedBy: commentDataDocument.commentedBy.toString(),
+        idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map(
+          (userId) => userId.toString(),
+        ),
+        idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
+          (userId) => userId.toString(),
+        ),
+        repliesIds:
+          commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+        commenterName:
+          commentersData.find(
+            (userData) =>
+              userData._id === commentDataDocument.commentedBy.toString(),
+          )?.userName ?? "Unknown",
+      }));
+
+    const parseResult = CommentDataWithCommenterNameSchema.array().safeParse(
+      commentsDataWithCommenterName,
+    );
+
+    if (!parseResult.success) {
+      throw new Error(
+        `Invalid comment data from DB: ${parseResult.error.message}`,
+      );
+    }
+
+    return parseResult.data;
+  },
+);
+
+export async function getCommentRepliesData({
+  commentId,
+}: {
+  commentId: string;
+}): Promise<CommentData[]> {
+  const collection = await getCommentsCollection();
+
+  const parentComment = await collection.findOne({
+    _id: new ObjectId(commentId),
+  });
+
+  if (!parentComment || parentComment.repliesIds.length === 0) return [];
+
+  const replyDocuments = await collection
+    .find({ _id: { $in: parentComment.repliesIds } })
+    .toArray();
+
+  const replies: CommentData[] = replyDocuments.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+    reviewId: doc.reviewId.toString(),
+    commentedBy: doc.commentedBy.toString(),
+    idsOfUsersWhoLiked: doc.idsOfUsersWhoLiked.map((id) => id.toString()),
+    idsOfUsersWhoDisliked: doc.idsOfUsersWhoDisliked.map((id) => id.toString()),
+    repliesIds: doc.repliesIds?.map((id) => id.toString()) || [],
+  }));
+
+  const parseResult = CommentDataSchema.array().safeParse(replies);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid reply data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
+}
 
 export async function addLikeToComment({
   commentId,
@@ -718,6 +877,35 @@ export async function getUserDataByUserId({
   };
 
   const parseResult = UserDataSchema.safeParse(userData);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid user data from DB: ${parseResult.error.message}`);
+  }
+
+  return parseResult.data;
+}
+
+export async function getUserDataByUserIds({
+  userIds,
+}: {
+  userIds: string[];
+}): Promise<UserData[]> {
+  const collection = await getUsersCollection();
+  const userDataDocuments = await collection
+    .find({
+      _id: { $in: userIds.map((id) => new ObjectId(id)) },
+    })
+    .toArray();
+
+  if (!userDataDocuments || userDataDocuments.length === 0) return [];
+
+  const usersData: UserData[] = userDataDocuments.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+    savedReviewesIds: doc.savedReviewesIds.map((id) => id.toString()),
+  }));
+
+  const parseResult = UserDataSchema.array().safeParse(usersData);
 
   if (!parseResult.success) {
     throw new Error(`Invalid user data from DB: ${parseResult.error.message}`);
