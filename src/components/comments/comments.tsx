@@ -2,7 +2,7 @@
 
 import { CommentCard } from "@/components/comment-card/comment-card";
 import { UserData } from "@/schema/user";
-import { CommentDataWithCommenterName } from "@/schema/comment";
+import { CommentDataWithCommenterData } from "@/schema/comment";
 import { useEffect, useState } from "react";
 
 export function Comments({
@@ -16,10 +16,10 @@ export function Comments({
   commentIds: string[];
   reviewUserData: UserData;
   currentUserData?: UserData;
-  parentCommentData?: CommentDataWithCommenterName;
+  parentCommentData?: CommentDataWithCommenterData;
 }) {
   const [commentsDataWithCommenterName, setCommentsDataWithCommenterName] =
-    useState<CommentDataWithCommenterName[]>([]);
+    useState<CommentDataWithCommenterData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -99,10 +99,10 @@ export function Comments({
     return (
       <div className="flex flex-col gap-3 bg-white rounded-2xl shadow-md p-6">
         <h2 className="text-base font-semibold text-gray-900 mb-4">Comments</h2>
-        {commentsDataWithCommenterName.map((commentDataWithCommenterName) => (
+        {commentsDataWithCommenterName.map((commentDataWithCommenterData) => (
           <CommentCard
-            key={commentDataWithCommenterName._id}
-            commentData={commentDataWithCommenterName}
+            key={commentDataWithCommenterData._id}
+            commentData={commentDataWithCommenterData}
             reviewUserData={reviewUserData}
             currentUserData={currentUserData}
             parentCommentData={parentCommentData}
@@ -113,10 +113,10 @@ export function Comments({
 
   return (
     <div className="border-l border-gray-300 ml-4 pl-4">
-      {commentsDataWithCommenterName.map((commentDataWithCommenterName) => (
+      {commentsDataWithCommenterName.map((commentDataWithCommenterData) => (
         <CommentCard
-          key={commentDataWithCommenterName._id}
-          commentData={commentDataWithCommenterName}
+          key={commentDataWithCommenterData._id}
+          commentData={commentDataWithCommenterData}
           reviewUserData={reviewUserData}
           currentUserData={currentUserData}
           parentCommentData={parentCommentData}

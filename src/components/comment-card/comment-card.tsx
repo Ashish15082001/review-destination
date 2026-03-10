@@ -1,6 +1,6 @@
 "use client";
 
-import { CommentDataWithCommenterName } from "@/schema/comment";
+import { CommentDataWithCommenterData } from "@/schema/comment";
 import { CommentActions } from "../comment-actions/comment-actions";
 import { UserAvatar } from "../user-avatar/user-avatar";
 import { UserData } from "@/schema/user";
@@ -8,8 +8,8 @@ import { useState } from "react";
 import { Comments } from "../comments/comments";
 
 interface CommentCardProps {
-  commentData: CommentDataWithCommenterName;
-  parentCommentData?: CommentDataWithCommenterName;
+  commentData: CommentDataWithCommenterData;
+  parentCommentData?: CommentDataWithCommenterData;
   reviewUserData: UserData;
   currentUserData?: UserData;
 }
@@ -67,7 +67,11 @@ export function CommentCard({
     <div>
       <div className="p-4 flex gap-3">
         {/* Avatar */}
-        <UserAvatar userName={commenterName} className={avatarColor} />
+        <UserAvatar
+          userName={commenterName}
+          imageSrc={commentData.profilePictureUrl}
+          className={avatarColor}
+        />
 
         {/* Content */}
         <div className="flex-1 min-w-0">

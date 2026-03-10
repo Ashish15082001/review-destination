@@ -19,6 +19,11 @@ export const SignUpUserDataFromBrowserSchema = z.object({
   confirmPassword: z
     .string()
     .min(6, "Confirm password must be at least 6 characters"),
+  profilePicture: z
+    .instanceof(File, { message: "Please upload an image" })
+    .refine((file) => file.size > 0, {
+      message: "File size cannot be empty",
+    }),
 });
 
 export const UserDataDocumentSchema = z.object({
@@ -28,6 +33,7 @@ export const UserDataDocumentSchema = z.object({
   password: z.string(),
   registeredAt: z.date(),
   savedReviewesIds: z.array(z.instanceof(ObjectId)),
+  profilePictureUrl: z.string(),
 });
 
 export const UserDataSchema = UserDataDocumentSchema.extend({

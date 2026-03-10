@@ -1,4 +1,5 @@
 import { getUserDataByUserId } from "@/lib/mongodb";
+import { UserAvatar } from "../user-avatar/user-avatar";
 
 export async function UserInfo({
   userId,
@@ -11,20 +12,13 @@ export async function UserInfo({
 
   if (!userData) return null;
 
-  // Get initials for avatar
-  const initials = userData.userName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-
   return (
     <div className="flex items-center gap-3">
       {/* Avatar */}
-      <div className="w-10 h-10 rounded-full bg-teal-800 flex items-center justify-center text-white text-sm font-semibold shrink-0">
-        {initials}
-      </div>
+      <UserAvatar
+        userName={userData.userName}
+        imageSrc={userData.profilePictureUrl}
+      />
       {/* Name + Date */}
       <div className="flex flex-col">
         <span className="text-sm font-semibold text-gray-900">

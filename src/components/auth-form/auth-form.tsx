@@ -2,7 +2,7 @@
 
 import signInUser from "@/actions/sign-in";
 import signUpUser from "@/actions/sign-up";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { AuthMode } from "@/lib/auth-mode";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -22,6 +22,8 @@ const AVATAR_URLS = [
 export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [state, formAction, isPending] = useActionState(
     mode === AuthMode.SIGN_IN ? signInUser : signUpUser,
@@ -153,7 +155,81 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
 
           {/* Form */}
-          <form className="space-y-5" action={formAction}>
+          <form
+            className="space-y-5"
+            action={formAction}
+            encType="multipart/form-data"
+          >
+            {/* Profile Picture – sign-up only */}
+            {!isSignIn && (
+              <div className="flex flex-col items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  id="profilePicture"
+                  name="profilePicture"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setPreviewUrl((prev) => {
+                        if (prev) URL.revokeObjectURL(prev);
+                        return url;
+                      });
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="Upload profile picture"
+                  className="relative group size-24 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-[#853853] focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800"
+                >
+                  {previewUrl ? (
+                    <>
+                      <img
+                        src={previewUrl}
+                        alt="Profile preview"
+                        className="size-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="size-7 text-white"
+                        >
+                          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                        </svg>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1 text-slate-400 group-hover:text-[#853853] transition-colors">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="size-8"
+                      >
+                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                      </svg>
+                      <span className="text-xs font-semibold">
+                        Upload photo
+                      </span>
+                    </div>
+                  )}
+                </button>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {previewUrl
+                    ? "Click to change photo"
+                    : "Profile picture (required)"}
+                </p>
+                <FormError error={state.fields?.profilePicture?.error} />
+              </div>
+            )}
+
             {/* Username – sign-up only */}
             {!isSignIn && (
               <div className="space-y-1.5">

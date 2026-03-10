@@ -8,6 +8,7 @@ import {
 import { SignUpUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
+import { uploadImage } from "@/lib/cloudinary";
 
 /**
  * Server action to register a new user.
@@ -29,6 +30,7 @@ const signUpUser = async (
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
+    const profilePicture = formData.get("profilePicture") as File;
 
     // Validate form data with Zod
     const validationResult = SignUpUserDataFromBrowserSchema.safeParse({
@@ -36,6 +38,7 @@ const signUpUser = async (
       email,
       password,
       confirmPassword,
+      profilePicture,
     });
 
     const returnValue: SignUpUserReturnType = {
@@ -99,12 +102,15 @@ const signUpUser = async (
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const uploadResult = await uploadImage(profilePicture);
+
     const registeredUserId = await registerNewUser({
       userName,
       email,
       password: hashedPassword,
       registeredAt: new Date(),
       savedReviewesIds: [],
+      profilePictureUrl: uploadResult.secure_url,
     });
 
     const sessionData = await insertUserSession({

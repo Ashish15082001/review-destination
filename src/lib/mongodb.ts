@@ -4,8 +4,8 @@ import {
   CommentDataDocument,
   CommentDataDocumentSchema,
   CommentDataSchema,
-  CommentDataWithCommenterName,
-  CommentDataWithCommenterNameSchema,
+  CommentDataWithCommenterData,
+  CommentDataWithCommenterDataSchema,
 } from "@/schema/comment";
 import {
   LikeData,
@@ -502,7 +502,7 @@ export async function getCommentsDataWithCommenterNameByCommentIds({
   commentIds,
 }: {
   commentIds: string[];
-}): Promise<CommentDataWithCommenterName[]> {
+}): Promise<CommentDataWithCommenterData[]> {
   const collection = await getCommentsCollection();
 
   const commentDataDocuments = await collection
@@ -521,31 +521,35 @@ export async function getCommentsDataWithCommenterNameByCommentIds({
     userIds: commenterIds,
   });
 
-  const commentsDataWithCommenterName: CommentDataWithCommenterName[] =
-    commentDataDocuments.map((commentDataDocument) => ({
-      ...commentDataDocument,
-      _id: commentDataDocument._id.toString(),
-      reviewId: commentDataDocument.reviewId.toString(),
-      commentedBy: commentDataDocument.commentedBy.toString(),
-      idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map((userId) =>
-        userId.toString(),
-      ),
-      idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
-        (userId) => userId.toString(),
-      ),
-      repliesIds:
-        commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
-      parentCommentId: commentDataDocument.parentCommentId
-        ? commentDataDocument.parentCommentId.toString()
-        : null,
-      commenterName:
-        commentersData.find(
-          (userData) =>
-            userData._id === commentDataDocument.commentedBy.toString(),
-        )?.userName ?? "Unknown",
-    }));
+  const commentsDataWithCommenterName: CommentDataWithCommenterData[] =
+    commentDataDocuments.map((commentDataDocument) => {
+      const commenterData = commentersData.find(
+        (userData) =>
+          userData._id === commentDataDocument.commentedBy.toString(),
+      );
 
-  const parseResult = CommentDataWithCommenterNameSchema.array().safeParse(
+      return {
+        ...commentDataDocument,
+        _id: commentDataDocument._id.toString(),
+        reviewId: commentDataDocument.reviewId.toString(),
+        commentedBy: commentDataDocument.commentedBy.toString(),
+        idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map(
+          (userId) => userId.toString(),
+        ),
+        idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
+          (userId) => userId.toString(),
+        ),
+        repliesIds:
+          commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+        parentCommentId: commentDataDocument.parentCommentId
+          ? commentDataDocument.parentCommentId.toString()
+          : null,
+        commenterName: commenterData?.userName ?? "Unknown",
+        profilePictureUrl: commenterData?.profilePictureUrl ?? "",
+      };
+    });
+
+  const parseResult = CommentDataWithCommenterDataSchema.array().safeParse(
     commentsDataWithCommenterName,
   );
 
@@ -613,7 +617,7 @@ export const getCommentsDataWithCommenterNameByReviewId = cache(
     reviewId,
   }: {
     reviewId: string;
-  }): Promise<CommentDataWithCommenterName[]> {
+  }): Promise<CommentDataWithCommenterData[]> {
     "use cache";
 
     cacheTag(`commentsDataWithCommenterName-reviewId-${reviewId}`);
@@ -636,31 +640,35 @@ export const getCommentsDataWithCommenterNameByReviewId = cache(
       userIds: commenterIds,
     });
 
-    const commentsDataWithCommenterName: CommentDataWithCommenterName[] =
-      commentDataDocuments.map((commentDataDocument) => ({
-        ...commentDataDocument,
-        _id: commentDataDocument._id.toString(),
-        reviewId: commentDataDocument.reviewId.toString(),
-        commentedBy: commentDataDocument.commentedBy.toString(),
-        idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map(
-          (userId) => userId.toString(),
-        ),
-        idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
-          (userId) => userId.toString(),
-        ),
-        repliesIds:
-          commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
-        commenterName:
-          commentersData.find(
-            (userData) =>
-              userData._id === commentDataDocument.commentedBy.toString(),
-          )?.userName ?? "Unknown",
-        parentCommentId: commentDataDocument.parentCommentId
-          ? commentDataDocument.parentCommentId.toString()
-          : null,
-      }));
+    const commentsDataWithCommenterName: CommentDataWithCommenterData[] =
+      commentDataDocuments.map((commentDataDocument) => {
+        const commenterData = commentersData.find(
+          (userData) =>
+            userData._id === commentDataDocument.commentedBy.toString(),
+        );
 
-    const parseResult = CommentDataWithCommenterNameSchema.array().safeParse(
+        return {
+          ...commentDataDocument,
+          _id: commentDataDocument._id.toString(),
+          reviewId: commentDataDocument.reviewId.toString(),
+          commentedBy: commentDataDocument.commentedBy.toString(),
+          idsOfUsersWhoLiked: commentDataDocument.idsOfUsersWhoLiked.map(
+            (userId) => userId.toString(),
+          ),
+          idsOfUsersWhoDisliked: commentDataDocument.idsOfUsersWhoDisliked.map(
+            (userId) => userId.toString(),
+          ),
+          repliesIds:
+            commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+          parentCommentId: commentDataDocument.parentCommentId
+            ? commentDataDocument.parentCommentId.toString()
+            : null,
+          commenterName: commenterData?.userName ?? "Unknown",
+          profilePictureUrl: commenterData?.profilePictureUrl ?? "",
+        };
+      });
+
+    const parseResult = CommentDataWithCommenterDataSchema.array().safeParse(
       commentsDataWithCommenterName,
     );
 
