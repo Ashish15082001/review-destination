@@ -6,12 +6,12 @@ import { CommentDataWithCommenterName } from "@/schema/comment";
 import { useEffect, useState } from "react";
 
 export function Comments({
-  isParentComment = false,
+  isRootLevel = false,
   commentIds,
   reviewUserData,
   currentUserData,
 }: {
-  isParentComment?: boolean;
+  isRootLevel?: boolean;
   commentIds: string[];
   reviewUserData: UserData;
   currentUserData: UserData | null;
@@ -46,11 +46,11 @@ export function Comments({
       }
     }
 
-    fetchCommentsData();
+    if (commentIds.length > 0) fetchCommentsData();
   }, [commentIds]);
 
   if (isLoading) {
-    if (isParentComment)
+    if (isRootLevel)
       return (
         <div className="bg-white rounded-2xl shadow-md p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-4">
@@ -71,7 +71,7 @@ export function Comments({
   }
 
   if (commentsDataWithCommenterName.length === 0) {
-    if (isParentComment)
+    if (isRootLevel)
       return (
         <div className="bg-white rounded-2xl shadow-md p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-4">
@@ -92,7 +92,7 @@ export function Comments({
     );
   }
 
-  if (isParentComment)
+  if (isRootLevel)
     return (
       <div className="flex flex-col gap-3 bg-white rounded-2xl shadow-md p-6">
         <h2 className="text-base font-semibold text-gray-900 mb-4">Comments</h2>

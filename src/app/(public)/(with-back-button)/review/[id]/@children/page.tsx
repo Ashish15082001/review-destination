@@ -149,7 +149,7 @@ export default async function ReviewPage({
             </CheckAuth>
 
             <Comments
-              isParentComment={true}
+              isRootLevel={true}
               commentIds={commentsData.map((comment) => comment._id)}
               reviewUserData={reviewUserData}
               currentUserData={currentUserData}
