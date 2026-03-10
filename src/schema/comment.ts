@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 
 export const CommentDataDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
+  parentCommentId: z.instanceof(ObjectId).nullable(),
   reviewId: z.instanceof(ObjectId),
   commentedBy: z.instanceof(ObjectId),
   commentedOn: z.date(),
@@ -20,6 +21,7 @@ export const CommentDataDocumentSchema = z.object({
 
 export const CommentDataSchema = z.object({
   _id: z.string(),
+  parentCommentId: z.string().nullable(),
   reviewId: z.string(),
   commentedBy: z.string(),
   commentedOn: z.date(),

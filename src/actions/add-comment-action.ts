@@ -82,6 +82,14 @@ const addCommentAction = async (
 
     const validatedCommentData = validationResult.data;
 
+    if ((parentCommentId && parentCommentId !== "") || !parentCommentId) {
+      returnValue.type = "error";
+      returnValue.message =
+        "Invalid parent comment. Please refresh the page and try again.";
+
+      return returnValue;
+    }
+
     const insertedCommentId = await insertCommentData({
       reviewId: validatedCommentData.reviewId,
       commentedBy: userData._id,
@@ -90,6 +98,7 @@ const addCommentAction = async (
       repliesIds: [],
       idsOfUsersWhoLiked: [],
       idsOfUsersWhoDisliked: [],
+      parentCommentId,
     });
 
     await addReplyToComment({

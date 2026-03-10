@@ -10,11 +10,13 @@ export function Comments({
   commentIds,
   reviewUserData,
   currentUserData,
+  parentCommentData,
 }: {
   isRootLevel?: boolean;
   commentIds: string[];
   reviewUserData: UserData;
-  currentUserData: UserData | null;
+  currentUserData?: UserData;
+  parentCommentData?: CommentDataWithCommenterName;
 }) {
   const [commentsDataWithCommenterName, setCommentsDataWithCommenterName] =
     useState<CommentDataWithCommenterName[]>([]);
@@ -23,6 +25,7 @@ export function Comments({
   useEffect(() => {
     async function fetchCommentsData() {
       try {
+        setIsLoading(true);
         const response = await fetch(
           `/api/comments-with-commenter-name-by-commentIds?${commentIds
             .map((id) => `commentIds=${id}`)
@@ -102,6 +105,7 @@ export function Comments({
             commentData={commentDataWithCommenterName}
             reviewUserData={reviewUserData}
             currentUserData={currentUserData}
+            parentCommentData={parentCommentData}
           />
         ))}
       </div>
@@ -115,6 +119,7 @@ export function Comments({
           commentData={commentDataWithCommenterName}
           reviewUserData={reviewUserData}
           currentUserData={currentUserData}
+          parentCommentData={parentCommentData}
         />
       ))}
     </div>

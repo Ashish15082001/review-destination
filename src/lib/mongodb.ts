@@ -435,6 +435,9 @@ export async function insertCommentData(
       (userId) => new ObjectId(userId),
     ),
     repliesIds: commentData.repliesIds?.map((id) => new ObjectId(id)) || [],
+    parentCommentId: commentData.parentCommentId
+      ? new ObjectId(commentData.parentCommentId)
+      : null,
   };
 
   const parseResult = CommentDataDocumentSchema.safeParse(commentDataDocument);
@@ -479,6 +482,9 @@ export async function getCommentData({
     ),
     repliesIds:
       commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+    parentCommentId: commentDataDocument.parentCommentId
+      ? commentDataDocument.parentCommentId.toString()
+      : null,
   };
 
   const parseResult = CommentDataSchema.safeParse(commentData);
@@ -529,6 +535,9 @@ export async function getCommentsDataWithCommenterNameByCommentIds({
       ),
       repliesIds:
         commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+      parentCommentId: commentDataDocument.parentCommentId
+        ? commentDataDocument.parentCommentId.toString()
+        : null,
       commenterName:
         commentersData.find(
           (userData) =>
@@ -582,6 +591,9 @@ export const getCommentsDataByReviewId = cache(async function ({
       ),
       repliesIds:
         commentDataDocument.repliesIds?.map((id) => id.toString()) || [],
+      parentCommentId: commentDataDocument.parentCommentId
+        ? commentDataDocument.parentCommentId.toString()
+        : null,
     }),
   );
 
@@ -643,6 +655,9 @@ export const getCommentsDataWithCommenterNameByReviewId = cache(
             (userData) =>
               userData._id === commentDataDocument.commentedBy.toString(),
           )?.userName ?? "Unknown",
+        parentCommentId: commentDataDocument.parentCommentId
+          ? commentDataDocument.parentCommentId.toString()
+          : null,
       }));
 
     const parseResult = CommentDataWithCommenterNameSchema.array().safeParse(
@@ -684,6 +699,9 @@ export async function getCommentRepliesData({
     idsOfUsersWhoLiked: doc.idsOfUsersWhoLiked.map((id) => id.toString()),
     idsOfUsersWhoDisliked: doc.idsOfUsersWhoDisliked.map((id) => id.toString()),
     repliesIds: doc.repliesIds?.map((id) => id.toString()) || [],
+    parentCommentId: doc.parentCommentId
+      ? doc.parentCommentId.toString()
+      : null,
   }));
 
   const parseResult = CommentDataSchema.array().safeParse(replies);

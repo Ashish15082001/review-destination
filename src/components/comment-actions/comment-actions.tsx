@@ -6,7 +6,7 @@ import { UserData } from "@/schema/user";
 
 interface CommentActionsProps {
   commentData: CommentData;
-  currentUserData: UserData | null;
+  currentUserData?: UserData;
 }
 
 export function CommentActions({

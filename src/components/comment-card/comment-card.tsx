@@ -9,8 +9,9 @@ import { Comments } from "../comments/comments";
 
 interface CommentCardProps {
   commentData: CommentDataWithCommenterName;
+  parentCommentData?: CommentDataWithCommenterName;
   reviewUserData: UserData;
-  currentUserData: UserData | null;
+  currentUserData?: UserData;
 }
 
 function getRelativeTime(date: Date): string {
@@ -38,6 +39,7 @@ function getRelativeTime(date: Date): string {
 
 export function CommentCard({
   commentData,
+  parentCommentData,
   reviewUserData,
   currentUserData,
 }: CommentCardProps) {
@@ -79,6 +81,12 @@ export function CommentCard({
 
           {/* comment */}
           <p className={`text-sm text-gray-600 leading-relaxed `}>
+            {commentData.parentCommentId && parentCommentData && (
+              <span className="text-xs text-gray-400 mr-2 color-gray-400">
+                Replying to {parentCommentData.commenterName}
+              </span>
+            )}
+
             {commentData.comment}
           </p>
 
@@ -114,6 +122,7 @@ export function CommentCard({
             commentIds={commentData.repliesIds}
             reviewUserData={reviewUserData}
             currentUserData={currentUserData}
+            parentCommentData={commentData}
           />
         )}
       </div>
