@@ -20,7 +20,7 @@ export function Comments({
 }) {
   const [commentsDataWithCommenterName, setCommentsDataWithCommenterName] =
     useState<CommentDataWithCommenterData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(commentIds.length > 0);
 
   useEffect(() => {
     async function fetchCommentsData() {
