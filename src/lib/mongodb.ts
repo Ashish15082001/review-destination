@@ -25,7 +25,7 @@ import {
   UserDataDocumentSchema,
   UserDataSchema,
 } from "@/schema/user";
-import { MongoClient, Db, ObjectId, Collection } from "mongodb";
+import { MongoClient, Db, ObjectId, Collection, Document } from "mongodb";
 import { cookies } from "next/headers";
 import {
   UserSessionData,
@@ -558,6 +558,8 @@ export async function getCommentsDataWithCommenterNameByCommentIds({
       `Invalid comment data from DB: ${parseResult.error.message}`,
     );
   }
+
+  console.log("Fetched comments data with commenter name:", parseResult.data);
 
   return parseResult.data;
 }
@@ -1171,4 +1173,26 @@ export async function deleteUserSession(_id: string): Promise<boolean> {
     _id: new ObjectId(_id),
   });
   return result.deletedCount > 0;
+}
+
+// ############################################
+// ###################### userScrapedData related functions ######################
+// ############################################
+
+export async function getUserScrapedDataCollection(): Promise<
+  Collection<Document>
+> {
+  const db = await getDatabase();
+  return db.collection("userScrapedData");
+}
+
+export async function storeUserScrapedData(data: unknown): Promise<string> {
+  const collection = await getUserScrapedDataCollection();
+  const document = {
+    _id: new ObjectId(),
+    data,
+    createdAt: new Date(),
+  };
+  await collection.insertOne(document);
+  return document._id.toString();
 }
