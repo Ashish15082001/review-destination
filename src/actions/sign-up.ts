@@ -1,14 +1,11 @@
 "use server";
 
-import {
-  getUserDataByEmail,
-  insertUserSession,
-  registerNewUser,
-} from "@/lib/mongodb";
 import { SignUpUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import { uploadImage } from "@/lib/cloudinary";
+import { getUserDataByEmail, registerNewUser } from "@/repository/user";
+import { insertUserSession } from "@/repository/userSession";
 
 /**
  * Server action to register a new user.

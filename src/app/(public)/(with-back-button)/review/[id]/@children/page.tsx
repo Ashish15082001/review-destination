@@ -1,16 +1,16 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
-  getCommentsDataByReviewId,
-  getReviewData,
   getUserDataByUserId,
   getUserDataUsingSession,
-} from "@/lib/mongodb";
+} from "@/repository/user";
 import { ReviewStats } from "@/components/review-stats/review-stats";
 import { Comments } from "@/components/comments/comments";
 import { CommentForm } from "@/components/comment-form/comment-form";
 import CheckAuth from "@/components/check-auth/check-auth";
 import { UserAvatar } from "@/components/user-avatar/user-avatar";
+import { getReviewData } from "@/repository/review";
+import { getCommentsDataByReviewId } from "@/repository/comment";
 
 export default async function ReviewPage({
   params,

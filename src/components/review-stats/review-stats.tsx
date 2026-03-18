@@ -1,9 +1,7 @@
-import {
-  getLikesDataByReviewId,
-  getCommentsDataByReviewId,
-  getUserDataUsingSession,
-} from "@/lib/mongodb";
+import { getLikesDataByReviewId } from "@/repository/like";
 import { ReviewLikeButton } from "../review-like-button/review-like-button";
+import { getCommentsDataByReviewId } from "@/repository/comment";
+import { getUserDataUsingSession } from "@/repository/user";
 
 export async function ReviewStats({ reviewId }: { reviewId: string }) {
   const [likesData, commentsData, userData] = await Promise.all([

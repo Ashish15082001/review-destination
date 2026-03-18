@@ -3,7 +3,7 @@
  *
  * Steps:
  *  1. Set `parentCommentId = null` for every comment that is missing the field.
- *  2. For each comment that has entries in `repliesIds`, set the `parentCommentId`
+ *  2. For each comment that has entries in `replyCommentIds`, set the `parentCommentId`
  *     of each referenced reply to the current comment's `_id`.
  *
  * Usage (from project root):
@@ -36,20 +36,20 @@ async function main() {
 
   // Step 2: for every parent comment with replies, stamp the correct parentCommentId
   console.log(
-    "Step 2: stamping parentCommentId on reply comments via repliesIds...",
+    "Step 2: stamping parentCommentId on reply comments via replyCommentIds...",
   );
 
   const parents = await collection
     .find(
-      { repliesIds: { $exists: true, $not: { $size: 0 } } },
-      { projection: { _id: 1, repliesIds: 1 } },
+      { replyCommentIds: { $exists: true, $not: { $size: 0 } } },
+      { projection: { _id: 1, replyCommentIds: 1 } },
     )
     .toArray();
 
   let totalUpdated = 0;
 
   for (const parent of parents) {
-    const replyIds: ObjectId[] = parent.repliesIds ?? [];
+    const replyIds: ObjectId[] = parent.replyCommentIds ?? [];
     if (replyIds.length === 0) continue;
 
     const res = await collection.updateMany(

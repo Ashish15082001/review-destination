@@ -1,13 +1,12 @@
-import {
-  getUserDataUsingSession,
-  getUserStats,
-  getReviewsByIds,
-  getReviewsDataByUserId,
-} from "@/lib/mongodb";
 import Link from "next/link";
 import { ReviewCard } from "@/components/review-card/review-card";
 import { Suspense } from "react";
 import { ReviewCardSkeleton } from "@/components/review-card/review-card-skeleton";
+import { getUserDataUsingSession, getUserStats } from "@/repository/user";
+import {
+  getReviewsDataByIds,
+  getReviewsDataByUserId,
+} from "@/repository/review";
 
 type PageProps = {
   searchParams: Promise<{ tab?: string }>;
@@ -31,7 +30,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
 
   const reviews =
     activeTab === "saved"
-      ? await getReviewsByIds(userData.savedReviewesIds)
+      ? await getReviewsDataByIds(userData.savedReviewesIds)
       : await getReviewsDataByUserId(userData._id);
 
   // Get initials from userName

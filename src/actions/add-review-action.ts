@@ -1,7 +1,8 @@
 "use server";
 
 import { uploadImage } from "@/lib/cloudinary";
-import { getUserDataUsingSession, insertReviewData } from "@/lib/mongodb";
+import { insertReviewData } from "@/repository/review";
+import { getUserDataUsingSession } from "@/repository/user";
 import { ReviewDataBrowserSchema } from "@/schema/review";
 /**
  * Server action to add a new destination review.

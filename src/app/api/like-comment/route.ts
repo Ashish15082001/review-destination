@@ -1,8 +1,5 @@
-import {
-  addLikeToComment,
-  removeLikeFromComment,
-  getUserDataUsingSession,
-} from "@/lib/mongodb";
+import { addLikeToComment, removeLikeFromComment } from "@/repository/comment";
+import { getUserDataUsingSession } from "@/repository/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

@@ -1,8 +1,5 @@
-import {
-  deleteLikeData,
-  getUserDataUsingSession,
-  insertLikeData,
-} from "@/lib/mongodb";
+import { deleteLikeData, insertLikeData } from "@/repository/like";
+import { getUserDataUsingSession } from "@/repository/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

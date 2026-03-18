@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "migrate:comments:rename-repliesIds": "ts-node --project tsconfig.scripts.json scripts/rename-repliesIds-migration.ts",
     "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts",
     "seed:dummy": "ts-node --project tsconfig.scripts.json scripts/seed-dummy.ts",
     "seed:large": "ts-node --project tsconfig.scripts.json scripts/seed-large.ts"

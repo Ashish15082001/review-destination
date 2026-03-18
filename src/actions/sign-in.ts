@@ -1,9 +1,10 @@
 "use server";
 
-import { getUserDataByEmail, insertUserSession } from "@/lib/mongodb";
 import { SignInUserDataFromBrowserSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
+import { getUserDataByEmail } from "@/repository/user";
+import { insertUserSession } from "@/repository/userSession";
 
 /**
  * Server action to sign in an existing user.
@@ -80,7 +81,7 @@ const signInUser = async (
 
     sessionCookie.set("sessionId", sessionData.toString(), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });

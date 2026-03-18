@@ -1,4 +1,4 @@
-import { getCommentRepliesData } from "@/lib/mongodb";
+import { getCommentRepliesData } from "@/repository/comment";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

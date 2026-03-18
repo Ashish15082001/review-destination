@@ -5,7 +5,7 @@
  * For each top-level comment (parentCommentId === null):
  *   1. Pick 1–5 random existing users as repliers.
  *   2. Insert a new reply comment document for each replier.
- *   3. Push the new reply's _id into the parent comment's `repliesIds` array.
+ *   3. Push the new reply's _id into the parent comment's `replyCommentIds` array.
  *
  * Usage (from project root):
  *   npx ts-node --project tsconfig.scripts.json scripts/seed-comment-replies.ts
@@ -155,7 +155,7 @@ async function main() {
         commentedBy: userId,
         commentedOn: getRandomDate(parentDate),
         comment: pickRandomText(),
-        repliesIds: [] as ObjectId[],
+        replyCommentIds: [] as ObjectId[],
         idsOfUsersWhoLiked: [] as ObjectId[],
         idsOfUsersWhoDisliked: [] as ObjectId[],
       }));
@@ -163,12 +163,12 @@ async function main() {
       // Insert replies
       await commentsCol.insertMany(replyDocs);
 
-      // Push reply IDs into parent's repliesIds
+      // Push reply IDs into parent's replyCommentIds
       const replyIds = replyDocs.map((r) => r._id);
       await commentsCol.updateOne(
         { _id: parentComment._id },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        { $push: { repliesIds: { $each: replyIds } } } as any,
+        { $push: { replyCommentIds: { $each: replyIds } } } as any,
       );
 
       totalRepliesInserted += replyDocs.length;

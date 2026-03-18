@@ -15,26 +15,25 @@ interface CommentCardProps {
 }
 
 function getRelativeTime(date: Date): string {
-  // const now = new Date();
-  // const diffMs = now.getTime() - date.getTime();
-  // const diffSecs = Math.floor(diffMs / 1000);
-  // const diffMins = Math.floor(diffSecs / 60);
-  // const diffHours = Math.floor(diffMins / 60);
-  // const diffDays = Math.floor(diffHours / 24);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
-  // if (diffSecs < 60) return "Just now";
-  // if (diffMins < 60)
-  //   return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
-  // if (diffHours < 24)
-  //   return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
-  // if (diffDays === 1) return "Yesterday";
-  // if (diffDays < 7) return `${diffDays} days ago`;
-  // return date.toLocaleDateString("en-US", {
-  //   month: "short",
-  //   day: "numeric",
-  //   year: "numeric",
-  // });
-  return "";
+  if (diffSecs < 60) return "Just now";
+  if (diffMins < 60)
+    return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
+  if (diffHours < 24)
+    return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export function CommentCard({
@@ -44,7 +43,7 @@ export function CommentCard({
   currentUserData,
 }: CommentCardProps) {
   const [isCommentRepliesVisible, setIsCommentRepliesVisible] = useState(false);
-  const relativeTime = getRelativeTime(commentData.commentedOn);
+  const relativeTime = getRelativeTime(new Date(commentData.commentedOn));
 
   // generate a consistent color from the name
   const colors = [
@@ -90,12 +89,11 @@ export function CommentCard({
                 Replying to {parentCommentData.commenterName}
               </span>
             )}
-
             {commentData.comment}
           </p>
 
           {/* total replies */}
-          {commentData.repliesIds.length > 0 && (
+          {commentData.replyCommentIds.length > 0 && (
             <div className="mt-2 text-xs text-gray-400">
               <button
                 className="hover:underline cursor-pointer"
@@ -104,9 +102,9 @@ export function CommentCard({
                   handleToggleCommentRespliesVisibility();
                 }}
               >
-                {commentData.repliesIds.length === 1
+                {commentData.replyCommentIds.length === 1
                   ? "1 person replied"
-                  : `${commentData.repliesIds.length} people replied`}
+                  : `${commentData.replyCommentIds.length} people replied`}
               </button>
             </div>
           )}
@@ -121,9 +119,9 @@ export function CommentCard({
 
       <div className=" ml-4">
         {/* Replies */}
-        {commentData.repliesIds.length > 0 && isCommentRepliesVisible && (
+        {commentData.replyCommentIds.length > 0 && isCommentRepliesVisible && (
           <Comments
-            commentIds={commentData.repliesIds}
+            commentIds={commentData.replyCommentIds}
             reviewUserData={reviewUserData}
             currentUserData={currentUserData}
             parentCommentData={commentData}

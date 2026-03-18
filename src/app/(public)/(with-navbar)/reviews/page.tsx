@@ -1,6 +1,6 @@
-import { getReviewsData, getReviewsCount } from "@/lib/mongodb";
 import { Reviews } from "@/components/reviews/reviews";
 import { ReviewCard } from "@/components/review-card/review-card";
+import { getReviewsCount, getReviewsData } from "@/repository/review";
 
 export const metadata = {
   title: "Travel Reviews - Share Your Experiences",

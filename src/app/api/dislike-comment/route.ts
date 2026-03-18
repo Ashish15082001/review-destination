@@ -1,8 +1,8 @@
 import {
   addDislikeToComment,
   removeDislikeFromComment,
-  getUserDataUsingSession,
-} from "@/lib/mongodb";
+} from "@/repository/comment";
+import { getUserDataUsingSession } from "@/repository/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

@@ -1,4 +1,4 @@
-import { getUserDataByUserId } from "@/lib/mongodb";
+import { getUserDataByUserId } from "@/repository/user";
 import { UserAvatar } from "../user-avatar/user-avatar";
 
 export async function UserInfo({

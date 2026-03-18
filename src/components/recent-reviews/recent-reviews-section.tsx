@@ -2,14 +2,17 @@ import { Suspense } from "react";
 import { Link } from "react-transition-progress/next";
 import { ReviewCard } from "@/components/review-card/review-card";
 import { ReviewCardSkeleton } from "@/components/review-card/review-card-skeleton";
-import { getMostRecentReviews } from "@/lib/mongodb";
+import { getMostRecentReviews } from "@/repository/review";
 
 async function ReviewList() {
-  const reviews = await getMostRecentReviews();
+  const mostRecentReviewsData = await getMostRecentReviews();
   return (
     <>
-      {reviews.map((review) => (
-        <ReviewCard key={review._id} reviewData={review} />
+      {mostRecentReviewsData.map((mostRecentReviewData) => (
+        <ReviewCard
+          key={mostRecentReviewData._id}
+          reviewData={mostRecentReviewData}
+        />
       ))}
     </>
   );

@@ -1,10 +1,7 @@
 "use server";
 
-import {
-  addReplyToComment,
-  getUserDataUsingSession,
-  insertCommentData,
-} from "@/lib/mongodb";
+import { addReplyToComment, insertCommentData } from "@/repository/comment";
+import { getUserDataUsingSession } from "@/repository/user";
 import z from "zod";
 
 const CommentFormSchema = z.object({
@@ -82,20 +79,12 @@ const addCommentAction = async (
 
     const validatedCommentData = validationResult.data;
 
-    if ((parentCommentId && parentCommentId !== "") || !parentCommentId) {
-      returnValue.type = "error";
-      returnValue.message =
-        "Invalid parent comment. Please refresh the page and try again.";
-
-      return returnValue;
-    }
-
     const insertedCommentId = await insertCommentData({
       reviewId: validatedCommentData.reviewId,
       commentedBy: userData._id,
       commentedOn: new Date(),
       comment: validatedCommentData.comment,
-      repliesIds: [],
+      replyCommentIds: [],
       idsOfUsersWhoLiked: [],
       idsOfUsersWhoDisliked: [],
       parentCommentId,
@@ -104,7 +93,6 @@ const addCommentAction = async (
     await addReplyToComment({
       parentCommentId,
       replyCommentId: insertedCommentId,
-      reviewId,
     });
 
     return {

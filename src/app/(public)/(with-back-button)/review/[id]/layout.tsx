@@ -1,5 +1,3 @@
-import { getReviewData } from "@/lib/mongodb";
-
 // export const generateMetadata = async ({
 //   params,
 // }: PageProps<"/review/[id]">) => {

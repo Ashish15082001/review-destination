@@ -1,4 +1,4 @@
-import { getReviewsData, getReviewsCount } from "@/lib/mongodb";
+import { getReviewsCount, getReviewsData } from "@/repository/review";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

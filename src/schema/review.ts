@@ -1,7 +1,9 @@
 import z from "zod";
 import { ObjectId } from "mongodb";
 
-// Base schema with common fields
+/**
+ * Common review fields shared by browser and database schemas.
+ */
 const BaseReviewSchema = z.object({
   destinationName: z.string().min(1, "Destination name is required"),
   whenVisited: z.string().min(1, "Visit date is required"),
@@ -9,9 +11,11 @@ const BaseReviewSchema = z.object({
   experience: z.string().min(1, "Experience is required"),
 });
 
-// Schema for form data (with File) recieved from browser
+/**
+ * Browser payload schema for review form submissions.
+ */
 export const ReviewDataBrowserSchema = BaseReviewSchema.extend({
-  // photos uploaded by the user
+  // Photos uploaded by the user.
   destinationPhotos: z
     .array(
       z
@@ -23,7 +27,9 @@ export const ReviewDataBrowserSchema = BaseReviewSchema.extend({
     .min(1, "Please upload at least one image"),
 });
 
-// Schema for review data stored in database
+/**
+ * MongoDB representation of a review document.
+ */
 export const ReviewDataDocumentSchema = BaseReviewSchema.extend({
   _id: z.instanceof(ObjectId),
   userId: z.instanceof(ObjectId),
@@ -31,18 +37,25 @@ export const ReviewDataDocumentSchema = BaseReviewSchema.extend({
   datePosted: z.date(),
 });
 
-// Schema for review data used in app
+/**
+ * Application-level representation of review data.
+ */
 export const ReviewDataSchema = ReviewDataDocumentSchema.extend({
   _id: z.string(),
   userId: z.string(),
 });
 
-export interface ReviewDataBrowser extends z.infer<
-  typeof ReviewDataBrowserSchema
-> {}
+/**
+ * Inferred TypeScript type for browser review payload.
+ */
+export type ReviewDataBrowser = z.infer<typeof ReviewDataBrowserSchema>;
 
-export interface ReviewDataDocument extends z.infer<
-  typeof ReviewDataDocumentSchema
-> {}
+/**
+ * Inferred TypeScript type for MongoDB review documents.
+ */
+export type ReviewDataDocument = z.infer<typeof ReviewDataDocumentSchema>;
 
-export interface ReviewData extends z.infer<typeof ReviewDataSchema> {}
+/**
+ * Inferred TypeScript type for application-level reviews.
+ */
+export type ReviewData = z.infer<typeof ReviewDataSchema>;

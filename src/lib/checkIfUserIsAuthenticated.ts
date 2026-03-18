@@ -1,5 +1,5 @@
+import { getUserSessionData } from "@/repository/userSession";
 import { cookies } from "next/headers";
-import { getUserSessionDataFromMongoDB } from "./mongodb";
 
 export async function checkIfUserIsAuthenticated() {
   const sessionCookie = await cookies();
@@ -7,7 +7,7 @@ export async function checkIfUserIsAuthenticated() {
 
   if (!sessionId) return false;
 
-  const sessionData = await getUserSessionDataFromMongoDB(sessionId);
+  const sessionData = await getUserSessionData(sessionId);
 
   if (!sessionData) return false;
 
