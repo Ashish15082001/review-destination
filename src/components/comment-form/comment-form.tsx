@@ -109,6 +109,11 @@ export function CommentForm({ reviewId, parentCommentId }: CommentFormProps) {
             Comment posted successfully!
           </p>
         )}
+
+        {/* error message */}
+        {state.type === "error" && state.message && (
+          <p className="mt-2 text-xs text-red-600">{state.message}</p>
+        )}
       </form>
     </div>
   );

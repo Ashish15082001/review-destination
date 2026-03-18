@@ -155,11 +155,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
 
           {/* Form */}
-          <form
-            className="space-y-5"
-            action={formAction}
-            encType="multipart/form-data"
-          >
+          <form className="space-y-5" action={formAction}>
             {/* Profile Picture – sign-up only */}
             {!isSignIn && (
               <div className="flex flex-col items-center gap-2">
