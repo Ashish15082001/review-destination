@@ -4,11 +4,11 @@ import signInUser from "@/actions/sign-in";
 import signUpUser from "@/actions/sign-up";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { AuthMode } from "@/lib/auth-mode";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import FormError from "../validation-message/field-error";
 import FormMessage from "../validation-message/form-message";
 import RotatingText from "../RotatingText";
+import Link from "next/link";
 
 const HERO_IMAGE_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBcWYScyAD8p7n2j-QA5BDProOkVx_o6_dPuKCtHr_hiMvrj_lORu8NfvMDcRsUesHo7oRCs_je75AUzF7uq219XuUq97SlRrCNuUGUpGJCd5aJ6sUT0G7wVqydxdKK-9hH9UP-TABwffICNE9CL6PFIP37olzAsJkkY8A4eQ_jqyt2SDouy3RlvdM2YrHUjtdWbsJlgQ1Id9n_-kaKYyZb24k0jtUagHrgZta-kv7XDsVD2HtNN7paHDBzu4TSb0rXg61J1eG1UO0t";
@@ -30,11 +30,19 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     {},
   );
 
+  const isSignIn = mode === AuthMode.SIGN_IN;
+
   useEffect(() => {
     if (state.type === "success") redirect("/");
   }, [state.type]);
 
-  const isSignIn = mode === AuthMode.SIGN_IN;
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
     <div className="flex min-h-screen font-[family-name:var(--font-geist-sans)]">
@@ -155,7 +163,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
 
           {/* Form */}
-          <form className="space-y-5" action={formAction}>
+          <form className="space-y-5" action={formAction} key={mode}>
             {/* Profile Picture – sign-up only */}
             {!isSignIn && (
               <div className="flex flex-col items-center gap-2">
@@ -454,7 +462,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 New here?{" "}
                 <Link
                   href="/auth?mode=sign-up"
-                  className="text-[#853853] font-bold hover:underline"
+                  className="text-[#853853] font-bold hover:underline cursor-pointer"
                 >
                   Create an account
                 </Link>
@@ -464,7 +472,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 Already have an account?{" "}
                 <Link
                   href="/auth?mode=sign-in"
-                  className="text-[#853853] font-bold hover:underline"
+                  className="text-[#853853] font-bold hover:underline cursor-pointer"
                 >
                   Log in
                 </Link>

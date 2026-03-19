@@ -12,7 +12,5 @@ export default async function AuthPage({ searchParams }: PageProps<"/auth">) {
       ? (modeParam as AuthMode)
       : AuthMode.SIGN_IN;
 
-  console.log(authMode);
-
-  return <AuthForm mode={authMode} />;
+  return <AuthForm mode={authMode} key={authMode} />;
 }
