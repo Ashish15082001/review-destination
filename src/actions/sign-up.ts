@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import { uploadImage } from "@/lib/cloudinary";
 import { getUserDataByEmail, registerNewUser } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
+import Mailchecker from "mailchecker";
 
 /**
  * Server action to register a new user.
@@ -63,6 +64,18 @@ const signUpUser = async (
         confirmPassword: {
           ...returnValue.fields?.confirmPassword,
           error: "Passwords do not match",
+        },
+      };
+      return returnValue;
+    }
+
+    if (!Mailchecker.isValid(email)) {
+      returnValue.type = "error";
+      returnValue.fields = {
+        ...returnValue.fields,
+        email: {
+          ...returnValue.fields?.email,
+          error: "Invalid email address",
         },
       };
       return returnValue;

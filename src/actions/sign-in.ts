@@ -68,7 +68,7 @@ const signInUser = async (
 
     if (!passwordMatch) {
       returnValue.type = "error";
-      returnValue.message = "Incorrect password.";
+      returnValue.message = "Incorrect Credentials.";
       return returnValue;
     }
 

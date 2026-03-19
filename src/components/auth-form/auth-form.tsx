@@ -9,6 +9,7 @@ import FormError from "../validation-message/field-error";
 import FormMessage from "../validation-message/form-message";
 import RotatingText from "../RotatingText";
 import Link from "next/link";
+import { passwordStrength } from "check-password-strength";
 
 const HERO_IMAGE_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBcWYScyAD8p7n2j-QA5BDProOkVx_o6_dPuKCtHr_hiMvrj_lORu8NfvMDcRsUesHo7oRCs_je75AUzF7uq219XuUq97SlRrCNuUGUpGJCd5aJ6sUT0G7wVqydxdKK-9hH9UP-TABwffICNE9CL6PFIP37olzAsJkkY8A4eQ_jqyt2SDouy3RlvdM2YrHUjtdWbsJlgQ1Id9n_-kaKYyZb24k0jtUagHrgZta-kv7XDsVD2HtNN7paHDBzu4TSb0rXg61J1eG1UO0t";
@@ -22,6 +23,7 @@ const AVATAR_URLS = [
 export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -151,7 +153,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
 
           {/* Heading */}
-          <div className="space-y-2">
+          <div className="space-y-2 flex items-center flex-col">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
               {isSignIn ? "Login to Your Account" : "Create an Account"}
             </h2>
@@ -189,7 +191,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   aria-label="Upload profile picture"
-                  className="relative group size-24 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-[#853853] focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800"
+                  className=" cursor-pointer relative group size-24 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-[#853853] focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800"
                 >
                   {previewUrl ? (
                     <>
@@ -306,85 +308,50 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
               <FormError error={state.fields?.email?.error} />
             </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                >
-                  Password
-                </label>
-                {isSignIn && (
-                  <a
-                    href="#"
-                    className="text-sm font-semibold text-[#853853] hover:text-[#612D53] transition-colors"
-                  >
-                    Forgot Password?
-                  </a>
-                )}
-              </div>
-              <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="size-5"
-                  >
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-                  </svg>
-                </span>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  defaultValue={
-                    state.fields?.password
-                      ? (state.fields.password.value as string)
-                      : ""
-                  }
-                  placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-5"
-                    >
-                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-5"
-                    >
-                      <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              <FormError error={state.fields?.password?.error} />
-            </div>
-
-            {/* Confirm Password – sign-up only */}
-            {!isSignIn && (
+            <div
+              className={
+                isSignIn
+                  ? "space-y-5"
+                  : "grid gap-5 md:grid-cols-2 md:items-start"
+              }
+            >
+              {/* Password */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                >
-                  Confirm Password
-                </label>
+                <div className="flex justify-between items-center">
+                  <div className="flex flex-row items-center gap-2">
+                    <label
+                      htmlFor="password"
+                      className="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                    >
+                      Password
+                    </label>
+                    {/* password strength indicator can be added here */}
+
+                    {password && !isSignIn && (
+                      <span
+                        className={`text-xs font-medium ${
+                          passwordStrength(password).id === 0
+                            ? "text-red-500"
+                            : passwordStrength(password).id === 1
+                              ? "text-orange-500"
+                              : passwordStrength(password).id === 2
+                                ? "text-yellow-500"
+                                : "text-green-500"
+                        }`}
+                      >
+                        {`(${passwordStrength(password).value})`}
+                      </span>
+                    )}
+                  </div>
+                  {isSignIn && (
+                    <a
+                      href="#"
+                      className="text-sm font-semibold text-[#853853] hover:text-[#612D53] transition-colors"
+                    >
+                      Forgot Password?
+                    </a>
+                  )}
+                </div>
                 <div className="relative group">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
                     <svg
@@ -397,18 +364,25 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     </svg>
                   </span>
                   <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    defaultValue={
+                      state.fields?.password
+                        ? (state.fields.password.value as string)
+                        : ""
+                    }
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    onClick={() => setShowPassword((v) => !v)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   >
-                    {showConfirmPassword ? (
+                    {showPassword ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -429,9 +403,66 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     )}
                   </button>
                 </div>
-                <FormError error={state.fields?.confirmPassword?.error} />
+                <FormError error={state.fields?.password?.error} />
               </div>
-            )}
+
+              {/* Confirm Password – sign-up only */}
+              {!isSignIn && (
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                  >
+                    Confirm Password
+                  </label>
+                  <div className="relative group">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#853853] transition-colors pointer-events-none">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="size-5"
+                      >
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+                      </svg>
+                    </span>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#853853]/30 focus:border-[#853853] transition-all placeholder:text-slate-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((v) => !v)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="size-5"
+                        >
+                          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="size-5"
+                        >
+                          <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                  <FormError error={state.fields?.confirmPassword?.error} />
+                </div>
+              )}
+            </div>
 
             {/* Global message */}
             <FormMessage
