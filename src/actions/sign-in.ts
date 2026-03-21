@@ -1,6 +1,6 @@
 "use server";
 
-import { SignInUserDataFromBrowserSchema } from "@/schema/user";
+import { UserSignInData, UserSignInDataSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import { getUserDataByEmail } from "@/repository/user";
@@ -27,8 +27,7 @@ const signInUser = async (
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    // Validate form data with Zod
-    const validationResult = SignInUserDataFromBrowserSchema.safeParse({
+    const validationResult = UserSignInDataSchema.safeParse({
       email,
       password,
     });
@@ -59,11 +58,8 @@ const signInUser = async (
       return returnValue;
     }
 
-    const userData = await getUserDataByEmail({ email });
-    const passwordMatch = await bcrypt.compare(
-      password,
-      userData?.password || BCRYPT_DUMMY_HASH, // if userData is null, compare with dummy hash to prevent timing attacks
-    );
+    const userSignInData: UserSignInData = validationResult.data;
+    const userData = await getUserDataByEmail({ email: userSignInData.email });
 
     if (!userData) {
       returnValue.type = "error";
@@ -71,7 +67,17 @@ const signInUser = async (
       return returnValue;
     }
 
-    if (!passwordMatch) {
+    // Hash the provided password with the stored salt and compare to the stored hash.
+    const hashedPassword = await bcrypt.hash(
+      userSignInData.password,
+      userData.passwordSalt,
+    );
+    const doesPasswordMatch = await bcrypt.compare(
+      hashedPassword,
+      userData.password,
+    );
+
+    if (!doesPasswordMatch) {
       returnValue.type = "error";
       returnValue.message = "Invalid Credentials.";
       return returnValue;
@@ -86,8 +92,8 @@ const signInUser = async (
 
     sessionCookie.set("sessionId", sessionData.toString(), {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
 

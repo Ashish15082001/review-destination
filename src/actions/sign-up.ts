@@ -1,6 +1,6 @@
 "use server";
 
-import { SignUpUserDataFromBrowserSchema } from "@/schema/user";
+import { UserSignUpData, UserSignUpDataSchema } from "@/schema/user";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import { uploadImage } from "@/lib/cloudinary";
@@ -30,8 +30,7 @@ const signUpUser = async (
     const confirmPassword = formData.get("confirmPassword") as string;
     const profilePicture = formData.get("profilePicture") as File;
 
-    // Validate form data with Zod
-    const validationResult = SignUpUserDataFromBrowserSchema.safeParse({
+    const validationResult = UserSignUpDataSchema.safeParse({
       userName,
       email,
       password,
@@ -57,30 +56,6 @@ const signUpUser = async (
       },
     };
 
-    if (password !== confirmPassword) {
-      returnValue.type = "error";
-      returnValue.fields = {
-        ...returnValue.fields,
-        confirmPassword: {
-          ...returnValue.fields?.confirmPassword,
-          error: "Passwords do not match",
-        },
-      };
-      return returnValue;
-    }
-
-    if (!Mailchecker.isValid(email)) {
-      returnValue.type = "error";
-      returnValue.fields = {
-        ...returnValue.fields,
-        email: {
-          ...returnValue.fields?.email,
-          error: "Invalid email address",
-        },
-      };
-      return returnValue;
-    }
-
     if (!validationResult.success) {
       validationResult.error.issues.forEach((issue) => {
         const fieldName = issue.path[issue.path.length - 1];
@@ -95,8 +70,36 @@ const signUpUser = async (
       return returnValue;
     }
 
+    const userSignUpData: UserSignUpData = validationResult.data;
+
+    if (userSignUpData.password !== userSignUpData.confirmPassword) {
+      returnValue.type = "error";
+      returnValue.fields = {
+        ...returnValue.fields,
+        confirmPassword: {
+          ...returnValue.fields?.confirmPassword,
+          error: "Passwords do not match",
+        },
+      };
+      return returnValue;
+    }
+
+    if (!Mailchecker.isValid(userSignUpData.email)) {
+      returnValue.type = "error";
+      returnValue.fields = {
+        ...returnValue.fields,
+        email: {
+          ...returnValue.fields?.email,
+          error: "Invalid email address",
+        },
+      };
+      return returnValue;
+    }
+
     // check if email already exists
-    const existingUserByEmail = await getUserDataByEmail({ email });
+    const existingUserByEmail = await getUserDataByEmail({
+      email: userSignUpData.email,
+    });
 
     if (existingUserByEmail) {
       returnValue.type = "error";
@@ -110,17 +113,27 @@ const signUpUser = async (
       return returnValue;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // generate salt and hash password
+    const passwordSalt = await bcrypt.genSalt(12);
 
-    const uploadResult = await uploadImage(profilePicture);
+    // Hash the password with the generated salt
+    const hashedPassword = await bcrypt.hash(
+      userSignUpData.password,
+      passwordSalt,
+    );
+
+    // Upload profile picture to Cloudinary
+    const uploadResult = await uploadImage(userSignUpData.profilePicture);
 
     const registeredUserId = await registerNewUser({
-      userName,
-      email,
+      userName: userSignUpData.userName,
+      email: userSignUpData.email,
       password: hashedPassword,
+      passwordSalt,
       registeredAt: new Date(),
       savedReviewesIds: [],
       profilePictureUrl: uploadResult.secure_url,
+      isEmailVerified: false,
     });
 
     const sessionData = await insertUserSession({
@@ -132,13 +145,14 @@ const signUpUser = async (
 
     sessionCookie.set("sessionId", sessionData.toString(), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
 
     returnValue.type = "success";
-    returnValue.message = `Welcome ${userName}!`;
+    returnValue.message = `Welcome ${userSignUpData.userName}!`;
+
     return returnValue;
   } catch (error) {
     return {

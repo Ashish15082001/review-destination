@@ -13,7 +13,7 @@ const BaseUserFields = {
 /**
  * Browser payload schema for sign-in.
  */
-export const SignInUserDataFromBrowserSchema = z.object({
+export const UserSignInDataSchema = z.object({
   email: BaseUserFields.email,
   password: BaseUserFields.password,
 });
@@ -21,7 +21,7 @@ export const SignInUserDataFromBrowserSchema = z.object({
 /**
  * Browser payload schema for sign-up.
  */
-export const SignUpUserDataFromBrowserSchema = z.object({
+export const UserSignUpDataSchema = z.object({
   userName: BaseUserFields.userName,
   email: BaseUserFields.email,
   password: BaseUserFields.password,
@@ -43,9 +43,11 @@ export const UserDataDocumentSchema = z.object({
   userName: z.string(),
   email: z.email(),
   password: z.string(),
+  passwordSalt: z.string(),
   registeredAt: z.date(),
   savedReviewesIds: z.array(z.instanceof(ObjectId)),
   profilePictureUrl: z.string(),
+  isEmailVerified: z.boolean(),
 });
 
 /**
@@ -59,16 +61,12 @@ export const UserDataSchema = UserDataDocumentSchema.extend({
 /**
  * Inferred TypeScript type for sign-in browser payload.
  */
-export type SignInUserDataFromBrowser = z.infer<
-  typeof SignInUserDataFromBrowserSchema
->;
+export type UserSignInData = z.infer<typeof UserSignInDataSchema>;
 
 /**
  * Inferred TypeScript type for sign-up browser payload.
  */
-export type SignUpUserDataFromBrowser = z.infer<
-  typeof SignUpUserDataFromBrowserSchema
->;
+export type UserSignUpData = z.infer<typeof UserSignUpDataSchema>;
 
 /**
  * Inferred TypeScript type for MongoDB user documents.

@@ -1,5 +1,6 @@
 "use server";
 
+import { deleteUserSession } from "@/repository/userSession";
 import { cookies } from "next/headers";
 
 /**
@@ -10,8 +11,12 @@ import { cookies } from "next/headers";
  */
 const signOutUser = async () => {
   const sessionCookie = await cookies();
+  const sessionId = sessionCookie.get("sessionId")?.value;
 
-  sessionCookie.delete("sessionId");
+  if (sessionId) {
+    await deleteUserSession(sessionId);
+    sessionCookie.delete("sessionId");
+  }
 };
 
 export default signOutUser;

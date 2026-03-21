@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "migrate:users:add-email-verified-and-password-salt": "ts-node --project tsconfig.scripts.json scripts/add-email-verification-and-password-salt-migration.ts",
     "migrate:comments:rename-repliesIds": "ts-node --project tsconfig.scripts.json scripts/rename-repliesIds-migration.ts",
     "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts",
     "seed:dummy": "ts-node --project tsconfig.scripts.json scripts/seed-dummy.ts",
