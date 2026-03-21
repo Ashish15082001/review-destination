@@ -7,19 +7,20 @@ import {
 import { UserData } from "@/schema/user";
 import { ObjectId } from "bson";
 import { cookies } from "next/headers";
-import { getUserSessionData } from "./userSession";
+import { deleteUserSession, getUserSessionData } from "./userSession";
 import {
   mapUserDataDocumentToUserData,
   mapUserDataToUserDataDocument,
 } from "@/mappers/user";
+import { cacheTag } from "next/cache";
 
 export async function getUserDataByEmail({
   email,
 }: {
   email: string;
 }): Promise<UserData | null> {
-  // "use cache";
-  // cacheTag(`userData-email-${email}`);
+  "use cache";
+  cacheTag(`userData-email-${email}`);
 
   const collection = await getUsersCollection();
   const userDataDocument = await collection.findOne({ email });
@@ -34,8 +35,8 @@ export async function getUserDataByUserId({
 }: {
   userId: string;
 }): Promise<UserData | null> {
-  // "use cache";
-  // cacheTag(`userData-userId-${userId}`);
+  "use cache";
+  cacheTag(`userData-userId-${userId}`);
 
   const collection = await getUsersCollection();
   const userDataDocument = await collection.findOne({
@@ -90,7 +91,10 @@ export async function getUserDataUsingSession(): Promise<UserData | null> {
   if (!userSessionData || !userSessionData.userId) return null;
 
   // Reject expired sessions
-  if (new Date(userSessionData.expiresOn) < new Date()) return null;
+  if (new Date(userSessionData.expiresOn) < new Date()) {
+    await deleteUserSession(sessionId);
+    return null;
+  }
 
   const userData = await getUserDataByUserId({
     userId: userSessionData.userId,

@@ -1,8 +1,8 @@
 import {
-  SignInUserDataFromBrowser,
-  SignInUserDataFromBrowserSchema,
-  SignUpUserDataFromBrowser,
-  SignUpUserDataFromBrowserSchema,
+  UserSignInData,
+  UserSignInDataSchema,
+  UserSignUpData,
+  UserSignUpDataSchema,
   UserData,
   UserDataDocument,
   UserDataDocumentSchema,
@@ -43,16 +43,14 @@ export function validateUserDataDocument(
 
 /**
  * Validates sign-in payload submitted from the browser.
- * @param signInUserDataFromBrowser - Raw sign-in form payload.
+ * @param UsersignInData - Raw sign-in form payload.
  * @returns The parsed and validated sign-in payload.
  * @throws {Error} If validation fails.
  */
-export function validateSignInUserDataFromBrowser(
-  signInUserDataFromBrowser: SignInUserDataFromBrowser,
-): SignInUserDataFromBrowser {
-  const parseResult = SignInUserDataFromBrowserSchema.safeParse(
-    signInUserDataFromBrowser,
-  );
+export function validateUserSignInData(
+  UsersignInData: UserSignInData,
+): UserSignInData {
+  const parseResult = UserSignInDataSchema.safeParse(UsersignInData);
 
   if (!parseResult.success)
     throw new Error(
@@ -64,16 +62,14 @@ export function validateSignInUserDataFromBrowser(
 
 /**
  * Validates sign-up payload submitted from the browser.
- * @param signUpUserDataFromBrowser - Raw sign-up form payload.
+ * @param signUpUserData - Raw sign-up form payload.
  * @returns The parsed and validated sign-up payload.
  * @throws {Error} If validation fails.
  */
-export function validateSignUpUserDataFromBrowser(
-  signUpUserDataFromBrowser: SignUpUserDataFromBrowser,
-): SignUpUserDataFromBrowser {
-  const parseResult = SignUpUserDataFromBrowserSchema.safeParse(
-    signUpUserDataFromBrowser,
-  );
+export function validateSignUpUserData(
+  signUpUserData: UserSignUpData,
+): UserSignUpData {
+  const parseResult = UserSignUpDataSchema.safeParse(signUpUserData);
 
   if (!parseResult.success)
     throw new Error(

@@ -383,11 +383,6 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    defaultValue={
-                      state.fields?.password
-                        ? (state.fields.password.value as string)
-                        : ""
-                    }
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"

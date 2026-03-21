@@ -101,6 +101,7 @@ const signInUser = async (
     returnValue.message = `Welcome back, ${userData.userName}!`;
     return returnValue;
   } catch (error) {
+    console.log("Error in signInUser action:", error);
     return {
       type: "error",
       message: "An unexpected error occurred. Please try again later.",

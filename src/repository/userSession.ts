@@ -5,13 +5,13 @@ import {
 } from "@/mappers/userSession";
 import { UserSessionData, UserSessionDataDocument } from "@/schema/userSession";
 import { ObjectId } from "bson";
+import { cacheTag } from "next/cache";
 
 export async function getUserSessionData(
   sessionId: string,
 ): Promise<UserSessionData | null> {
-  // "use cache";
-
-  // cacheTag(`userSessionData-${sessionId}`);
+  "use cache";
+  cacheTag(`userSessionData-sessionId-${sessionId}`);
 
   const userSessionsCollection = await getUserSessionsCollection();
 

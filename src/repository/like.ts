@@ -6,6 +6,7 @@ import {
 import { LikeData, LikeDataDocument } from "@/schema/like";
 import validateLikeData from "@/validators/like";
 import { ObjectId } from "bson";
+import { cacheTag, revalidateTag } from "next/cache";
 
 export async function insertLikeData(
   likeData: Omit<LikeData, "_id">,
@@ -34,7 +35,7 @@ export async function insertLikeData(
 
   await collection.insertOne(likeDataDocument);
 
-  // revalidateTag(`likesData-reviewId-${likeData.reviewId}`, "max");
+  revalidateTag(`likesData-reviewId-${likeData.reviewId}`, "max");
 
   return validatedLikeData;
 }
@@ -44,8 +45,8 @@ export async function getLikeData({
 }: {
   likeId: string;
 }): Promise<LikeData | null> {
-  // "use cache";
-  // cacheTag(`likeData-${likeId}`);
+  "use cache";
+  cacheTag(`likeData-likeId-${likeId}`);
 
   const collection = await getLikesCollection();
 
@@ -63,8 +64,8 @@ export async function getLikesDataByReviewId({
 }: {
   reviewId: string;
 }): Promise<LikeData[]> {
-  // "use cache";
-  // cacheTag(`likesData-reviewId-${reviewId}`);
+  "use cache";
+  cacheTag(`likesData-reviewId-${reviewId}`);
 
   const collection = await getLikesCollection();
 
@@ -93,7 +94,7 @@ export async function deleteLikeData({
     _id: new ObjectId(likeId),
   });
 
-  // revalidateTag(`likesData-reviewId-${reviewId}`, "max");
+  revalidateTag(`likesData-reviewId-${reviewId}`, "max");
 
   return result.deletedCount > 0;
 }

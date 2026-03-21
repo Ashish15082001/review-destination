@@ -5,6 +5,7 @@ import {
 } from "@/mappers/review";
 import { ReviewData, ReviewDataDocument } from "@/schema/review";
 import { ObjectId } from "bson";
+import { cacheTag, revalidateTag } from "next/cache";
 import { cache } from "react";
 
 export async function insertReviewData(
@@ -20,7 +21,8 @@ export async function insertReviewData(
   const collection = await getReviewsCollection();
   await collection.insertOne(reviewDataDocument);
 
-  // revalidateTag("reviewsData", "max");
+  revalidateTag("reviewsData", "max");
+  revalidateTag(`reviewsData-userId-${reviewData.userId}`, "max");
 
   return reviewDataDocument._id.toString();
 }
@@ -28,9 +30,8 @@ export async function insertReviewData(
 export const getReviewData = cache(async function (
   reviewId: string,
 ): Promise<ReviewData | null> {
-  // "use cache";
-
-  // cacheTag(`reviewData-${reviewId}`);
+  "use cache";
+  cacheTag(`reviewData-reviewId-${reviewId}`);
 
   const collection = await getReviewsCollection();
   const reviewDataDocument = await collection.findOne({
@@ -45,6 +46,9 @@ export const getReviewData = cache(async function (
 export async function getReviewsDataByUserId(
   userId: string,
 ): Promise<ReviewData[]> {
+  "use cache";
+  cacheTag(`reviewsData-userId-${userId}`);
+
   const collection = await getReviewsCollection();
 
   const reviewDataDocuments = await collection
@@ -76,9 +80,8 @@ export async function getReviewsDataByIds(
 }
 
 export async function getReviewsCount(): Promise<number> {
-  // "use cache";
-
-  // cacheTag("reviewsData");
+  "use cache";
+  cacheTag("reviewsData");
 
   const collection = await getReviewsCollection();
   return collection.countDocuments({});
@@ -91,9 +94,8 @@ export async function getReviewsData({
   pageSize?: number;
   page?: number;
 }): Promise<ReviewData[]> {
-  // "use cache";
-
-  // cacheTag("reviewsData");
+  "use cache";
+  cacheTag("reviewsData");
 
   const collection = await getReviewsCollection();
 
@@ -111,9 +113,8 @@ export async function getReviewsData({
 }
 
 export async function getMostRecentReviews(): Promise<ReviewData[]> {
-  // "use cache";
-
-  // cacheTag("reviewsData");
+  "use cache";
+  cacheTag("reviewsData");
 
   const collection = await getReviewsCollection();
 
