@@ -104,7 +104,7 @@ const signUpUser = async (
         ...returnValue.fields,
         email: {
           ...returnValue.fields?.email,
-          error: "Invalid credentials. Please try again.",
+          error: "Invalid email address",
         },
       };
       return returnValue;

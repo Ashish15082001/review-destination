@@ -2,7 +2,13 @@
 
 import signInUser from "@/actions/sign-in";
 import signUpUser from "@/actions/sign-up";
-import { useActionState, useEffect, useRef, useState } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AuthMode } from "@/lib/auth-mode";
 import { redirect } from "next/navigation";
 import FormError from "../validation-message/field-error";
@@ -34,9 +40,28 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
 
   const isSignIn = mode === AuthMode.SIGN_IN;
 
+  const syncPreviewUrlWithInput = useCallback(() => {
+    const selectedFile = fileInputRef.current?.files?.[0] ?? null;
+
+    setPreviewUrl((previousPreviewUrl) => {
+      if (previousPreviewUrl) {
+        URL.revokeObjectURL(previousPreviewUrl);
+      }
+
+      return selectedFile ? URL.createObjectURL(selectedFile) : null;
+    });
+  }, [setPreviewUrl, fileInputRef]);
+
   useEffect(() => {
     if (state.type === "success") redirect("/");
   }, [state.type]);
+
+  useEffect(() => {
+    if (isSignIn) return;
+
+    // Keep the preview aligned with the actual file input after browser-driven resets.
+    syncPreviewUrlWithInput();
+  }, [isSignIn, state]);
 
   useEffect(() => {
     return () => {
@@ -176,16 +201,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const url = URL.createObjectURL(file);
-                      setPreviewUrl((prev) => {
-                        if (prev) URL.revokeObjectURL(prev);
-                        return url;
-                      });
-                    }
-                  }}
+                  onChange={syncPreviewUrlWithInput}
                 />
                 <button
                   type="button"

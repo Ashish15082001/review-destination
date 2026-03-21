@@ -6,6 +6,9 @@ import bcrypt from "bcrypt";
 import { getUserDataByEmail } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
 
+const BCRYPT_DUMMY_HASH =
+  "$2b$10$CwTycUXWue0Thq9StjUM0uJ8z5rZ3G9oFj1Yy/8aK7fXnY2DFe"; // bcrypt hash of "password" (used to prevent timing attacks)
+
 /**
  * Server action to sign in an existing user.
  *
@@ -57,18 +60,20 @@ const signInUser = async (
     }
 
     const userData = await getUserDataByEmail({ email });
+    const passwordMatch = await bcrypt.compare(
+      password,
+      userData?.password || BCRYPT_DUMMY_HASH, // if userData is null, compare with dummy hash to prevent timing attacks
+    );
 
     if (!userData) {
       returnValue.type = "error";
-      returnValue.message = "No account found with that email address.";
+      returnValue.message = "Invalid Credentials.";
       return returnValue;
     }
 
-    const passwordMatch = await bcrypt.compare(password, userData.password);
-
     if (!passwordMatch) {
       returnValue.type = "error";
-      returnValue.message = "Incorrect Credentials.";
+      returnValue.message = "Invalid Credentials.";
       return returnValue;
     }
 
