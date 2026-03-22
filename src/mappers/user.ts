@@ -11,15 +11,11 @@ export function mapUserDataDocumentToUserData(
   const validatedUserDataDocument = validateUserDataDocument(userDataDocument);
 
   return validateUserData({
+    ...validatedUserDataDocument,
     _id: validatedUserDataDocument._id.toString(),
-    userName: validatedUserDataDocument.userName,
-    email: validatedUserDataDocument.email,
-    password: validatedUserDataDocument.password,
-    registeredAt: validatedUserDataDocument.registeredAt,
     savedReviewesIds: validatedUserDataDocument.savedReviewesIds.map((id) =>
       id.toString(),
     ),
-    profilePictureUrl: validatedUserDataDocument.profilePictureUrl,
   });
 }
 
@@ -32,14 +28,10 @@ export function mapUserDataToUserDataDocument(
   const validatedUserData = validateUserData(userData);
 
   return validateUserDataDocument({
+    ...validatedUserData,
     _id: toObjectId(validatedUserData._id, "_id"),
-    userName: validatedUserData.userName,
-    email: validatedUserData.email,
-    password: validatedUserData.password,
-    registeredAt: validatedUserData.registeredAt,
     savedReviewesIds: validatedUserData.savedReviewesIds.map((id) =>
       toObjectId(id, "savedReviewesIds"),
     ),
-    profilePictureUrl: validatedUserData.profilePictureUrl,
   });
 }
