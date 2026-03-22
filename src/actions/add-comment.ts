@@ -2,6 +2,7 @@
 
 import { addReplyToComment, insertCommentData } from "@/repository/comment";
 import { getUserDataUsingSession } from "@/repository/user";
+import { ApiResponse } from "@/types/apiResponse";
 import z from "zod";
 
 const CommentFormSchema = z.object({
@@ -28,16 +29,16 @@ const CommentFormSchema = z.object({
  *   - `comment` {string} — The comment text (1–500 characters).
  *   - `reviewId` {string} — The ID of the review being commented on.
  *   - `parentCommentId` {string} — Optional ID of the comment being replied to.
- * @returns A promise resolving to {@link AddCommentActionReturnType} with:
+ * @returns A promise resolving to {@link ApiResponse} with:
  *   - `type` — `"success"` if the comment was saved, `"error"` otherwise.
  *   - `message` — A human-readable summary of the outcome.
  *   - `fields` — Per-field values and validation error messages (comment field is always included).
  *     On success the comment `value` is reset to `""` to clear the form.
  */
 const addCommentAction = async (
-  prevData: AddCommentActionReturnType,
+  prevData: ApiResponse,
   formData: FormData,
-): Promise<AddCommentActionReturnType> => {
+): Promise<ApiResponse> => {
   try {
     const userData = await getUserDataUsingSession();
 
@@ -53,7 +54,7 @@ const addCommentAction = async (
 
     const validationResult = CommentFormSchema.safeParse({ comment, reviewId });
 
-    const returnValue: AddCommentActionReturnType = {
+    const returnValue: ApiResponse = {
       type: validationResult.success ? "success" : "error",
       message: validationResult.success
         ? "Comment added successfully"
@@ -109,15 +110,3 @@ const addCommentAction = async (
 };
 
 export { addCommentAction };
-
-export interface AddCommentActionReturnType {
-  type?: "success" | "error";
-  message?: string;
-  fields?: Record<
-    PropertyKey,
-    {
-      value?: string;
-      error?: string;
-    }
-  >;
-}

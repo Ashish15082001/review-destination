@@ -14,11 +14,11 @@ No validation logic or data transformation lives here. This folder is purely **d
 
 Most entities have **three distinct representations**, each captured by its own schema:
 
-| Tier | Suffix | ID fields | Used in |
-|---|---|---|---|
-| Browser payload | `*BrowserSchema` | N/A (no `_id`) | Form submissions from the client |
-| MongoDB document | `*DataDocumentSchema` | `ObjectId` | `src/repository/*`, `src/mappers/*` |
-| Application data | `*DataSchema` | `string` | Actions, API routes, components |
+| Tier             | Suffix                | ID fields      | Used in                             |
+| ---------------- | --------------------- | -------------- | ----------------------------------- |
+| Browser payload  | `*BrowserSchema`      | N/A (no `_id`) | Form submissions from the client    |
+| MongoDB document | `*DataDocumentSchema` | `ObjectId`     | `src/repository/*`, `src/mappers/*` |
+| Application data | `*DataSchema`         | `string`       | Actions, API routes, components     |
 
 > `comment.ts` and `like.ts` have no browser payload schema — they do not receive raw form submissions directly.
 
@@ -82,18 +82,19 @@ These are used by repository functions that resolve the commenter's name and ava
 
 ### `comment.ts`
 
-| Export | Kind | Description |
-|---|---|---|
-| `CommentDataDocumentSchema` | Zod schema | MongoDB document; all IDs as `ObjectId`, arrays of `ObjectId` |
-| `CommentDataSchema` | Zod schema | Application data; all IDs as `string`, arrays of `string` |
-| `CommentDataWithCommenterDataSchema` | Zod schema | App data enriched with `commenterName` + `profilePictureUrl` |
-| `CommentDataWithCommenterDataDocumentSchema` | Zod schema | Document enriched with `commenterName` + `profilePictureUrl` |
-| `CommentDataDocument` | TypeScript type | Inferred from `CommentDataDocumentSchema` |
-| `CommentData` | TypeScript type | Inferred from `CommentDataSchema` |
-| `CommentDataWithCommenterData` | TypeScript type | Inferred from `CommentDataWithCommenterDataSchema` |
-| `CommentDataWithCommenterDataDocument` | TypeScript type | Inferred from `CommentDataWithCommenterDataDocumentSchema` |
+| Export                                       | Kind            | Description                                                   |
+| -------------------------------------------- | --------------- | ------------------------------------------------------------- |
+| `CommentDataDocumentSchema`                  | Zod schema      | MongoDB document; all IDs as `ObjectId`, arrays of `ObjectId` |
+| `CommentDataSchema`                          | Zod schema      | Application data; all IDs as `string`, arrays of `string`     |
+| `CommentDataWithCommenterDataSchema`         | Zod schema      | App data enriched with `commenterName` + `profilePictureUrl`  |
+| `CommentDataWithCommenterDataDocumentSchema` | Zod schema      | Document enriched with `commenterName` + `profilePictureUrl`  |
+| `CommentDataDocument`                        | TypeScript type | Inferred from `CommentDataDocumentSchema`                     |
+| `CommentData`                                | TypeScript type | Inferred from `CommentDataSchema`                             |
+| `CommentDataWithCommenterData`               | TypeScript type | Inferred from `CommentDataWithCommenterDataSchema`            |
+| `CommentDataWithCommenterDataDocument`       | TypeScript type | Inferred from `CommentDataWithCommenterDataDocumentSchema`    |
 
 **Key fields:**
+
 - `parentCommentId` — nullable; `null` for top-level comments, set for replies
 - `replyCommentIds[]` — IDs of direct child reply comments
 - `idsOfUsersWhoLiked[]` / `idsOfUsersWhoDisliked[]` — reaction tracking arrays
@@ -101,48 +102,51 @@ These are used by repository functions that resolve the commenter's name and ava
 
 ### `like.ts`
 
-| Export | Kind | Description |
-|---|---|---|
-| `LikeDataDocumentSchema` | Zod schema | MongoDB document; IDs as `ObjectId` |
-| `LikeDataSchema` | Zod schema | Application data; IDs as `string` |
-| `LikeDataDocument` | TypeScript type | Inferred from `LikeDataDocumentSchema` |
-| `LikeData` | TypeScript type | Inferred from `LikeDataSchema` |
+| Export                   | Kind            | Description                            |
+| ------------------------ | --------------- | -------------------------------------- |
+| `LikeDataDocumentSchema` | Zod schema      | MongoDB document; IDs as `ObjectId`    |
+| `LikeDataSchema`         | Zod schema      | Application data; IDs as `string`      |
+| `LikeDataDocument`       | TypeScript type | Inferred from `LikeDataDocumentSchema` |
+| `LikeData`               | TypeScript type | Inferred from `LikeDataSchema`         |
 
 **Key fields:**
+
 - `reviewId` — the review being liked
 - `likedBy` — the user who liked it
 - `likedOn` — timestamp of the like
 
 ### `review.ts`
 
-| Export | Kind | Description |
-|---|---|---|
-| `ReviewDataBrowserSchema` | Zod schema | Browser form payload; includes `File[]` for photo uploads |
-| `ReviewDataDocumentSchema` | Zod schema | MongoDB document; extends `BaseReviewSchema`; IDs as `ObjectId` |
-| `ReviewDataSchema` | Zod schema | Application data; extends document schema, overrides IDs to `string` |
-| `ReviewDataBrowser` | TypeScript type | Inferred from `ReviewDataBrowserSchema` |
-| `ReviewDataDocument` | TypeScript type | Inferred from `ReviewDataDocumentSchema` |
-| `ReviewData` | TypeScript type | Inferred from `ReviewDataSchema` |
+| Export                     | Kind            | Description                                                          |
+| -------------------------- | --------------- | -------------------------------------------------------------------- |
+| `ReviewDataBrowserSchema`  | Zod schema      | Browser form payload; includes `File[]` for photo uploads            |
+| `ReviewDataDocumentSchema` | Zod schema      | MongoDB document; extends `BaseReviewSchema`; IDs as `ObjectId`      |
+| `ReviewDataSchema`         | Zod schema      | Application data; extends document schema, overrides IDs to `string` |
+| `ReviewDataBrowser`        | TypeScript type | Inferred from `ReviewDataBrowserSchema`                              |
+| `ReviewDataDocument`       | TypeScript type | Inferred from `ReviewDataDocumentSchema`                             |
+| `ReviewData`               | TypeScript type | Inferred from `ReviewDataSchema`                                     |
 
 **Key fields:**
+
 - `destinationPhotos` (`ReviewDataBrowser` only) — array of `File` objects, min 1, non-empty file size validated
 - `destinationPhotoUrls` — array of uploaded photo URLs (present after server-side upload)
 - `experience` / `description` — both required, min 1 character
 
 ### `user.ts`
 
-| Export | Kind | Description |
-|---|---|---|
-| `SignInUserDataFromBrowserSchema` | Zod schema | Sign-in form: `email` + `password` |
-| `SignUpUserDataFromBrowserSchema` | Zod schema | Sign-up form: `userName`, `email`, `password`, `confirmPassword`, `profilePicture` (File) |
-| `UserDataDocumentSchema` | Zod schema | MongoDB document; `_id` + `savedReviewesIds[]` as `ObjectId` |
-| `UserDataSchema` | Zod schema | Application data; extends document schema, overrides IDs to `string` |
-| `SignInUserDataFromBrowser` | TypeScript type | Inferred from `SignInUserDataFromBrowserSchema` |
-| `SignUpUserDataFromBrowser` | TypeScript type | Inferred from `SignUpUserDataFromBrowserSchema` |
-| `UserDataDocument` | TypeScript type | Inferred from `UserDataDocumentSchema` |
-| `UserData` | TypeScript type | Inferred from `UserDataSchema` |
+| Export                            | Kind            | Description                                                                               |
+| --------------------------------- | --------------- | ----------------------------------------------------------------------------------------- |
+| `SignInUserDataFromBrowserSchema` | Zod schema      | Sign-in form: `email` + `password`                                                        |
+| `SignUpUserDataFromBrowserSchema` | Zod schema      | Sign-up form: `userName`, `email`, `password`, `confirmPassword`, `profilePicture` (File) |
+| `UserDataDocumentSchema`          | Zod schema      | MongoDB document; `_id` + `savedReviewesIds[]` as `ObjectId`                              |
+| `UserDataSchema`                  | Zod schema      | Application data; extends document schema, overrides IDs to `string`                      |
+| `SignInUserDataFromBrowser`       | TypeScript type | Inferred from `SignInUserDataFromBrowserSchema`                                           |
+| `SignUpUserDataFromBrowser`       | TypeScript type | Inferred from `SignUpUserDataFromBrowserSchema`                                           |
+| `UserDataDocument`                | TypeScript type | Inferred from `UserDataDocumentSchema`                                                    |
+| `UserData`                        | TypeScript type | Inferred from `UserDataSchema`                                                            |
 
 **Key fields:**
+
 - `confirmPassword` — browser-only, not stored; used for client-side match validation
 - `profilePicture` (`SignUpUserDataFromBrowser`) — `File` object, non-empty size validated
 - `profilePictureUrl` — stored URL after server-side upload
@@ -150,14 +154,15 @@ These are used by repository functions that resolve the commenter's name and ava
 
 ### `userSession.ts`
 
-| Export | Kind | Description |
-|---|---|---|
-| `UserSessionDataDocumentSchema` | Zod schema | MongoDB document; `_id` + `userId` as `ObjectId` |
-| `UserSessionDataSchema` | Zod schema | Application data; extends document schema, overrides IDs to `string` |
-| `UserSessionDataDocument` | TypeScript type | Inferred from `UserSessionDataDocumentSchema` |
-| `UserSessionData` | TypeScript type | Inferred from `UserSessionDataSchema` |
+| Export                          | Kind            | Description                                                          |
+| ------------------------------- | --------------- | -------------------------------------------------------------------- |
+| `UserSessionDataDocumentSchema` | Zod schema      | MongoDB document; `_id` + `userId` as `ObjectId`                     |
+| `UserSessionDataSchema`         | Zod schema      | Application data; extends document schema, overrides IDs to `string` |
+| `UserSessionDataDocument`       | TypeScript type | Inferred from `UserSessionDataDocumentSchema`                        |
+| `UserSessionData`               | TypeScript type | Inferred from `UserSessionDataSchema`                                |
 
 **Key fields:**
+
 - `userId` — links the session to its owner
 - `expiresOn` — expiry timestamp; checked at read time in `src/repository/user.ts`
 

@@ -7,6 +7,8 @@ import { uploadImage } from "@/lib/cloudinary";
 import { getUserDataByEmail, registerNewUser } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
 import Mailchecker from "mailchecker";
+import getHashedPasswordWithSalt from "@/utils/getHashWithSalt";
+import { ApiResponse } from "@/types/apiResponse";
 
 /**
  * Server action to register a new user.
@@ -20,9 +22,9 @@ import Mailchecker from "mailchecker";
  * @returns An object indicating success or error, with a welcome message or field-level validation errors.
  */
 const signUpUser = async (
-  prevData: SignUpUserReturnType,
+  prevData: ApiResponse,
   formData: FormData,
-): Promise<SignUpUserReturnType> => {
+): Promise<ApiResponse> => {
   try {
     const userName = formData.get("userName") as string;
     const email = formData.get("email") as string;
@@ -38,7 +40,7 @@ const signUpUser = async (
       profilePicture,
     });
 
-    const returnValue: SignUpUserReturnType = {
+    const returnValue: ApiResponse = {
       type: validationResult.success ? "success" : "error",
       fields: {
         userName: {
@@ -113,13 +115,8 @@ const signUpUser = async (
       return returnValue;
     }
 
-    // generate salt and hash password
-    const passwordSalt = await bcrypt.genSalt(12);
-
-    // Hash the password with the generated salt
-    const hashedPassword = await bcrypt.hash(
+    const { hashedPassword } = await getHashedPasswordWithSalt(
       userSignUpData.password,
-      passwordSalt,
     );
 
     // Upload profile picture to Cloudinary
@@ -129,7 +126,6 @@ const signUpUser = async (
       userName: userSignUpData.userName,
       email: userSignUpData.email,
       password: hashedPassword,
-      passwordSalt,
       registeredAt: new Date(),
       savedReviewesIds: [],
       profilePictureUrl: uploadResult.secure_url,
@@ -161,17 +157,5 @@ const signUpUser = async (
     };
   }
 };
-
-export interface SignUpUserReturnType {
-  type?: "success" | "error";
-  message?: string;
-  fields?: Record<
-    PropertyKey,
-    {
-      value?: string;
-      error?: string;
-    }
-  >;
-}
 
 export default signUpUser;

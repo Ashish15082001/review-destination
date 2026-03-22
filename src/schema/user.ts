@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 /**
  * Reusable field definitions shared across user schemas.
  */
-const BaseUserFields = {
+export const BaseUserFields = {
   userName: z.string().min(1, "User name is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   email: z.email("Invalid email address"),
@@ -43,7 +43,6 @@ export const UserDataDocumentSchema = z.object({
   userName: z.string(),
   email: z.email(),
   password: z.string(),
-  passwordSalt: z.string(),
   registeredAt: z.date(),
   savedReviewesIds: z.array(z.instanceof(ObjectId)),
   profilePictureUrl: z.string(),

@@ -12,7 +12,7 @@ import {
   mapUserDataDocumentToUserData,
   mapUserDataToUserDataDocument,
 } from "@/mappers/user";
-import { cacheTag } from "next/cache";
+import { cacheTag, revalidateTag } from "next/cache";
 
 export async function getUserDataByEmail({
   email,
@@ -77,6 +77,27 @@ export async function registerNewUser(
   await collection.insertOne(userDataDocument);
 
   return userDataDocument._id.toString();
+}
+
+export async function updateUserPasswordByEmail({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}): Promise<boolean> {
+  const collection = await getUsersCollection();
+
+  const updateResult = await collection.updateOne(
+    { email },
+    { $set: { password } },
+  );
+
+  if (updateResult.matchedCount !== 1) return false;
+
+  revalidateTag(`userData-email-${email}`, "max");
+
+  return true;
 }
 
 export async function getUserDataUsingSession(): Promise<UserData | null> {
@@ -221,4 +242,22 @@ export async function getUserStats(): Promise<UserStats | null> {
       dislikesReceived: myCommentsReactions.totalDislikesReceived,
     },
   };
+}
+
+export async function UpdateUserPasswordByEmail({
+  email,
+  password,
+}: Pick<UserData, "email" | "password">): Promise<boolean> {
+  const collection = await getUsersCollection();
+
+  const updateResult = await collection.updateOne(
+    { email },
+    { $set: { password } },
+  );
+
+  if (updateResult.matchedCount !== 1) return false;
+
+  revalidateTag(`userData-email-${email}`, "max");
+
+  return true;
 }

@@ -15,6 +15,8 @@
     "seed:large": "ts-node --project tsconfig.scripts.json scripts/seed-large.ts"
   },
   "dependencies": {
+    "@react-email/components": "^1.0.10",
+    "@react-email/render": "^2.0.4",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@react-three/rapier": "^2.2.0",
@@ -35,8 +37,10 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-email": "^5.2.10",
     "react-hot-toast": "^2.6.0",
     "react-transition-progress": "^0.0.4",
+    "resend": "^6.9.4",
     "sharp": "^0.34.5",
     "tailwind-merge": "^3.5.0",
     "three": "^0.167.1",

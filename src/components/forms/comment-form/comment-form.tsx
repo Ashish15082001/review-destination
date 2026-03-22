@@ -1,9 +1,7 @@
 "use client";
 
-import {
-  addCommentAction,
-  AddCommentActionReturnType,
-} from "@/actions/add-comment-action";
+import { addCommentAction } from "@/actions/add-comment";
+import { ApiResponse } from "@/types/apiResponse";
 import { useActionState, useEffect, useRef } from "react";
 
 interface CommentFormProps {
@@ -15,7 +13,7 @@ interface CommentFormProps {
   parentCommentId?: string;
 }
 
-const initialState: AddCommentActionReturnType = {};
+const initialState: ApiResponse = {};
 
 /**
  * Renders a form for submitting a comment on a review.

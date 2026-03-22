@@ -1,7 +1,7 @@
 import { CommentData } from "@/schema/comment";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { CommentForm } from "../comment-form/comment-form";
+import { CommentForm } from "../forms/comment-form/comment-form";
 import { UserData } from "@/schema/user";
 
 interface CommentActionsProps {

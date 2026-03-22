@@ -1,6 +1,6 @@
 "use client";
 
-import { addReviewAction } from "@/actions/add-review-action";
+import { addReviewAction } from "@/actions/add-review";
 import { useActionState, useState } from "react";
 
 export default function AddReviewPage() {

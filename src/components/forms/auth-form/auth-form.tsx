@@ -11,9 +11,9 @@ import {
 } from "react";
 import { AuthMode } from "@/lib/auth-mode";
 import { redirect } from "next/navigation";
-import FormError from "../validation-message/field-error";
-import FormMessage from "../validation-message/form-message";
-import RotatingText from "../RotatingText";
+import FormError from "../../validation-message/field-error";
+import FormMessage from "../../validation-message/form-message";
+import RotatingText from "../../RotatingText";
 import Link from "next/link";
 import { passwordStrength } from "check-password-strength";
 
@@ -360,12 +360,12 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     )}
                   </div>
                   {isSignIn && (
-                    <a
-                      href="#"
+                    <Link
+                      href="/send-password-reset-link"
                       className="text-sm font-semibold text-[#853853] hover:text-[#612D53] transition-colors"
                     >
                       Forgot Password?
-                    </a>
+                    </Link>
                   )}
                 </div>
                 <div className="relative group">

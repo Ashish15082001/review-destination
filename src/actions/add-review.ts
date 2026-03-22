@@ -4,6 +4,7 @@ import { uploadImage } from "@/lib/cloudinary";
 import { insertReviewData } from "@/repository/review";
 import { getUserDataUsingSession } from "@/repository/user";
 import { ReviewDataBrowserSchema } from "@/schema/review";
+import { ApiResponse } from "@/types/apiResponse";
 /**
  * Server action to add a new destination review.
  *
@@ -19,9 +20,9 @@ import { ReviewDataBrowserSchema } from "@/schema/review";
  *   response (rather than throwing) if the user is not authenticated.
  */
 const addReviewAction = async (
-  prevData: AddReviewActionReturnType,
+  prevData: ApiResponse,
   formData: FormData,
-): Promise<AddReviewActionReturnType> => {
+): Promise<ApiResponse> => {
   try {
     const userData = await getUserDataUsingSession();
 
@@ -47,7 +48,7 @@ const addReviewAction = async (
       experience,
     });
 
-    const returnValue: AddReviewActionReturnType = {
+    const returnValue: ApiResponse = {
       type: validationResult.success ? "success" : "error",
       message: validationResult.success
         ? "Review added successfully"
@@ -127,15 +128,3 @@ const addReviewAction = async (
 };
 
 export { addReviewAction };
-
-export interface AddReviewActionReturnType {
-  type?: "success" | "error";
-  message?: string;
-  fields?: Record<
-    PropertyKey,
-    {
-      value?: string;
-      error?: string;
-    }
-  >;
-}

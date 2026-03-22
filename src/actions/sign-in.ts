@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import { getUserDataByEmail } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
+import { ApiResponse } from "@/types/apiResponse";
+import getHashedPasswordWithSalt from "@/utils/getHashWithSalt";
 
 const BCRYPT_DUMMY_HASH =
   "$2b$10$CwTycUXWue0Thq9StjUM0uJ8z5rZ3G9oFj1Yy/8aK7fXnY2DFe"; // bcrypt hash of "password" (used to prevent timing attacks)
@@ -20,9 +22,9 @@ const BCRYPT_DUMMY_HASH =
  * @returns An object indicating success or error, with a welcome message or field-level validation errors.
  */
 const signInUser = async (
-  prevData: SignInUserReturnType,
+  prevData: ApiResponse,
   formData: FormData,
-): Promise<SignInUserReturnType> => {
+): Promise<ApiResponse> => {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -32,7 +34,7 @@ const signInUser = async (
       password,
     });
 
-    const returnValue: SignInUserReturnType = {
+    const returnValue: ApiResponse = {
       type: validationResult.success ? "success" : "error",
       fields: {
         email: {
@@ -67,17 +69,15 @@ const signInUser = async (
       return returnValue;
     }
 
-    // Hash the provided password with the stored salt and compare to the stored hash.
-    const hashedPassword = await bcrypt.hash(
-      userSignInData.password,
-      userData.passwordSalt,
-    );
     const doesPasswordMatch = await bcrypt.compare(
-      hashedPassword,
+      userSignInData.password,
       userData.password,
     );
 
     if (!doesPasswordMatch) {
+      console.warn(
+        `Failed login attempt for email: ${userSignInData.email} - Incorrect password.`,
+      );
       returnValue.type = "error";
       returnValue.message = "Invalid Credentials.";
       return returnValue;
@@ -108,17 +108,5 @@ const signInUser = async (
     };
   }
 };
-
-export interface SignInUserReturnType {
-  type?: "success" | "error";
-  message?: string;
-  fields?: Record<
-    PropertyKey,
-    {
-      value?: string;
-      error?: string;
-    }
-  >;
-}
 
 export default signInUser;

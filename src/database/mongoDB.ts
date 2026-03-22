@@ -82,3 +82,10 @@ export async function getUserScrapedDataCollection(): Promise<
   const db = await getDatabase();
   return db.collection("userScrapedData");
 }
+
+export async function getPasswordResetValidationTokensCollection(): Promise<
+  Collection<Document>
+> {
+  const db = await getDatabase();
+  return db.collection("userPasswordReset");
+}
