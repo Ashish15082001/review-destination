@@ -2,8 +2,17 @@ import { getLikesDataByReviewId } from "@/repository/like";
 import { ReviewLikeButton } from "../review-like-button/review-like-button";
 import { getCommentsDataByReviewId } from "@/repository/comment";
 import { getUserDataUsingSession } from "@/repository/user";
+import { connection } from "next/server";
 
 export async function ReviewStats({ reviewId }: { reviewId: string }) {
+  /**
+  In review-stats.tsx:7, Promise.all launches getCommentsDataByReviewId and getUserDataUsingSession concurrently. The comments DB query deserializes
+  commentedOn Date fields (BSON → new Date()) and can resolve before cookies() inside getUserDataUsingSession is reached — violating Next.js 16's prerender rule.
+
+  The simplest fix is to add await connection() at the top of ReviewStats so Next.js knows it's dynamic before any work begins:   
+  */
+  await connection();
+
   const [likesData, commentsData, userData] = await Promise.all([
     getLikesDataByReviewId({ reviewId }),
     getCommentsDataByReviewId({ reviewId }),

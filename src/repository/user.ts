@@ -112,7 +112,7 @@ export async function getUserDataUsingSession(): Promise<UserData | null> {
   if (!userSessionData || !userSessionData.userId) return null;
 
   // Reject expired sessions
-  if (new Date(userSessionData.expiresOn) < new Date()) {
+  if (userSessionData.expiresOn < new Date()) {
     await deleteUserSession(sessionId);
     return null;
   }
