@@ -7,6 +7,7 @@ import {
   getReviewsDataByIds,
   getReviewsDataByUserId,
 } from "@/repository/review";
+import { UserAvatar } from "@/components/user-avatar/user-avatar";
 
 type PageProps = {
   searchParams: Promise<{ tab?: string }>;
@@ -47,20 +48,15 @@ export default async function ProfilePage({ searchParams }: PageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-[#F3F4F4]">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-5xl">
-        {/* ── Cover Banner ────────────────────────────────────────── */}
-        <div className="relative h-52 md:h-64 w-full overflow-hidden md:rounded-b-2xl bg-gradient-to-br from-[#853853] to-[#612D53] shadow-lg">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        </div>
-
         {/* ── Avatar + Name ────────────────────────────────────────── */}
-        <div className="-mt-14 relative z-10 flex flex-col items-center px-4">
-          <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#853853] to-[#612D53] flex items-center justify-center shrink-0">
-            <span className="text-4xl md:text-5xl font-bold text-white select-none">
-              {initials}
-            </span>
-          </div>
+        <div className="mt-14 relative z-10 flex flex-col items-center px-4">
+          <UserAvatar
+            size={100}
+            userName={userData.userName}
+            imageSrc={userData.profilePictureUrl}
+          />
 
           <div className="mt-4 text-center">
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
