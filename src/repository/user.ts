@@ -6,13 +6,13 @@ import {
 } from "@/database/mongoDB";
 import { UserData } from "@/schema/user";
 import { ObjectId } from "bson";
-import { cookies } from "next/headers";
 import { deleteUserSession, getUserSessionData } from "./userSession";
 import {
   mapUserDataDocumentToUserData,
   mapUserDataToUserDataDocument,
 } from "@/mappers/user";
 import { cacheTag, revalidateTag } from "next/cache";
+import getCookieValue from "@/utils/getCookieValue";
 
 export async function getUserDataByEmail({
   email,
@@ -101,9 +101,7 @@ export async function updateUserPasswordByEmail({
 }
 
 export async function getUserDataUsingSession(): Promise<UserData | null> {
-  const sessionCookie = await cookies();
-
-  const sessionId = sessionCookie.get("sessionId")?.value;
+  const sessionId = await getCookieValue("sessionId");
 
   if (!sessionId) return null;
 

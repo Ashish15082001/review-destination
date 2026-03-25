@@ -1,9 +1,8 @@
 import { getUserSessionData } from "@/repository/userSession";
-import { cookies } from "next/headers";
+import getCookieValue from "@/utils/getCookieValue";
 
 export async function checkIfUserIsAuthenticated() {
-  const sessionCookie = await cookies();
-  const sessionId = sessionCookie.get("sessionId")?.value;
+  const sessionId = await getCookieValue("sessionId");
 
   if (!sessionId) return false;
 

@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import { getUserDataByEmail } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
 import { ApiResponse } from "@/types/apiResponse";
-import getHashedPasswordWithSalt from "@/utils/getHashWithSalt";
+import validateCsrfToken from "@/utils/validateCsrfToken";
 
 const BCRYPT_DUMMY_HASH =
   "$2b$10$CwTycUXWue0Thq9StjUM0uJ8z5rZ3G9oFj1Yy/8aK7fXnY2DFe"; // bcrypt hash of "password" (used to prevent timing attacks)
@@ -14,11 +14,17 @@ const BCRYPT_DUMMY_HASH =
 /**
  * Server action to sign in an existing user.
  *
- * Validates credentials using Zod, looks up the user by username, verifies the password,
+ * Validates credentials using Zod, looks up the user by email, verifies the password,
  * creates a new session (expires in 7 days), and sets the `sessionId` cookie.
  *
+ * Follows these steps:
+ * 1. Validate the input using Zod. If validation fails, return an error response with field-level error messages.
+ * 2. Look up the user by email. If the user does not exist, return a generic "Invalid Credentials" error (do not reveal whether the email exists).
+ * 3. If the user exists, compare the provided password with the stored hashed password using bcrypt. If it does not match, return a generic "Invalid Credentials" error.
+ * 4. If the password matches, create a new session in the database with an expiration time of 7 days.
+ *
  * @param prevData - The previous action state (used by `useActionState`).
- * @param formData - The form data containing `userName` and `password`.
+ * @param formData - The form data containing `email` and `password`.
  * @returns An object indicating success or error, with a welcome message or field-level validation errors.
  */
 const signInUser = async (
@@ -46,6 +52,7 @@ const signInUser = async (
       },
     };
 
+    // step 1
     if (!validationResult.success) {
       validationResult.error.issues.forEach((issue) => {
         const fieldName = issue.path[issue.path.length - 1];
@@ -60,6 +67,7 @@ const signInUser = async (
       return returnValue;
     }
 
+    // step 2
     const userSignInData: UserSignInData = validationResult.data;
     const userData = await getUserDataByEmail({ email: userSignInData.email });
 
@@ -69,6 +77,7 @@ const signInUser = async (
       return returnValue;
     }
 
+    // Step 3
     const doesPasswordMatch = await bcrypt.compare(
       userSignInData.password,
       userData.password,
@@ -83,6 +92,7 @@ const signInUser = async (
       return returnValue;
     }
 
+    // Step 4
     const sessionData = await insertUserSession({
       userId: userData._id,
       expiresOn: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Session expires in 7 days
