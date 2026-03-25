@@ -1,6 +1,6 @@
 "use client";
 
-import { addCommentAction } from "@/actions/add-comment";
+import addCommentAction from "@/actions/add-comment";
 import { ApiResponse } from "@/types/apiResponse";
 import { useActionState, useEffect, useRef } from "react";
 

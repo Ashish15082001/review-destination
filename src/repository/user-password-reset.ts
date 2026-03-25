@@ -46,14 +46,12 @@ export async function getPasswordResetDataByToken({
 
 export async function deletePasswordResetData({
   token,
-  email,
 }: {
-  token?: string;
-  email?: string;
+  token: string;
 }): Promise<boolean> {
   const collection = await getPasswordResetValidationTokensCollection();
 
-  const result = await collection.deleteMany({ token, email });
+  const result = await collection.deleteMany({ token });
 
   return result.deletedCount > 0;
 }

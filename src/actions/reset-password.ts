@@ -13,10 +13,10 @@ import {
 import { ResetPasswordFormDataSchema } from "@/schema/user-password-reset";
 import getHashedPasswordWithSalt from "@/utils/getHashWithSalt";
 
-const resetPassword = async (
+export default async function resetPassword(
   prevData: ApiResponse,
   formData: FormData,
-): Promise<ApiResponse> => {
+): Promise<ApiResponse> {
   const token = formData.get("token") as string;
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
@@ -77,7 +77,6 @@ const resetPassword = async (
   if (passwordResetData.expiresAt < new Date()) {
     // delete the expired token from the database
     await deletePasswordResetData({
-      email: passwordResetData.email,
       token,
     });
 
@@ -104,6 +103,10 @@ const resetPassword = async (
     password: hashedPassword,
   });
 
+  await deletePasswordResetData({
+    token,
+  });
+
   if (!updateResult) {
     return {
       type: "error",
@@ -115,6 +118,4 @@ const resetPassword = async (
     type: "success",
     message: "Your password has been reset successfully.",
   };
-};
-
-export default resetPassword;
+}

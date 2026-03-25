@@ -8,10 +8,10 @@ import { ApiResponse } from "@/types/apiResponse";
 import { SendPasswordResetLinkFormDataSchema } from "@/schema/user-password-reset";
 import { insertPasswordResetData } from "@/repository/user-password-reset";
 
-const sendPasswordResetLink = async (
+export default async function sendPasswordResetLink(
   prevData: ApiResponse,
   formData: FormData,
-): Promise<ApiResponse> => {
+): Promise<ApiResponse> {
   const email = formData.get("email") as string;
 
   const validationResult = SendPasswordResetLinkFormDataSchema.safeParse({
@@ -72,6 +72,4 @@ const sendPasswordResetLink = async (
     message:
       "If an account with this email exists, a password reset link has been sent.",
   };
-};
-
-export default sendPasswordResetLink;
+}

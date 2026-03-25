@@ -21,10 +21,10 @@ import { ApiResponse } from "@/types/apiResponse";
  * @param formData - The form data containing `email`, `password`, `confirmPassword`, and `userName`.
  * @returns An object indicating success or error, with a welcome message or field-level validation errors.
  */
-const signUpUser = async (
+export default async function signUpUser(
   prevData: ApiResponse,
   formData: FormData,
-): Promise<ApiResponse> => {
+): Promise<ApiResponse> {
   try {
     const userName = formData.get("userName") as string;
     const email = formData.get("email") as string;
@@ -156,6 +156,4 @@ const signUpUser = async (
       message: "An unexpected error occurred. Please try again later.",
     };
   }
-};
-
-export default signUpUser;
+}

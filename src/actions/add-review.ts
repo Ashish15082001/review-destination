@@ -19,10 +19,10 @@ import { ApiResponse } from "@/types/apiResponse";
  *   errors and the previously submitted field values for form repopulation. Returns an error
  *   response (rather than throwing) if the user is not authenticated.
  */
-const addReviewAction = async (
+export default async function addReviewAction(
   prevData: ApiResponse,
   formData: FormData,
-): Promise<ApiResponse> => {
+): Promise<ApiResponse> {
   try {
     const userData = await getUserDataUsingSession();
 
@@ -125,6 +125,4 @@ const addReviewAction = async (
       message: "An unexpected error occurred. Please try again later.",
     };
   }
-};
-
-export { addReviewAction };
+}

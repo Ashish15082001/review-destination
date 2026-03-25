@@ -1,6 +1,7 @@
 "use server";
 
 import { deleteUserSession } from "@/repository/userSession";
+import { ApiResponse } from "@/types/apiResponse";
 import { cookies } from "next/headers";
 
 /**
@@ -9,7 +10,10 @@ import { cookies } from "next/headers";
  * Deletes the `sessionId` cookie, which instructs the browser to remove it
  * on the next response cycle.
  */
-const signOutUser = async () => {
+export default async function signOutUser(
+  prevData: ApiResponse,
+  formData: FormData,
+): Promise<ApiResponse> {
   const sessionCookie = await cookies();
   const sessionId = sessionCookie.get("sessionId")?.value;
 
@@ -17,6 +21,9 @@ const signOutUser = async () => {
     await deleteUserSession(sessionId);
     sessionCookie.delete("sessionId");
   }
-};
 
-export default signOutUser;
+  return {
+    type: "success",
+    message: "You have been signed out successfully.",
+  };
+}

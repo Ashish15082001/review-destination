@@ -35,10 +35,10 @@ const CommentFormSchema = z.object({
  *   - `fields` — Per-field values and validation error messages (comment field is always included).
  *     On success the comment `value` is reset to `""` to clear the form.
  */
-const addCommentAction = async (
+export default async function addCommentAction(
   prevData: ApiResponse,
   formData: FormData,
-): Promise<ApiResponse> => {
+): Promise<ApiResponse> {
   try {
     const userData = await getUserDataUsingSession();
 
@@ -107,6 +107,4 @@ const addCommentAction = async (
       message: "An unexpected error occurred. Please try again later.",
     };
   }
-};
-
-export { addCommentAction };
+}

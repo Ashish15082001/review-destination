@@ -27,10 +27,10 @@ const BCRYPT_DUMMY_HASH =
  * @param formData - The form data containing `email` and `password`.
  * @returns An object indicating success or error, with a welcome message or field-level validation errors.
  */
-const signInUser = async (
+export default async function signInUser(
   prevData: ApiResponse,
   formData: FormData,
-): Promise<ApiResponse> => {
+): Promise<ApiResponse> {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -117,6 +117,4 @@ const signInUser = async (
       message: "An unexpected error occurred. Please try again later.",
     };
   }
-};
-
-export default signInUser;
+}
