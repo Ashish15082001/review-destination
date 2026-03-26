@@ -76,16 +76,16 @@ export async function getUserSessionsCollection(): Promise<
   return db.collection("userSessions");
 }
 
-export async function getUserScrapedDataCollection(): Promise<
+export async function getPasswordResetCollection(): Promise<
   Collection<Document>
 > {
   const db = await getDatabase();
-  return db.collection("userScrapedData");
+  return db.collection("PasswordReset");
 }
 
-export async function getPasswordResetValidationTokensCollection(): Promise<
+export async function getEmailVerificationCollection(): Promise<
   Collection<Document>
 > {
   const db = await getDatabase();
-  return db.collection("userPasswordReset");
+  return db.collection("emailVerification");
 }

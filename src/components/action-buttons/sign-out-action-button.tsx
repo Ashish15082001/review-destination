@@ -6,7 +6,7 @@ import { useActionState } from "react";
 
 const initialState: ApiResponse = {};
 
-function SignOutActionButton() {
+export default function SignOutActionButton() {
   const [state, action, isPending] = useActionState(signOutUser, initialState);
 
   return (
@@ -21,5 +21,3 @@ function SignOutActionButton() {
     </form>
   );
 }
-
-export default SignOutActionButton;

@@ -88,13 +88,15 @@ export async function updateUserPasswordByEmail({
 }): Promise<boolean> {
   const collection = await getUsersCollection();
 
-  const updateResult = await collection.updateOne(
+  const updatedUserDoc = await collection.findOneAndUpdate(
     { email },
     { $set: { password } },
+    { returnDocument: 'after' }
   );
 
-  if (updateResult.matchedCount !== 1) return false;
+  if (!updatedUserDoc) return false;
 
+  revalidateTag(`userData-userId-${updatedUserDoc._id.toString()}`, "max");
   revalidateTag(`userData-email-${email}`, "max");
 
   return true;
@@ -242,19 +244,22 @@ export async function getUserStats(): Promise<UserStats | null> {
   };
 }
 
-export async function UpdateUserPasswordByEmail({
+export async function setUserAsVerified({
   email,
-  password,
-}: Pick<UserData, "email" | "password">): Promise<boolean> {
+}: {
+  email: string;
+}): Promise<boolean> {
   const collection = await getUsersCollection();
 
-  const updateResult = await collection.updateOne(
+  const updatedUserDoc = await collection.findOneAndUpdate(
     { email },
-    { $set: { password } },
+    { $set: { isEmailVerified: true } },
+    { returnDocument: 'after' }
   );
 
-  if (updateResult.matchedCount !== 1) return false;
+  if (!updatedUserDoc) return false;
 
+  revalidateTag(`userData-userId-${updatedUserDoc._id.toString()}`, "max");
   revalidateTag(`userData-email-${email}`, "max");
 
   return true;

@@ -17,6 +17,7 @@ export async function insertLikeData(
     ...likeData,
     _id: new ObjectId().toString(),
   });
+
   const likeDataDocument: LikeDataDocument =
     mapLikeDataToLikeDataDocument(validatedLikeData);
 

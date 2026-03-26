@@ -2,19 +2,19 @@
 
 import { getUserDataByEmail } from "@/repository/user";
 import crypto from "crypto";
-import generatePasswordResetLink from "@/utils/generatePasswordResetLink";
+import generateEmailVerificationLink from "@/utils/generateEmailVerificationLink";
 import { ApiResponse } from "@/types/apiResponse";
-import { SendPasswordResetLinkFormDataSchema } from "@/schema/password-reset";
-import { insertPasswordResetData } from "@/repository/password-reset";
-import sendPasswordResetEmail from "@/utils/sendPasswordResetEmail";
+import { insertEmailVerificationData } from "@/repository/email-verification";
+import { SendEmailVerificationLinkFormDataSchema } from "@/schema/email-verification";
+import sendEmailVerificationEmail from "@/utils/sendEmailVerficationEmail";
 
-export default async function sendPasswordResetLink(
+export default async function sendEmailVerificationLink(
   prevData: ApiResponse,
   formData: FormData,
 ): Promise<ApiResponse> {
   const email = formData.get("email") as string;
 
-  const validationResult = SendPasswordResetLinkFormDataSchema.safeParse({
+  const validationResult = SendEmailVerificationLinkFormDataSchema.safeParse({
     email,
   });
 
@@ -22,7 +22,7 @@ export default async function sendPasswordResetLink(
   const returnValue: ApiResponse = {
     type: validationResult.success ? "success" : "error",
     message: validationResult.success
-      ? "If an account with this email exists, a password reset link has been sent."
+      ? "If an account with this email exists, a verification link has been sent."
       : "Please check your email and try again.",
     fields: {
       email: { value: email },
@@ -47,19 +47,19 @@ export default async function sendPasswordResetLink(
   const userData = await getUserDataByEmail({ email });
 
   if (userData) {
-    // Generate a secure random token. In production, consider using a more robust solution and storing the token with an expiration time in the database.
-    const validationToken = crypto.randomBytes(32).toString("hex");
-    const passwordResetLink = generatePasswordResetLink(validationToken);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const emailVerificationLink =
+      generateEmailVerificationLink(verificationToken);
 
-    const sendEmailResponse = await sendPasswordResetEmail({
-      passwordResetLink,
+    const sendEmailResponse = await sendEmailVerificationEmail({
+      emailVerificationLink: emailVerificationLink,
       userName: userData.userName,
       recipientEmail: userData.email,
     });
 
-    await insertPasswordResetData({
+    await insertEmailVerificationData({
       email: userData.email,
-      token: validationToken,
+      token: verificationToken,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // Set token to expire in 10 minutes. Adjust as needed.
     });
 
@@ -69,6 +69,6 @@ export default async function sendPasswordResetLink(
   return {
     type: "success",
     message:
-      "If an account with this email exists, a password reset link has been sent.",
+      "If an account with this email exists, a verification link has been sent.",
   };
 }

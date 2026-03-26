@@ -8,6 +8,7 @@ import {
   getReviewsDataByUserId,
 } from "@/repository/review";
 import { UserAvatar } from "@/components/user-avatar/user-avatar";
+import SendEmailVerificationLinkActionButton from "@/components/action-buttons/send-email-verification-link-action-button";
 
 type PageProps = {
   searchParams: Promise<{ tab?: string }>;
@@ -62,7 +63,47 @@ export default async function ProfilePage({ searchParams }: PageProps) {
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
               {userData.userName}
             </h1>
-            <p className="text-sm text-slate-500 mt-1">{userData.email}</p>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <p className="text-sm text-slate-500">{userData.email}</p>
+              {userData.isEmailVerified ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Verified
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                    />
+                  </svg>
+                  Unverified
+                </span>
+              )}
+            </div>
+            {!userData.isEmailVerified && (
+              <SendEmailVerificationLinkActionButton email={userData.email} />
+            )}
             <p className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1">
               <svg
                 className="w-3.5 h-3.5"

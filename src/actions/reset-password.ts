@@ -9,8 +9,8 @@ import { ApiResponse } from "@/types/apiResponse";
 import {
   deletePasswordResetData,
   getPasswordResetDataByToken,
-} from "@/repository/user-password-reset";
-import { ResetPasswordFormDataSchema } from "@/schema/user-password-reset";
+} from "@/repository/password-reset";
+import { ResetPasswordFormDataSchema } from "@/schema/password-reset";
 import getHashedPasswordWithSalt from "@/utils/getHashWithSalt";
 
 export default async function resetPassword(
