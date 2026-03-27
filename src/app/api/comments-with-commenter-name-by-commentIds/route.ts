@@ -1,4 +1,4 @@
-import { getCommentsDataWithCommenterDataByCommentIds } from "@/repository/comment";
+import { getCommentsDataWithCommenterInfoByCommentIds } from "@/repository/comment";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const commentsData = await getCommentsDataWithCommenterDataByCommentIds({
+  const commentsData = await getCommentsDataWithCommenterInfoByCommentIds({
     commentIds,
   });
 

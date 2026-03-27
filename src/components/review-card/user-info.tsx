@@ -1,4 +1,4 @@
-import { getUserDataByUserId } from "@/repository/user";
+import { getUserDataById } from "@/repository/user";
 import { UserAvatar } from "../user-avatar/user-avatar";
 
 export async function UserInfo({
@@ -8,7 +8,7 @@ export async function UserInfo({
   userId: string;
   date: string;
 }) {
-  const userData = await getUserDataByUserId({ userId });
+  const userData = await getUserDataById({ userId });
 
   if (!userData) return null;
 

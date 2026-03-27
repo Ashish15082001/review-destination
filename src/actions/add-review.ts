@@ -1,6 +1,6 @@
 "use server";
 
-import { uploadImage } from "@/lib/cloudinary";
+import { uploadImage } from "@/utils/cloudinary";
 import { insertReviewData } from "@/repository/review";
 import { getUserDataUsingSession } from "@/repository/user";
 import { ReviewDataBrowserSchema } from "@/schema/review";

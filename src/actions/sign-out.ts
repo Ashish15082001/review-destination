@@ -14,12 +14,13 @@ export default async function signOutUser(
   prevData: ApiResponse,
   formData: FormData,
 ): Promise<ApiResponse> {
-  const sessionCookie = await cookies();
-  const sessionId = sessionCookie.get("sessionId")?.value;
+  const clientCookies = await cookies();
+  const sessionId = clientCookies.get("sessionId")?.value;
 
   if (sessionId) {
     await deleteUserSession(sessionId);
-    sessionCookie.delete("sessionId");
+
+    clientCookies.delete("sessionId");
   }
 
   return {

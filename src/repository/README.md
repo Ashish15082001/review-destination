@@ -90,7 +90,7 @@ $pull:     { idsOfUsersWhoDisliked: new ObjectId(userId) },
 | Function                                       | Operation                | Notes                                                                                           |
 | ---------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
 | `insertCommentData`                            | INSERT                   | Generates a new `ObjectId`, maps to document, inserts                                           |
-| `getCommentData`                               | SELECT by ID             | Returns `null` if not found                                                                     |
+| `getCommentDataById`                           | SELECT by ID             | Returns `null` if not found                                                                     |
 | `getCommentsDataByReviewId`                    | SELECT by `reviewId`     | Memoised with `React.cache`                                                                     |
 | `getCommentsDataWithCommenterDataByReviewId`   | SELECT + JOIN            | Enriches each comment with `userName` + `profilePictureUrl` from the users collection; memoised |
 | `getCommentsDataWithCommenterDataByCommentIds` | SELECT by ID list + JOIN | Batch look-up version of the above                                                              |
@@ -127,7 +127,7 @@ $pull:     { idsOfUsersWhoDisliked: new ObjectId(userId) },
 | Function                  | Operation         | Notes                                                           |
 | ------------------------- | ----------------- | --------------------------------------------------------------- |
 | `getUserDataByEmail`      | SELECT by `email` | Returns `null` if not found                                     |
-| `getUserDataByUserId`     | SELECT by `_id`   | Returns `null` if not found                                     |
+| `getUserDataById`         | SELECT by `_id`   | Returns `null` if not found                                     |
 | `getUsersDataByUserIds`   | SELECT by ID list | Batch look-up; returns `[]` for empty result                    |
 | `registerNewUser`         | INSERT            | Returns new user's string ID                                    |
 | `getUserDataUsingSession` | AUTH FLOW         | Reads cookie → session → user; validates expiry                 |

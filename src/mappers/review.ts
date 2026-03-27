@@ -1,39 +1,42 @@
-import { ReviewData, ReviewDataDocument } from "@/schema/review";
+import { ReviewData, ReviewDocument } from "@/schema/review";
 import toObjectId from "@/utils/toObjectId";
 import validateReviewData, {
-  validateReviewDataDocument,
+  validateReviewDocument,
 } from "@/validators/review";
 
 /**
- * Maps a MongoDB review document into application-level review data.
+ * Maps application-level review data into a MongoDB review document.
+ * @param reviewData - The review data to map.
+ * @returns The MongoDB review document.
  */
-export function mapReviewDataDocumentToReviewData(
-  reviewDataDocument: ReviewDataDocument,
+export function mapReviewDocumentToReviewData(
+  reviewDocument: ReviewDocument,
 ): ReviewData {
-  const validatedReviewDataDocument =
-    validateReviewDataDocument(reviewDataDocument);
+  const validatedReviewDocument = validateReviewDocument(reviewDocument);
 
   return validateReviewData({
-    _id: validatedReviewDataDocument._id.toString(),
-    userId: validatedReviewDataDocument.userId.toString(),
-    destinationName: validatedReviewDataDocument.destinationName,
-    whenVisited: validatedReviewDataDocument.whenVisited,
-    description: validatedReviewDataDocument.description,
-    experience: validatedReviewDataDocument.experience,
-    destinationPhotoUrls: validatedReviewDataDocument.destinationPhotoUrls,
-    datePosted: validatedReviewDataDocument.datePosted,
+    _id: validatedReviewDocument._id.toString(),
+    userId: validatedReviewDocument.userId.toString(),
+    destinationName: validatedReviewDocument.destinationName,
+    whenVisited: validatedReviewDocument.whenVisited,
+    description: validatedReviewDocument.description,
+    experience: validatedReviewDocument.experience,
+    destinationPhotoUrls: validatedReviewDocument.destinationPhotoUrls,
+    datePosted: validatedReviewDocument.datePosted,
   });
 }
 
 /**
  * Maps application-level review data into a MongoDB review document.
+ * @param reviewData - The review data to map.
+ * @returns The MongoDB review document.
  */
-export function mapReviewDataToReviewDataDocument(
+export function mapReviewDataToReviewDocument(
   reviewData: ReviewData,
-): ReviewDataDocument {
+): ReviewDocument {
   const validatedReviewData = validateReviewData(reviewData);
 
-  return validateReviewDataDocument({
+  return validateReviewDocument({
     _id: toObjectId(validatedReviewData._id, "_id"),
     userId: toObjectId(validatedReviewData.userId, "userId"),
     destinationName: validatedReviewData.destinationName,

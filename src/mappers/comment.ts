@@ -1,48 +1,50 @@
-import { CommentData, CommentDataDocument } from "@/schema/comment";
+import { CommentData, CommentDocument } from "@/schema/comment";
 import toObjectId from "@/utils/toObjectId";
 import validateCommentData, {
-  validateCommentDataDocument,
+  validateCommentDocument,
 } from "@/validators/comment";
 
 /**
  * Maps a MongoDB comment document into application-level comment data.
+ * @param commentDocument - The comment document to map.
+ * @returns The application-level comment data.
  */
-export function mapCommentDataDocumentToCommentData(
-  commentDataDocument: CommentDataDocument,
+export function mapCommentDocumentToCommentData(
+  commentDocument: CommentDocument,
 ): CommentData {
-  const validatedCommentDataDocument =
-    validateCommentDataDocument(commentDataDocument);
+  const validatedCommentDocument = validateCommentDocument(commentDocument);
 
   return validateCommentData({
-    _id: validatedCommentDataDocument._id.toString(),
+    _id: validatedCommentDocument._id.toString(),
     parentCommentId:
-      validatedCommentDataDocument.parentCommentId?.toString() ?? null,
-    reviewId: validatedCommentDataDocument.reviewId.toString(),
-    commentedBy: validatedCommentDataDocument.commentedBy.toString(),
-    commentedOn: validatedCommentDataDocument.commentedOn,
-    comment: validatedCommentDataDocument.comment,
-    replyCommentIds: validatedCommentDataDocument.replyCommentIds.map((id) =>
+      validatedCommentDocument.parentCommentId?.toString() ?? null,
+    reviewId: validatedCommentDocument.reviewId.toString(),
+    commentedBy: validatedCommentDocument.commentedBy.toString(),
+    commentedOn: validatedCommentDocument.commentedOn,
+    comment: validatedCommentDocument.comment,
+    replyCommentIds: validatedCommentDocument.replyCommentIds.map((id) =>
       id.toString(),
     ),
-    idsOfUsersWhoLiked: validatedCommentDataDocument.idsOfUsersWhoLiked.map(
+    idsOfUsersWhoLiked: validatedCommentDocument.idsOfUsersWhoLiked.map((id) =>
+      id.toString(),
+    ),
+    idsOfUsersWhoDisliked: validatedCommentDocument.idsOfUsersWhoDisliked.map(
       (id) => id.toString(),
     ),
-    idsOfUsersWhoDisliked:
-      validatedCommentDataDocument.idsOfUsersWhoDisliked.map((id) =>
-        id.toString(),
-      ),
   });
 }
 
 /**
  * Maps application-level comment data into a MongoDB comment document.
+ * @param commentData - The comment data to map.
+ * @returns The MongoDB comment document.
  */
-export function mapCommentDataToCommentDataDocument(
+export function mapCommentDataToCommentDocument(
   commentData: CommentData,
-): CommentDataDocument {
+): CommentDocument {
   const validatedCommentData = validateCommentData(commentData);
 
-  return validateCommentDataDocument({
+  return validateCommentDocument({
     _id: toObjectId(validatedCommentData._id, "_id"),
     parentCommentId: validatedCommentData.parentCommentId
       ? toObjectId(validatedCommentData.parentCommentId, "parentCommentId")

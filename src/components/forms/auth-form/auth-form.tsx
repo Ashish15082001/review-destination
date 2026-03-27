@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { AuthMode } from "@/lib/auth-mode";
+import { AuthMode } from "@/types/auth-mode";
 import { redirect } from "next/navigation";
 import FormError from "../../validation-message/field-error";
 import FormMessage from "../../validation-message/form-message";

@@ -3,7 +3,6 @@
 import verifyEmail from "@/actions/verify-email";
 import { redirect } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { is } from "zod/v4/locales";
 
 export default function VerifyEmailForm({ token }: { token: string }) {
   const [state, formAction, isPending] = useActionState(verifyEmail, {});

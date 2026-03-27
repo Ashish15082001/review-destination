@@ -4,8 +4,8 @@ import {
   UserSignUpData,
   UserSignUpDataSchema,
   UserData,
-  UserDataDocument,
-  UserDataDocumentSchema,
+  UserDocument,
+  UserDocumentSchema,
   UserDataSchema,
 } from "@/schema/user";
 
@@ -26,17 +26,15 @@ export default function validateUserData(userData: UserData): UserData {
 
 /**
  * Validates a MongoDB user document.
- * @param userDataDocument - The user document to validate.
+ * @param userDocument - The user document to validate.
  * @returns The parsed and validated user document.
  * @throws {Error} If validation fails.
  */
-export function validateUserDataDocument(
-  userDataDocument: UserDataDocument,
-): UserDataDocument {
-  const parseResult = UserDataDocumentSchema.safeParse(userDataDocument);
+export function validateUserDocument(userDocument: UserDocument): UserDocument {
+  const parseResult = UserDocumentSchema.safeParse(userDocument);
 
   if (!parseResult.success)
-    throw new Error(`Invalid user data document: ${parseResult.error.message}`);
+    throw new Error(`Invalid user document: ${parseResult.error.message}`);
 
   return parseResult.data;
 }

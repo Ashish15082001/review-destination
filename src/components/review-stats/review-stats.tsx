@@ -1,6 +1,6 @@
 import { getLikesDataByReviewId } from "@/repository/like";
 import { ReviewLikeButton } from "../review-like-button/review-like-button";
-import { getCommentsDataByReviewId } from "@/repository/comment";
+import { getCommentsDataWithCommenterInfoByReviewId } from "@/repository/comment";
 import { getUserDataUsingSession } from "@/repository/user";
 import { connection } from "next/server";
 
@@ -13,15 +13,15 @@ export async function ReviewStats({ reviewId }: { reviewId: string }) {
   */
   await connection();
 
-  const [likesData, commentsData, userData] = await Promise.all([
+  const [likesData, commentsWithCommenterInfos, userData] = await Promise.all([
     getLikesDataByReviewId({ reviewId }),
-    getCommentsDataByReviewId({ reviewId }),
+    getCommentsDataWithCommenterInfoByReviewId({ reviewId }),
     getUserDataUsingSession(),
   ]);
 
   const currentUserData = userData;
   const totalLikes = likesData.length;
-  const totalComments = commentsData.length;
+  const totalComments = commentsWithCommenterInfos.length;
 
   // Check if the current user has already liked the review
   // We find like data for the current user by comparing the likedBy field with the currentUserData

@@ -1,7 +1,7 @@
 import {
   LikeData,
-  LikeDataDocument,
-  LikeDataDocumentSchema,
+  LikeDocument,
+  LikeDocumentSchema,
   LikeDataSchema,
 } from "@/schema/like";
 
@@ -26,10 +26,8 @@ export default function validateLikeData(likeData: LikeData): LikeData {
  * @returns The parsed and validated like document.
  * @throws {Error} If validation fails.
  */
-export function validateLikeDataDocument(
-  likeDataDocument: LikeDataDocument,
-): LikeDataDocument {
-  const parseResult = LikeDataDocumentSchema.safeParse(likeDataDocument);
+export function validateLikeDocument(likeDocument: LikeDocument): LikeDocument {
+  const parseResult = LikeDocumentSchema.safeParse(likeDocument);
 
   if (!parseResult.success)
     throw new Error(`Invalid like data document: ${parseResult.error.message}`);

@@ -1,37 +1,42 @@
 import {
   EmailVerificationData,
-  EmailVerificationDataDocument,
+  EmailVerificationDocument,
 } from "@/schema/email-verification";
 import toObjectId from "@/utils/toObjectId";
 import validateEmailVerificationData from "@/validators/email-verification";
-import { validateEmailVerificationDataDocument } from "@/validators/email-verification";
+import { validateEmailVerificationDocument } from "@/validators/email-verification";
 
 /**
  * Maps a MongoDB email verification document into application-level email verification data.
+ * @param emailVerificationDocument - The email verification document to map.
+ * @returns The application-level email verification data.
  */
-export function mapEmailVerificationDataDocumentToEmailVerificationData(
-  emailVerificationDataDocument: EmailVerificationDataDocument,
+export function mapEmailVerificationDocumentToEmailVerificationData(
+  emailVerificationDocument: EmailVerificationDocument,
 ): EmailVerificationData {
-  const validatedEmailVerificationDataDocument =
-    validateEmailVerificationDataDocument(emailVerificationDataDocument);
+  const validatedEmailVerificationDocument = validateEmailVerificationDocument(
+    emailVerificationDocument,
+  );
 
   return validateEmailVerificationData({
-    ...validatedEmailVerificationDataDocument,
-    _id: validatedEmailVerificationDataDocument._id.toString(),
+    ...validatedEmailVerificationDocument,
+    _id: validatedEmailVerificationDocument._id.toString(),
   });
 }
 
 /**
  * Maps application-level email verification data into a MongoDB email verification document.
+ * @param emailVerificationData - The email verification data to map.
+ * @returns The MongoDB email verification document.
  */
-export function mapEmailVerificationDataToEmailVerificationDataDocument(
+export function mapEmailVerificationDataToEmailVerificationDocument(
   emailVerificationData: EmailVerificationData,
-): EmailVerificationDataDocument {
+): EmailVerificationDocument {
   const validatedEmailVerificationData = validateEmailVerificationData(
     emailVerificationData,
   );
 
-  return validateEmailVerificationDataDocument({
+  return validateEmailVerificationDocument({
     ...validatedEmailVerificationData,
     _id: toObjectId(validatedEmailVerificationData._id, "_id"),
   });

@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
     const updated = await addLikeToComment({
       commentId,
       userId: userData._id,
-      reviewId,
     });
 
     if (!updated) {

@@ -1,35 +1,38 @@
-import { UserSessionData, UserSessionDataDocument } from "@/schema/userSession";
+import { UserSessionData, UserSessionDocument } from "@/schema/userSession";
 import toObjectId from "@/utils/toObjectId";
 import validateUserSessionData, {
-  validateUserSessionDataDocument,
+  validateUserSessionDocument,
 } from "@/validators/userSession";
 
 /**
- * Maps a MongoDB user session document into application-level session data.
+ * Maps application-level user session data into a MongoDB user session document.
+ * @param userSessionData - The user session data to map.
+ * @returns The MongoDB user session document.
  */
-export function mapUserSessionDataDocumentToUserSessionData(
-  userSessionDataDocument: UserSessionDataDocument,
+export function mapUserSessionDocumentToUserSessionData(
+  userSessionDocument: UserSessionDocument,
 ): UserSessionData {
-  const validatedUserSessionDataDocument = validateUserSessionDataDocument(
-    userSessionDataDocument,
-  );
+  const validatedUserSessionDocument =
+    validateUserSessionDocument(userSessionDocument);
 
   return validateUserSessionData({
-    _id: validatedUserSessionDataDocument._id.toString(),
-    userId: validatedUserSessionDataDocument.userId.toString(),
-    expiresOn: validatedUserSessionDataDocument.expiresOn,
+    _id: validatedUserSessionDocument._id.toString(),
+    userId: validatedUserSessionDocument.userId.toString(),
+    expiresOn: validatedUserSessionDocument.expiresOn,
   });
 }
 
 /**
- * Maps application-level user session data into a MongoDB session document.
+ * Maps application-level user session data into a MongoDB user session document.
+ * @param userSessionData - The user session data to map.
+ * @returns The MongoDB user session document.
  */
-export function mapUserSessionDataToUserSessionDataDocument(
+export function mapUserSessionDataToUserSessionDocument(
   userSessionData: UserSessionData,
-): UserSessionDataDocument {
+): UserSessionDocument {
   const validatedUserSessionData = validateUserSessionData(userSessionData);
 
-  return validateUserSessionDataDocument({
+  return validateUserSessionDocument({
     _id: toObjectId(validatedUserSessionData._id, "_id"),
     userId: toObjectId(validatedUserSessionData.userId, "userId"),
     expiresOn: validatedUserSessionData.expiresOn,

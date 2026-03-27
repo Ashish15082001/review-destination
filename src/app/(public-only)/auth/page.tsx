@@ -1,7 +1,7 @@
 "use server";
 
 import AuthForm from "@/components/forms/auth-form/auth-form";
-import { AuthMode } from "@/lib/auth-mode";
+import { AuthMode } from "@/types/auth-mode";
 
 export default async function AuthPage({ searchParams }: PageProps<"/auth">) {
   const modeParam = (await searchParams).mode;

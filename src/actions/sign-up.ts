@@ -1,14 +1,14 @@
 "use server";
 
 import { UserSignUpData, UserSignUpDataSchema } from "@/schema/user";
-import { cookies } from "next/headers";
-import bcrypt from "bcrypt";
-import { uploadImage } from "@/lib/cloudinary";
+import { uploadImage } from "@/utils/cloudinary";
 import { getUserDataByEmail, registerNewUser } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
 import Mailchecker from "mailchecker";
 import getHashedPasswordWithSalt from "@/utils/getHashWithSalt";
 import { ApiResponse } from "@/types/apiResponse";
+import getSignature from "@/utils/getSignature";
+import { cookies } from "next/headers";
 
 /**
  * Server action to register a new user.
@@ -132,16 +132,17 @@ export default async function signUpUser(
       isEmailVerified: false,
     });
 
-    const sessionData = await insertUserSession({
+    const sessionId = await insertUserSession({
       userId: registeredUserId,
       expiresOn: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Session expires in 7 days
     });
 
-    const sessionCookie = await cookies();
+    const getCookieSignature = getSignature(sessionId);
+    const signedSessionId = `${sessionId}.${getCookieSignature}`;
 
-    sessionCookie.set("sessionId", sessionData.toString(), {
+    (await cookies()).set("sessionId", signedSessionId, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });

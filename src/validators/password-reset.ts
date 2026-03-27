@@ -1,7 +1,7 @@
 import {
   PasswordResetData,
-  PasswordResetDataDocument,
-  PasswordResetDataDocumentSchema,
+  PasswordResetDocument,
+  PasswordResetDocumentSchema,
   PasswordResetDataSchema,
 } from "@/schema/password-reset";
 
@@ -26,20 +26,20 @@ export default function validatePasswordResetData(
 
 /**
  * Validates a password reset document as stored in MongoDB.
- * @param passwordResetDataDocument - The password reset document to validate.
+ * @param passwordResetDocument - The password reset document to validate.
  * @returns The parsed and validated password reset document.
  * @throws {Error} If validation fails.
  */
-export function validatePasswordResetDataDocument(
-  passwordResetDataDocument: PasswordResetDataDocument,
-): PasswordResetDataDocument {
-  const parseResult = PasswordResetDataDocumentSchema.safeParse(
-    passwordResetDataDocument,
+export function validatePasswordResetDocument(
+  passwordResetDocument: PasswordResetDocument,
+): PasswordResetDocument {
+  const parseResult = PasswordResetDocumentSchema.safeParse(
+    passwordResetDocument,
   );
 
   if (!parseResult.success)
     throw new Error(
-      `Invalid password reset data document: ${parseResult.error.message}`,
+      `Invalid password reset document: ${parseResult.error.message}`,
     );
 
   return parseResult.data;

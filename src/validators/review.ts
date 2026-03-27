@@ -2,8 +2,8 @@ import {
   ReviewData,
   ReviewDataBrowser,
   ReviewDataBrowserSchema,
-  ReviewDataDocument,
-  ReviewDataDocumentSchema,
+  ReviewDocument,
+  ReviewDocumentSchema,
   ReviewDataSchema,
 } from "@/schema/review";
 
@@ -24,19 +24,17 @@ export default function validateReviewData(reviewData: ReviewData): ReviewData {
 
 /**
  * Validates a MongoDB review document.
- * @param reviewDataDocument - The review document to validate.
+ * @param reviewDocument - The review document to validate.
  * @returns The parsed and validated review document.
  * @throws {Error} If validation fails.
  */
-export function validateReviewDataDocument(
-  reviewDataDocument: ReviewDataDocument,
-): ReviewDataDocument {
-  const parseResult = ReviewDataDocumentSchema.safeParse(reviewDataDocument);
+export function validateReviewDocument(
+  reviewDocument: ReviewDocument,
+): ReviewDocument {
+  const parseResult = ReviewDocumentSchema.safeParse(reviewDocument);
 
   if (!parseResult.success)
-    throw new Error(
-      `Invalid review data document: ${parseResult.error.message}`,
-    );
+    throw new Error(`Invalid review document: ${parseResult.error.message}`);
 
   return parseResult.data;
 }

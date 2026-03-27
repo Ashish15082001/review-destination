@@ -2,7 +2,7 @@
 
 import { CommentCard } from "@/components/comment-card/comment-card";
 import { UserData } from "@/schema/user";
-import { CommentDataWithCommenterData } from "@/schema/comment";
+import { CommentDataWithCommenterInfo } from "@/schema/comment";
 import { useEffect, useState } from "react";
 
 export function Comments({
@@ -16,10 +16,10 @@ export function Comments({
   commentIds: string[];
   reviewUserData: UserData;
   currentUserData?: UserData;
-  parentCommentData?: CommentDataWithCommenterData;
+  parentCommentData?: CommentDataWithCommenterInfo;
 }) {
   const [commentsDataWithCommenterName, setCommentsDataWithCommenterName] =
-    useState<CommentDataWithCommenterData[]>([]);
+    useState<CommentDataWithCommenterInfo[]>([]);
   const [isLoading, setIsLoading] = useState(commentIds.length > 0);
 
   useEffect(() => {

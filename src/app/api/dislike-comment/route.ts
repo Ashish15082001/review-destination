@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
     const updated = await addDislikeToComment({
       commentId,
       userId: userData._id,
-      reviewId,
     });
 
     if (!updated) {

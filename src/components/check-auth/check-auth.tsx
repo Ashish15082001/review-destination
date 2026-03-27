@@ -1,4 +1,4 @@
-import { checkIfUserIsAuthenticated } from "@/lib/checkIfUserIsAuthenticated";
+import { checkIfUserIsAuthenticated } from "@/utils/checkIfUserIsAuthenticated";
 import { redirect } from "next/navigation";
 
 /**

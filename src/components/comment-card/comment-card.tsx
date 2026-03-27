@@ -1,6 +1,6 @@
 "use client";
 
-import { CommentDataWithCommenterData } from "@/schema/comment";
+import { CommentDataWithCommenterInfo } from "@/schema/comment";
 import { CommentActions } from "../comment-actions/comment-actions";
 import { UserAvatar } from "../user-avatar/user-avatar";
 import { UserData } from "@/schema/user";
@@ -8,8 +8,8 @@ import { useState } from "react";
 import { Comments } from "../comments/comments";
 
 interface CommentCardProps {
-  commentData: CommentDataWithCommenterData;
-  parentCommentData?: CommentDataWithCommenterData;
+  commentData: CommentDataWithCommenterInfo;
+  parentCommentData?: CommentDataWithCommenterInfo;
   reviewUserData: UserData;
   currentUserData?: UserData;
 }

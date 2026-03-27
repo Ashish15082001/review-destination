@@ -1,31 +1,31 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import {
-  getUserDataByUserId,
-  getUserDataUsingSession,
-} from "@/repository/user";
+import { getUserDataById, getUserDataUsingSession } from "@/repository/user";
 import { ReviewStats } from "@/components/review-stats/review-stats";
 import { Comments } from "@/components/comments/comments";
 import { CommentForm } from "@/components/forms/comment-form/comment-form";
 import CheckAuth from "@/components/check-auth/check-auth";
 import { UserAvatar } from "@/components/user-avatar/user-avatar";
 import { getReviewData } from "@/repository/review";
-import { getCommentsDataByReviewId } from "@/repository/comment";
+import { getCommentsDataWithCommenterInfoByReviewId } from "@/repository/comment";
 
 export default async function ReviewPage({
   params,
 }: PageProps<"/review/[id]">) {
   const { id } = await params;
   const reviewData = await getReviewData(id);
-  const commentsData = (
-    await getCommentsDataByReviewId({ reviewId: id })
-  ).filter((commentData) => commentData.parentCommentId === null); // required to ensure only top-level comments are fetched here, since replies are fetched in CommentCard component based on parent comment's _id
+  const commentsDataWithCommenterInfos = (
+    await getCommentsDataWithCommenterInfoByReviewId({ reviewId: id })
+  ).filter(
+    (commentDataWithCommenterInfo) =>
+      commentDataWithCommenterInfo.parentCommentId === null,
+  ); // required to ensure only top-level comments are fetched here, since replies are fetched in CommentCard component based on parent comment's _id
 
   if (!reviewData) {
     notFound();
   }
 
-  const reviewUserData = await getUserDataByUserId({
+  const reviewUserData = await getUserDataById({
     userId: reviewData.userId,
   });
   const currentUserData = await getUserDataUsingSession();
@@ -152,7 +152,9 @@ export default async function ReviewPage({
 
             <Comments
               isRootLevel={true}
-              commentIds={commentsData.map((comment) => comment._id)}
+              commentIds={commentsDataWithCommenterInfos.map(
+                (comment) => comment._id,
+              )}
               reviewUserData={reviewUserData}
               currentUserData={currentUserData || undefined}
             />

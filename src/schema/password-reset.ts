@@ -21,7 +21,7 @@ export const ResetPasswordFormDataSchema = z.object({
 /**
  * MongoDB representation of a password reset document.
  */
-export const PasswordResetDataDocumentSchema = z.object({
+export const PasswordResetDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   token: z.string().min(1, "Reset token is required"),
   email: BaseUserFields.email,
@@ -53,9 +53,7 @@ export type ResetPasswordFormData = z.infer<typeof ResetPasswordFormDataSchema>;
 /**
  * Inferred TypeScript type for password reset document from MongoDB.
  */
-export type PasswordResetDataDocument = z.infer<
-  typeof PasswordResetDataDocumentSchema
->;
+export type PasswordResetDocument = z.infer<typeof PasswordResetDocumentSchema>;
 
 /**
  * Inferred TypeScript type for password reset data used in the application.

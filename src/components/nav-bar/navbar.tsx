@@ -1,7 +1,7 @@
 import { Link } from "react-transition-progress/next";
 import CheckAuth from "../check-auth/check-auth";
 import { Suspense } from "react";
-import { AuthMode } from "@/lib/auth-mode";
+import { AuthMode } from "@/types/auth-mode";
 import SignOutActionButton from "../action-buttons/sign-out-action-button";
 
 export default function Navbar() {

@@ -1,11 +1,16 @@
 import "server-only";
 
-import { CommentDataDocument } from "@/schema/comment";
-import { LikeDataDocument } from "@/schema/like";
-import { ReviewDataDocument } from "@/schema/review";
-import { UserDataDocument } from "@/schema/user";
+import { CommentDocument } from "@/schema/comment";
+import { LikeDocument } from "@/schema/like";
+import { ReviewDocument } from "@/schema/review";
+import { UserDocument } from "@/schema/user";
 import { MongoClient, Db, Collection, Document } from "mongodb";
-import { UserSessionDataDocument } from "@/schema/userSession";
+import { UserSessionDocument } from "@/schema/userSession";
+import {
+  PasswordResetData,
+  PasswordResetDocument,
+} from "@/schema/password-reset";
+import { EmailVerificationDocument } from "@/schema/email-verification";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -42,49 +47,45 @@ export async function getDatabase(): Promise<Db> {
 }
 
 export async function getReviewsCollection(): Promise<
-  Collection<ReviewDataDocument>
+  Collection<ReviewDocument>
 > {
   const db = await getDatabase();
   return db.collection("reviews");
 }
 
-export async function getLikesCollection(): Promise<
-  Collection<LikeDataDocument>
-> {
+export async function getLikesCollection(): Promise<Collection<LikeDocument>> {
   const db = await getDatabase();
   return db.collection("likes");
 }
 
 export async function getCommentsCollection(): Promise<
-  Collection<CommentDataDocument>
+  Collection<CommentDocument>
 > {
   const db = await getDatabase();
   return db.collection("comments");
 }
 
-export async function getUsersCollection(): Promise<
-  Collection<UserDataDocument>
-> {
+export async function getUsersCollection(): Promise<Collection<UserDocument>> {
   const db = await getDatabase();
   return db.collection("users");
 }
 
 export async function getUserSessionsCollection(): Promise<
-  Collection<UserSessionDataDocument>
+  Collection<UserSessionDocument>
 > {
   const db = await getDatabase();
   return db.collection("userSessions");
 }
 
 export async function getPasswordResetCollection(): Promise<
-  Collection<Document>
+  Collection<PasswordResetDocument>
 > {
   const db = await getDatabase();
   return db.collection("PasswordReset");
 }
 
 export async function getEmailVerificationCollection(): Promise<
-  Collection<Document>
+  Collection<EmailVerificationDocument>
 > {
   const db = await getDatabase();
   return db.collection("emailVerification");

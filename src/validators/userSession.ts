@@ -1,7 +1,7 @@
 import {
   UserSessionData,
-  UserSessionDataDocument,
-  UserSessionDataDocumentSchema,
+  UserSessionDocument,
+  UserSessionDocumentSchema,
   UserSessionDataSchema,
 } from "@/schema/userSession";
 
@@ -24,20 +24,18 @@ export default function validateUserSessionData(
 
 /**
  * Validates a MongoDB user session document.
- * @param userSessionDataDocument - The user session document to validate.
+ * @param userSessionDocument - The user session document to validate.
  * @returns The parsed and validated session document.
  * @throws {Error} If validation fails.
  */
-export function validateUserSessionDataDocument(
-  userSessionDataDocument: UserSessionDataDocument,
-): UserSessionDataDocument {
-  const parseResult = UserSessionDataDocumentSchema.safeParse(
-    userSessionDataDocument,
-  );
+export function validateUserSessionDocument(
+  userSessionDocument: UserSessionDocument,
+): UserSessionDocument {
+  const parseResult = UserSessionDocumentSchema.safeParse(userSessionDocument);
 
   if (!parseResult.success)
     throw new Error(
-      `Invalid user session data document: ${parseResult.error.message}`,
+      `Invalid user session document: ${parseResult.error.message}`,
     );
 
   return parseResult.data;

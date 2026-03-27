@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
  *
  * Uses native ObjectId values for persisted records.
  */
-export const CommentDataDocumentSchema = z.object({
+export const CommentDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   parentCommentId: z.instanceof(ObjectId).nullable(),
   reviewId: z.instanceof(ObjectId),
@@ -48,34 +48,34 @@ export const CommentDataSchema = z.object({
 });
 
 /**
- * Enriched comment schema containing commenter profile fields.
+ * Enriched comment schema containing commenter information.
  */
-export const CommentDataWithCommenterDataSchema = CommentDataSchema.extend({
+export const CommentDataWithCommenterInfoSchema = CommentDataSchema.extend({
   commenterName: z.string(),
   profilePictureUrl: z.string(),
 });
 
 /**
- * MongoDB document schema enriched with commenter profile fields.
+ * MongoDB document schema enriched with commenter information.
  */
-export const CommentDataWithCommenterDataDocumentSchema =
-  CommentDataDocumentSchema.extend({
+export const CommentDocumentWithCommenterInfoSchema =
+  CommentDocumentSchema.extend({
     commenterName: z.string(),
     profilePictureUrl: z.string(),
   });
 
-/** Type inferred from CommentDataDocumentSchema. */
-export type CommentDataDocument = z.infer<typeof CommentDataDocumentSchema>;
+/** Type inferred from CommentDocumentSchema. */
+export type CommentDocument = z.infer<typeof CommentDocumentSchema>;
 
 /** Type inferred from CommentDataSchema. */
 export type CommentData = z.infer<typeof CommentDataSchema>;
 
-/** Type inferred from CommentDataWithCommenterDataSchema. */
-export type CommentDataWithCommenterData = z.infer<
-  typeof CommentDataWithCommenterDataSchema
+/** Type inferred from CommentDataWithCommenterInfoSchema. */
+export type CommentDataWithCommenterInfo = z.infer<
+  typeof CommentDataWithCommenterInfoSchema
 >;
 
-/** Type inferred from CommentDataWithCommenterDataDocumentSchema. */
-export type CommentDataWithCommenterDataDocument = z.infer<
-  typeof CommentDataWithCommenterDataDocumentSchema
+/** Type inferred from CommentDocumentWithCommenterInfoSchema. */
+export type CommentDocumentWithCommenterInfo = z.infer<
+  typeof CommentDocumentWithCommenterInfoSchema
 >;

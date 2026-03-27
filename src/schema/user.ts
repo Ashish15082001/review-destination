@@ -38,7 +38,7 @@ export const UserSignUpDataSchema = z.object({
 /**
  * MongoDB representation of a user document.
  */
-export const UserDataDocumentSchema = z.object({
+export const UserDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   userName: z.string(),
   email: z.email(),
@@ -52,7 +52,7 @@ export const UserDataDocumentSchema = z.object({
 /**
  * Application-level representation of user data.
  */
-export const UserDataSchema = UserDataDocumentSchema.extend({
+export const UserDataSchema = UserDocumentSchema.extend({
   _id: z.string(),
   savedReviewesIds: z.array(z.string()),
 });
@@ -70,7 +70,7 @@ export type UserSignUpData = z.infer<typeof UserSignUpDataSchema>;
 /**
  * Inferred TypeScript type for MongoDB user documents.
  */
-export type UserDataDocument = z.infer<typeof UserDataDocumentSchema>;
+export type UserDocument = z.infer<typeof UserDocumentSchema>;
 
 /**
  * Inferred TypeScript type for application-level users.

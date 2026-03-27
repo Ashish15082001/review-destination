@@ -8,12 +8,18 @@ import { UserData } from "@/schema/user";
 import { ObjectId } from "bson";
 import { deleteUserSession, getUserSessionData } from "./userSession";
 import {
-  mapUserDataDocumentToUserData,
-  mapUserDataToUserDataDocument,
+  mapUserDocumentToUserData,
+  mapUserDataToUserDocument,
 } from "@/mappers/user";
 import { cacheTag, revalidateTag } from "next/cache";
-import getCookieValue from "@/utils/getCookieValue";
+import getCookie from "@/utils/getCookie";
+import { cookies } from "next/headers";
 
+/**
+ * Validates and retrieves user data by email.
+ * @param email - The email of the user to retrieve.
+ * @returns The user data or null if not found.
+ */
 export async function getUserDataByEmail({
   email,
 }: {
@@ -25,12 +31,15 @@ export async function getUserDataByEmail({
   const collection = await getUsersCollection();
   const userDataDocument = await collection.findOne({ email });
 
-  return userDataDocument
-    ? mapUserDataDocumentToUserData(userDataDocument)
-    : null;
+  return userDataDocument ? mapUserDocumentToUserData(userDataDocument) : null;
 }
 
-export async function getUserDataByUserId({
+/**
+ * Validates and retrieves user data by ID.
+ * @param userId - The ID of the user to retrieve.
+ * @returns The user data or null if not found.
+ */
+export async function getUserDataById({
   userId,
 }: {
   userId: string;
@@ -39,71 +48,83 @@ export async function getUserDataByUserId({
   cacheTag(`userData-userId-${userId}`);
 
   const collection = await getUsersCollection();
-  const userDataDocument = await collection.findOne({
+  const userDocument = await collection.findOne({
     _id: new ObjectId(userId),
   });
 
-  return userDataDocument
-    ? mapUserDataDocumentToUserData(userDataDocument)
-    : null;
+  return userDocument ? mapUserDocumentToUserData(userDocument) : null;
 }
 
+/**
+ * Validates and retrieves user data by IDs.
+ * @param userIds - The IDs of the users to retrieve.
+ * @returns The user data or null if not found.
+ */
 export async function getUsersDataByUserIds({
   userIds,
 }: {
   userIds: string[];
 }): Promise<UserData[]> {
-  const collection = await getUsersCollection();
-  const userDataDocuments = await collection
-    .find({
-      _id: { $in: userIds.map((id) => new ObjectId(id)) },
-    })
-    .toArray();
+  const userDataPromises = userIds.map((userId) => getUserDataById({ userId }));
 
-  if (!userDataDocuments || userDataDocuments.length === 0) return [];
+  const usersData = await Promise.all(userDataPromises);
 
-  return userDataDocuments.map((doc) => mapUserDataDocumentToUserData(doc));
+  return usersData.filter((userData) => userData !== null);
 }
 
+/**
+ * Validates and inserts a new user data into the users collection.
+ * @param userData - The user data to insert.
+ * @returns The ID of the inserted user data.
+ */
 export async function registerNewUser(
   userData: Omit<UserData, "_id">,
 ): Promise<string> {
-  const userDataDocument = mapUserDataToUserDataDocument({
+  const userDocument = mapUserDataToUserDocument({
     ...userData,
     _id: new ObjectId().toString(),
   });
 
   const collection = await getUsersCollection();
-  await collection.insertOne(userDataDocument);
+  await collection.insertOne(userDocument);
 
-  return userDataDocument._id.toString();
+  return userDocument._id.toString();
 }
 
+/**
+ * Validates and inserts a new review data into the reviews collection.
+ * @param reviewData - The review data to insert.
+ * @returns The ID of the inserted review data.
+ */
 export async function updateUserPasswordByEmail({
   email,
   password,
 }: {
   email: string;
   password: string;
-}): Promise<boolean> {
+}): Promise<UserData | null> {
   const collection = await getUsersCollection();
 
-  const updatedUserDoc = await collection.findOneAndUpdate(
+  const updatedUserDocument = await collection.findOneAndUpdate(
     { email },
     { $set: { password } },
-    { returnDocument: 'after' }
+    { returnDocument: "after" },
   );
 
-  if (!updatedUserDoc) return false;
+  if (!updatedUserDocument) return null;
 
-  revalidateTag(`userData-userId-${updatedUserDoc._id.toString()}`, "max");
+  revalidateTag(`userData-userId-${updatedUserDocument._id.toString()}`, "max");
   revalidateTag(`userData-email-${email}`, "max");
 
-  return true;
+  return mapUserDocumentToUserData(updatedUserDocument);
 }
 
+/**
+ * Validates and retrieves user data using a session.
+ * @returns The user data or null if not found.
+ */
 export async function getUserDataUsingSession(): Promise<UserData | null> {
-  const sessionId = await getCookieValue("sessionId");
+  const sessionId = await getCookie("sessionId");
 
   if (!sessionId) return null;
 
@@ -117,7 +138,7 @@ export async function getUserDataUsingSession(): Promise<UserData | null> {
     return null;
   }
 
-  const userData = await getUserDataByUserId({
+  const userData = await getUserDataById({
     userId: userSessionData.userId,
   });
 
@@ -149,6 +170,10 @@ export interface UserStats {
   };
 }
 
+/**
+ * Validates and retrieves user stats.
+ * @returns The user stats or null if not found.
+ */
 export async function getUserStats(): Promise<UserStats | null> {
   const userData = await getUserDataUsingSession();
 
@@ -244,6 +269,11 @@ export async function getUserStats(): Promise<UserStats | null> {
   };
 }
 
+/**
+ * Validates and sets a user as verified.
+ * @param email - The email of the user to verify.
+ * @returns A boolean indicating whether the operation was successful.
+ */
 export async function setUserAsVerified({
   email,
 }: {
@@ -254,7 +284,7 @@ export async function setUserAsVerified({
   const updatedUserDoc = await collection.findOneAndUpdate(
     { email },
     { $set: { isEmailVerified: true } },
-    { returnDocument: 'after' }
+    { returnDocument: "after" },
   );
 
   if (!updatedUserDoc) return false;

@@ -1,4 +1,4 @@
-import { getReviewsCount, getReviewsData } from "@/repository/review";
+import { getReviewsCount, getReviewsDataByPage } from "@/repository/review";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   const page = parseInt(searchParams.get("page") ?? "1", 10);
 
   const [reviewsData, total] = await Promise.all([
-    getReviewsData({ page }),
+    getReviewsDataByPage({ page }),
     getReviewsCount(),
   ]);
 

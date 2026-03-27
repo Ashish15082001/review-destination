@@ -19,7 +19,7 @@ export const VerifyEmailFormDataSchema = z.object({
 /**
  * MongoDB document schema for storing email verification data.
  */
-export const EmailVerificationDataDocumentSchema = z.object({
+export const EmailVerificationDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   token: z.string().min(1, "Verification token is required"),
   email: BaseUserFields.email,
@@ -39,8 +39,8 @@ export const EmailVerificationDataSchema = z.object({
 /**
  * Inferred TypeScript type for email verification document from MongoDB.
  */
-export type EmailVerificationDataDocument = z.infer<
-  typeof EmailVerificationDataDocumentSchema
+export type EmailVerificationDocument = z.infer<
+  typeof EmailVerificationDocumentSchema
 >;
 
 /**

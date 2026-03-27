@@ -30,7 +30,7 @@ export const ReviewDataBrowserSchema = BaseReviewSchema.extend({
 /**
  * MongoDB representation of a review document.
  */
-export const ReviewDataDocumentSchema = BaseReviewSchema.extend({
+export const ReviewDocumentSchema = BaseReviewSchema.extend({
   _id: z.instanceof(ObjectId),
   userId: z.instanceof(ObjectId),
   destinationPhotoUrls: z.array(z.url("Invalid URL")).min(1),
@@ -40,7 +40,7 @@ export const ReviewDataDocumentSchema = BaseReviewSchema.extend({
 /**
  * Application-level representation of review data.
  */
-export const ReviewDataSchema = ReviewDataDocumentSchema.extend({
+export const ReviewDataSchema = ReviewDocumentSchema.extend({
   _id: z.string(),
   userId: z.string(),
 });
@@ -53,7 +53,7 @@ export type ReviewDataBrowser = z.infer<typeof ReviewDataBrowserSchema>;
 /**
  * Inferred TypeScript type for MongoDB review documents.
  */
-export type ReviewDataDocument = z.infer<typeof ReviewDataDocumentSchema>;
+export type ReviewDocument = z.infer<typeof ReviewDocumentSchema>;
 
 /**
  * Inferred TypeScript type for application-level reviews.

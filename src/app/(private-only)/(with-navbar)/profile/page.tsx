@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { ReviewCardSkeleton } from "@/components/review-card/review-card-skeleton";
 import { getUserDataUsingSession, getUserStats } from "@/repository/user";
 import {
-  getReviewsDataByIds,
+  getReviewsDataByReviewIds,
   getReviewsDataByUserId,
 } from "@/repository/review";
 import { UserAvatar } from "@/components/user-avatar/user-avatar";
@@ -32,7 +32,9 @@ export default async function ProfilePage({ searchParams }: PageProps) {
 
   const reviews =
     activeTab === "saved"
-      ? await getReviewsDataByIds(userData.savedReviewesIds)
+      ? await getReviewsDataByReviewIds({
+          reviewIds: userData.savedReviewesIds,
+        })
       : await getReviewsDataByUserId(userData._id);
 
   // Get initials from userName

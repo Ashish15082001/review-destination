@@ -1,10 +1,10 @@
 import {
   CommentData,
-  CommentDataDocument,
-  CommentDataDocumentSchema,
+  CommentDocument,
+  CommentDocumentSchema,
   CommentDataSchema,
-  CommentDataWithCommenterData,
-  CommentDataWithCommenterDataSchema,
+  CommentDataWithCommenterInfo,
+  CommentDataWithCommenterInfoSchema,
 } from "@/schema/comment";
 
 /**
@@ -25,40 +25,38 @@ export default function validateCommentData(
 }
 
 /**
- * Validates a comment data document (as stored in the database) against the CommentDataDocumentSchema.
- * @param commentDataDocument - The comment document to validate.
+ * Validates a comment document (as stored in the database) against the CommentDocumentSchema.
+ * @param commentDocument - The comment document to validate.
  * @returns The parsed and validated comment document.
  * @throws {Error} If validation fails.
  */
-export function validateCommentDataDocument(
-  commentDataDocument: CommentDataDocument,
-): CommentDataDocument {
-  const parseResult = CommentDataDocumentSchema.safeParse(commentDataDocument);
+export function validateCommentDocument(
+  commentDocument: CommentDocument,
+): CommentDocument {
+  const parseResult = CommentDocumentSchema.safeParse(commentDocument);
 
   if (!parseResult.success)
-    throw new Error(
-      `Invalid comment data document: ${parseResult.error.message}`,
-    );
+    throw new Error(`Invalid comment document: ${parseResult.error.message}`);
 
   return parseResult.data;
 }
 
 /**
- * Validates a comment  enriched with commenter profile data against the CommentDataWithCommenterDataSchema.
- * @param commentDataWithCommenterData - The enriched comment  to validate.
- * @returns The parsed and validated enriched comment .
+ * Validates a comment enriched with commenter profile data against the CommentDataWithCommenterSchema.
+ * @param commentDataWithCommenter - The enriched comment to validate.
+ * @returns The parsed and validated enriched comment.
  * @throws {Error} If validation fails.
  */
-export function validateCommentDataWithCommenterData(
-  commentDataWithCommenterData: CommentDataWithCommenterData,
-): CommentDataWithCommenterData {
-  const parseResult = CommentDataWithCommenterDataSchema.safeParse(
-    commentDataWithCommenterData,
+export function validateCommentDataWithCommenterInfo(
+  commentDataWithCommenterInfo: CommentDataWithCommenterInfo,
+): CommentDataWithCommenterInfo {
+  const parseResult = CommentDataWithCommenterInfoSchema.safeParse(
+    commentDataWithCommenterInfo,
   );
 
   if (!parseResult.success)
     throw new Error(
-      `Invalid comment data document with commenter data: ${parseResult.error.message}`,
+      `Invalid comment data with commenter info: ${parseResult.error.message}`,
     );
 
   return parseResult.data;

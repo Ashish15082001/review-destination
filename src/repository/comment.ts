@@ -1,17 +1,17 @@
 import { getCommentsCollection } from "@/database/mongoDB";
 import {
   CommentData,
-  CommentDataDocument,
-  CommentDataWithCommenterData,
+  CommentDocument,
+  CommentDataWithCommenterInfo,
 } from "@/schema/comment";
-import { validateCommentDataWithCommenterData } from "@/validators/comment";
+import { validateCommentDataWithCommenterInfo } from "@/validators/comment";
 import { ObjectId } from "bson";
-import { cache } from "react";
 import {
-  mapCommentDataDocumentToCommentData,
-  mapCommentDataToCommentDataDocument,
+  mapCommentDocumentToCommentData,
+  mapCommentDataToCommentDocument,
 } from "@/mappers/comment";
-import { getUsersDataByUserIds } from "./user";
+import { getUserDataById } from "./user";
+import { cacheTag } from "next/cache";
 
 /**
  * Validates and inserts a new comment  into the comments collection.
@@ -21,108 +21,79 @@ import { getUsersDataByUserIds } from "./user";
 export async function insertCommentData(
   commentData: Omit<CommentData, "_id">,
 ): Promise<string> {
-  const validatedCommentDataDocument: CommentDataDocument =
-    mapCommentDataToCommentDataDocument({
+  const validatedCommentDocument: CommentDocument =
+    mapCommentDataToCommentDocument({
       ...commentData,
       _id: new ObjectId().toString(),
     });
 
   const collection = await getCommentsCollection();
-  await collection.insertOne(validatedCommentDataDocument);
+  await collection.insertOne(validatedCommentDocument);
 
-  return validatedCommentDataDocument._id.toString();
+  return validatedCommentDocument._id.toString();
 }
 
 /**
- * Retrieves a single comment by its ID.
+ * Retrieves a comment data by its ID, enriched with the commenter info.
  * @param commentId - The string representation of the comment's ObjectId.
- * @returns The validated comment, or `null` if not found.
+ * @returns The validated comment data with commenter data, or `null` if not found.
  */
-export async function getCommentData({
+export async function getCommentDataWithCommenterInfoByCommentId({
   commentId,
 }: {
   commentId: string;
-}): Promise<CommentData | null> {
+}): Promise<CommentDataWithCommenterInfo | null> {
+  "use cache";
+  cacheTag(`commentDataWithCommenterInfo-commentId-${commentId}`);
+
   const collection = await getCommentsCollection();
 
-  const commentDataDocument = await collection.findOne({
+  const commentDocument = await collection.findOne({
     _id: new ObjectId(commentId),
   });
 
-  return commentDataDocument
-    ? mapCommentDataDocumentToCommentData(commentDataDocument)
-    : null;
+  if (!commentDocument) return null;
+
+  const commentData = mapCommentDocumentToCommentData(commentDocument);
+
+  const commenterDocument = await getUserDataById({
+    userId: commentData.commentedBy,
+  });
+
+  if (!commenterDocument) return null;
+
+  const validateCommentDataWithCommenterInfoResult =
+    validateCommentDataWithCommenterInfo({
+      ...commentData,
+      commenterName: commenterDocument.userName,
+      profilePictureUrl: commenterDocument.profilePictureUrl,
+    });
+
+  return validateCommentDataWithCommenterInfoResult;
 }
 
 /**
- * Retrieves multiple comments by their IDs, each enriched with the commenter's name and profile picture.
+ * Retrieves multiple comments data by their IDs, each enriched with the commenter's info.
  * @param commentIds - An array of comment ID strings to look up.
  * @returns An array of validated comments with commenter data. Returns an empty array if none are found.
  */
-export async function getCommentsDataWithCommenterDataByCommentIds({
+export async function getCommentsDataWithCommenterInfoByCommentIds({
   commentIds,
 }: {
-  commentIds: string[];
-}): Promise<CommentDataWithCommenterData[]> {
-  const collection = await getCommentsCollection();
-
-  const commentDataDocuments = await collection
-    .find({
-      _id: { $in: commentIds.map((id) => new ObjectId(id)) },
-    })
-    .toArray();
-
-  if (!commentDataDocuments || commentDataDocuments.length === 0) return [];
-
-  const commentsData: CommentData[] = commentDataDocuments.map(
-    (commentDataDocument) =>
-      mapCommentDataDocumentToCommentData(commentDataDocument),
+  commentIds: Array<string>;
+}): Promise<Array<CommentDataWithCommenterInfo>> {
+  const commentDataWithCommenterInfoPromises = commentIds.map((commentId) =>
+    getCommentDataWithCommenterInfoByCommentId({ commentId }),
   );
 
-  const commenterIds = commentDataDocuments.map((commentDataDocument) =>
-    commentDataDocument.commentedBy.toString(),
+  const commentDataWithCommenterInfos = await Promise.all(
+    commentDataWithCommenterInfoPromises,
   );
 
-  const commentersData = await getUsersDataByUserIds({
-    userIds: commenterIds,
-  });
-
-  return commentsData.map((commentData): CommentDataWithCommenterData => {
-    const commenterData = commentersData.find(
-      (userData) => userData._id === commentData.commentedBy.toString(),
-    );
-
-    return validateCommentDataWithCommenterData({
-      ...commentData,
-      commenterName: commenterData?.userName ?? "Unknown",
-      profilePictureUrl: commenterData?.profilePictureUrl ?? "",
-    });
-  });
+  return commentDataWithCommenterInfos.filter(
+    (commentDataWithCommenterInfo) => commentDataWithCommenterInfo !== null,
+  );
 }
-
-/**
- * Retrieves all comments associated with a given review ID.
- * Results are memoised per request via React's `cache`.
- * @param reviewId - The string representation of the review's ObjectId.
- * @returns An array of validated comments for the review.
- */
-export const getCommentsDataByReviewId = cache(async function ({
-  reviewId,
-}: {
-  reviewId: string;
-}): Promise<CommentData[]> {
-  const collection = await getCommentsCollection();
-
-  const commentDataDocuments = await collection
-    .find({
-      reviewId: new ObjectId(reviewId),
-    })
-    .toArray();
-
-  return commentDataDocuments.map((commentDataDocument) =>
-    mapCommentDataDocumentToCommentData(commentDataDocument),
-  );
-});
 
 /**
  * Retrieves all comments for a review, each enriched with the commenter's name and profile picture.
@@ -130,94 +101,81 @@ export const getCommentsDataByReviewId = cache(async function ({
  * @param reviewId - The string representation of the review's ObjectId.
  * @returns An array of validated enriched comments. Returns an empty array if none are found.
  */
-export const getCommentsDataWithCommenterDataByReviewId = cache(
-  async function ({
-    reviewId,
-  }: {
-    reviewId: string;
-  }): Promise<CommentDataWithCommenterData[]> {
-    const collection = await getCommentsCollection();
+export const getCommentsDataWithCommenterInfoByReviewId = async function ({
+  reviewId,
+}: {
+  reviewId: string;
+}): Promise<Array<CommentDataWithCommenterInfo>> {
+  const collection = await getCommentsCollection();
 
-    const commentDataDocuments = await collection
-      .find({
+  // fetching comment ids of comments posted on the review
+  const commentDocumentIds = await collection
+    .find(
+      {
         reviewId: new ObjectId(reviewId),
-      })
-      .toArray();
+      },
+      { projection: { _id: 1 } },
+    )
+    .toArray();
 
-    if (!commentDataDocuments || commentDataDocuments.length === 0) return [];
+  const commentIds = commentDocumentIds.map((commentDocumentId) =>
+    commentDocumentId._id.toString(),
+  );
 
-    const commentsData: CommentData[] = commentDataDocuments.map(
-      (commentDataDocument) =>
-        mapCommentDataDocumentToCommentData(commentDataDocument),
-    );
+  const commentDataWithCommenterInfos =
+    await getCommentsDataWithCommenterInfoByCommentIds({ commentIds });
 
-    const commenterIds = commentDataDocuments.map((commentDataDocument) =>
-      commentDataDocument.commentedBy.toString(),
-    );
-
-    const commentersData = await getUsersDataByUserIds({
-      userIds: commenterIds,
-    });
-
-    return commentsData.map((commentData): CommentDataWithCommenterData => {
-      const commenterData = commentersData.find(
-        (userData) => userData._id === commentData.commentedBy.toString(),
-      );
-
-      return validateCommentDataWithCommenterData({
-        ...commentData,
-        commenterName: commenterData?.userName ?? "Unknown",
-        profilePictureUrl: commenterData?.profilePictureUrl ?? "",
-      });
-    });
-  },
-);
+  return commentDataWithCommenterInfos;
+};
 
 /**
  * Retrieves all replies for a given parent comment.
  * @param commentId - The string representation of the parent comment's ObjectId.
  * @returns An array of validated reply comments. Returns an empty array if the parent has no replies.
  */
-export async function getCommentRepliesData({
+export async function getCommentRepliesDataWithCommenterInfo({
   commentId,
 }: {
   commentId: string;
-}): Promise<CommentData[]> {
+}): Promise<Array<CommentDataWithCommenterInfo>> {
   const collection = await getCommentsCollection();
 
-  const parentComment = await collection.findOne({
-    _id: new ObjectId(commentId),
-  });
-
-  if (!parentComment || parentComment.replyCommentIds.length === 0) return [];
-
-  const commentRepliesDataDocument = await collection
-    .find({ _id: { $in: parentComment.replyCommentIds } })
-    .toArray();
-
-  return commentRepliesDataDocument.map((commentReplyDataDocument) =>
-    mapCommentDataDocumentToCommentData(commentReplyDataDocument),
+  const commentDocument = await collection.findOne(
+    {
+      _id: new ObjectId(commentId),
+    },
+    {
+      projection: { replyCommentIds: 1 },
+    },
   );
+
+  if (!commentDocument) return [];
+
+  const commentIds = commentDocument.replyCommentIds.map((id) => id.toString());
+
+  const commentRepliesDataWithCommenterInfoResponses =
+    await getCommentsDataWithCommenterInfoByCommentIds({
+      commentIds,
+    });
+
+  return commentRepliesDataWithCommenterInfoResponses;
 }
 
 /**
  * Adds a like from a user to a comment, removing any existing dislike from that user atomically.
  * @param commentId - The string representation of the comment's ObjectId.
  * @param userId - The string representation of the user's ObjectId.
- * @param reviewId - The string representation of the review's ObjectId (reserved for cache invalidation).
- * @returns `true` if the document was modified, `false` otherwise.
+ * @returns The updated comment data if the document was modified, `null` otherwise.
  */
 export async function addLikeToComment({
   commentId,
   userId,
-  reviewId,
 }: {
   commentId: string;
   userId: string;
-  reviewId: string;
-}): Promise<boolean> {
+}): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
-  const result = await collection.updateOne(
+  const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
     {
       $addToSet: { idsOfUsersWhoLiked: new ObjectId(userId) },
@@ -225,7 +183,9 @@ export async function addLikeToComment({
     },
   );
 
-  return result.modifiedCount > 0;
+  return updatedCommentDocument !== null
+    ? mapCommentDocumentToCommentData(updatedCommentDocument)
+    : null;
 }
 
 /**
@@ -233,19 +193,18 @@ export async function addLikeToComment({
  * @param commentId - The string representation of the comment's ObjectId.
  * @param userId - The string representation of the user's ObjectId.
  * @param reviewId - The string representation of the review's ObjectId (reserved for cache invalidation).
- * @returns `true` if the document was modified, `false` otherwise.
+ * @returns The updated comment data if the document was modified, `null` otherwise.
  */
 export async function removeLikeFromComment({
   commentId,
   userId,
-  reviewId,
 }: {
   commentId: string;
   userId: string;
   reviewId: string;
-}): Promise<boolean> {
+}): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
-  const result = await collection.updateOne(
+  const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
     {
       $pull: { idsOfUsersWhoLiked: new ObjectId(userId) },
@@ -255,27 +214,26 @@ export async function removeLikeFromComment({
   // revalidateTag(`commentData-${commentId}`, "max");
   // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
 
-  return result.modifiedCount > 0;
+  return updatedCommentDocument !== null
+    ? mapCommentDocumentToCommentData(updatedCommentDocument)
+    : null;
 }
 
 /**
  * Adds a dislike from a user to a comment, removing any existing like from that user atomically.
  * @param commentId - The string representation of the comment's ObjectId.
  * @param userId - The string representation of the user's ObjectId.
- * @param reviewId - The string representation of the review's ObjectId (reserved for cache invalidation).
- * @returns `true` if the document was modified, `false` otherwise.
+ * @returns The updated comment data if the document was modified, `null` otherwise.
  */
 export async function addDislikeToComment({
   commentId,
   userId,
-  reviewId,
 }: {
   commentId: string;
   userId: string;
-  reviewId: string;
-}): Promise<boolean> {
+}): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
-  const result = await collection.updateOne(
+  const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
     {
       $addToSet: { idsOfUsersWhoDisliked: new ObjectId(userId) },
@@ -286,7 +244,9 @@ export async function addDislikeToComment({
   // revalidateTag(`commentData-${commentId}`, "max");
   // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
 
-  return result.modifiedCount > 0;
+  return updatedCommentDocument !== null
+    ? mapCommentDocumentToCommentData(updatedCommentDocument)
+    : null;
 }
 
 /**
@@ -294,19 +254,18 @@ export async function addDislikeToComment({
  * @param commentId - The string representation of the comment's ObjectId.
  * @param userId - The string representation of the user's ObjectId.
  * @param reviewId - The string representation of the review's ObjectId (reserved for cache invalidation).
- * @returns `true` if the document was modified, `false` otherwise.
+ * @returns The updated comment data if the document was modified, `null` otherwise.
  */
 export async function removeDislikeFromComment({
   commentId,
   userId,
-  reviewId,
 }: {
   commentId: string;
   userId: string;
   reviewId: string;
-}): Promise<boolean> {
+}): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
-  const result = await collection.updateOne(
+  const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
     {
       $pull: { idsOfUsersWhoDisliked: new ObjectId(userId) },
@@ -316,14 +275,16 @@ export async function removeDislikeFromComment({
   // revalidateTag(`commentData-${commentId}`, "max");
   // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
 
-  return result.modifiedCount > 0;
+  return updatedCommentDocument !== null
+    ? mapCommentDocumentToCommentData(updatedCommentDocument)
+    : null;
 }
 
 /**
  * Registers a reply comment under its parent by adding the reply's ID to the parent's `replyCommentIds` set.
  * @param parentCommentId - The string representation of the parent comment's ObjectId.
  * @param replyCommentId - The string representation of the reply comment's ObjectId.
- * @returns `true` if the parent document was modified, `false` otherwise.
+ * @returns The updated comment data if the parent document was modified, `null` otherwise.
  */
 export async function addReplyToComment({
   parentCommentId,
@@ -331,9 +292,9 @@ export async function addReplyToComment({
 }: {
   parentCommentId: string;
   replyCommentId: string;
-}): Promise<boolean> {
+}): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
-  const result = await collection.updateOne(
+  const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(parentCommentId) },
     {
       $addToSet: { replyCommentIds: new ObjectId(replyCommentId) },
@@ -343,5 +304,7 @@ export async function addReplyToComment({
   // revalidateTag(`commentData-${parentCommentId}`, "max");
   // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
 
-  return result.modifiedCount > 0;
+  return updatedCommentDocument !== null
+    ? mapCommentDocumentToCommentData(updatedCommentDocument)
+    : null;
 }

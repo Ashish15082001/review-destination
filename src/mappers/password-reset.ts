@@ -1,37 +1,41 @@
 import {
   PasswordResetData,
-  PasswordResetDataDocument,
+  PasswordResetDocument,
 } from "@/schema/password-reset";
 import toObjectId from "@/utils/toObjectId";
 import validatePasswordResetData from "@/validators/password-reset";
-import { validatePasswordResetDataDocument } from "@/validators/password-reset";
+import { validatePasswordResetDocument } from "@/validators/password-reset";
 
 /**
- * Maps a MongoDB password reset document into application-level password reset data.
+ * Maps application-level password reset data into a MongoDB password reset document.
+ * @param passwordResetData - The password reset data to map.
+ * @returns The MongoDB password reset document.
  */
-export function mapPasswordResetDataDocumentToPasswordResetData(
-  passwordResetDataDocument: PasswordResetDataDocument,
+export function mapPasswordResetDocumentToPasswordResetData(
+  passwordResetDocument: PasswordResetDocument,
 ): PasswordResetData {
-  const validatedPasswordResetDataDocument = validatePasswordResetDataDocument(
-    passwordResetDataDocument,
+  const validatedPasswordResetDocument = validatePasswordResetDocument(
+    passwordResetDocument,
   );
 
   return validatePasswordResetData({
-    ...validatedPasswordResetDataDocument,
-    _id: validatedPasswordResetDataDocument._id.toString(),
+    ...validatedPasswordResetDocument,
+    _id: validatedPasswordResetDocument._id.toString(),
   });
 }
 
 /**
  * Maps application-level password reset data into a MongoDB password reset document.
+ * @param passwordResetData - The password reset data to map.
+ * @returns The MongoDB password reset document.
  */
-export function mapPasswordResetDataToPasswordResetDataDocument(
+export function mapPasswordResetDataToPasswordResetDocument(
   passwordResetData: PasswordResetData,
-): PasswordResetDataDocument {
+): PasswordResetDocument {
   const validatedPasswordResetData =
     validatePasswordResetData(passwordResetData);
 
-  return validatePasswordResetDataDocument({
+  return validatePasswordResetDocument({
     ...validatedPasswordResetData,
     _id: toObjectId(validatedPasswordResetData._id, "_id"),
   });

@@ -1,15 +1,12 @@
 "use server";
 
 import { UserSignInData, UserSignInDataSchema } from "@/schema/user";
-import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import { getUserDataByEmail } from "@/repository/user";
 import { insertUserSession } from "@/repository/userSession";
 import { ApiResponse } from "@/types/apiResponse";
-import validateCsrfToken from "@/utils/validateCsrfToken";
-
-const BCRYPT_DUMMY_HASH =
-  "$2b$10$CwTycUXWue0Thq9StjUM0uJ8z5rZ3G9oFj1Yy/8aK7fXnY2DFe"; // bcrypt hash of "password" (used to prevent timing attacks)
+import { cookies } from "next/headers";
+import getSignature from "@/utils/getSignature";
 
 /**
  * Server action to sign in an existing user.
@@ -93,16 +90,17 @@ export default async function signInUser(
     }
 
     // Step 4
-    const sessionData = await insertUserSession({
+    const sessionId = await insertUserSession({
       userId: userData._id,
       expiresOn: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Session expires in 7 days
     });
 
-    const sessionCookie = await cookies();
+    const getCookieSignature = getSignature(sessionId);
+    const signedSessionId = `${sessionId}.${getCookieSignature}`;
 
-    sessionCookie.set("sessionId", sessionData.toString(), {
+    (await cookies()).set("sessionId", signedSessionId, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
@@ -111,7 +109,6 @@ export default async function signInUser(
     returnValue.message = `Welcome back, ${userData.userName}!`;
     return returnValue;
   } catch (error) {
-    console.log("Error in signInUser action:", error);
     return {
       type: "error",
       message: "An unexpected error occurred. Please try again later.",

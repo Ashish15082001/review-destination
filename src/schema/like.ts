@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 /**
  * MongoDB representation of a like document.
  */
-export const LikeDataDocumentSchema = z.object({
+export const LikeDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
   reviewId: z.instanceof(ObjectId),
   likedBy: z.instanceof(ObjectId),
@@ -24,7 +24,7 @@ export const LikeDataSchema = z.object({
 /**
  * Inferred TypeScript type for MongoDB like documents.
  */
-export type LikeDataDocument = z.infer<typeof LikeDataDocumentSchema>;
+export type LikeDocument = z.infer<typeof LikeDocumentSchema>;
 
 /**
  * Inferred TypeScript type for application-level likes.

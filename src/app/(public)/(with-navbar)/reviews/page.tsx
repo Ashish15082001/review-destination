@@ -1,6 +1,6 @@
 import { Reviews } from "@/components/reviews/reviews";
 import { ReviewCard } from "@/components/review-card/review-card";
-import { getReviewsCount, getReviewsData } from "@/repository/review";
+import { getReviewsCount, getReviewsDataByPage } from "@/repository/review";
 
 export const metadata = {
   title: "Travel Reviews - Share Your Experiences",
@@ -17,7 +17,7 @@ export default async function ReviewsPage({
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   const [reviewsData, total] = await Promise.all([
-    getReviewsData({ pageSize: 10, page }),
+    getReviewsDataByPage({ pageSize: 10, page }),
     getReviewsCount(),
   ]);
 

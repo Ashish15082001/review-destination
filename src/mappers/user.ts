@@ -1,19 +1,21 @@
-import { UserData, UserDataDocument } from "@/schema/user";
+import { UserData, UserDocument } from "@/schema/user";
 import toObjectId from "@/utils/toObjectId";
-import validateUserData, { validateUserDataDocument } from "@/validators/user";
+import validateUserData, { validateUserDocument } from "@/validators/user";
 
 /**
- * Maps a MongoDB user document into application-level user data.
+ * Maps application-level user data into a MongoDB user document.
+ * @param userData - The user data to map.
+ * @returns The MongoDB user document.
  */
-export function mapUserDataDocumentToUserData(
-  userDataDocument: UserDataDocument,
+export function mapUserDocumentToUserData(
+  userDocument: UserDocument,
 ): UserData {
-  const validatedUserDataDocument = validateUserDataDocument(userDataDocument);
+  const validatedUserDocument = validateUserDocument(userDocument);
 
   return validateUserData({
-    ...validatedUserDataDocument,
-    _id: validatedUserDataDocument._id.toString(),
-    savedReviewesIds: validatedUserDataDocument.savedReviewesIds.map((id) =>
+    ...validatedUserDocument,
+    _id: validatedUserDocument._id.toString(),
+    savedReviewesIds: validatedUserDocument.savedReviewesIds.map((id) =>
       id.toString(),
     ),
   });
@@ -21,13 +23,13 @@ export function mapUserDataDocumentToUserData(
 
 /**
  * Maps application-level user data into a MongoDB user document.
+ * @param userData - The user data to map.
+ * @returns The MongoDB user document.
  */
-export function mapUserDataToUserDataDocument(
-  userData: UserData,
-): UserDataDocument {
+export function mapUserDataToUserDocument(userData: UserData): UserDocument {
   const validatedUserData = validateUserData(userData);
 
-  return validateUserDataDocument({
+  return validateUserDocument({
     ...validatedUserData,
     _id: toObjectId(validatedUserData._id, "_id"),
     savedReviewesIds: validatedUserData.savedReviewesIds.map((id) =>

@@ -1,7 +1,7 @@
 import {
   EmailVerificationData,
-  EmailVerificationDataDocument,
-  EmailVerificationDataDocumentSchema,
+  EmailVerificationDocument,
+  EmailVerificationDocumentSchema,
   EmailVerificationDataSchema,
 } from "@/schema/email-verification";
 
@@ -28,20 +28,20 @@ export default function validateEmailVerificationData(
 
 /**
  * Validates an email verification document as stored in MongoDB.
- * @param emailVerificationDataDocument - The email verification document to validate.
+ * @param emailVerificationDocument - The email verification document to validate.
  * @returns The parsed and validated email verification document.
  * @throws {Error} If validation fails.
  */
-export function validateEmailVerificationDataDocument(
-  emailVerificationDataDocument: EmailVerificationDataDocument,
-): EmailVerificationDataDocument {
-  const parseResult = EmailVerificationDataDocumentSchema.safeParse(
-    emailVerificationDataDocument,
+export function validateEmailVerificationDocument(
+  emailVerificationDocument: EmailVerificationDocument,
+): EmailVerificationDocument {
+  const parseResult = EmailVerificationDocumentSchema.safeParse(
+    emailVerificationDocument,
   );
 
   if (!parseResult.success)
     throw new Error(
-      `Invalid email verification data document: ${parseResult.error.message}`,
+      `Invalid email verification document: ${parseResult.error.message}`,
     );
 
   return parseResult.data;
