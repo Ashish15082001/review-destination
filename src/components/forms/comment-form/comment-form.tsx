@@ -75,7 +75,7 @@ export function CommentForm({ reviewId, parentCommentId }: CommentFormProps) {
             <input
               type="hidden"
               name="parentCommentId"
-              value={parentCommentId ?? ""}
+              value={parentCommentId}
             />
             {/* validation error */}
             {state.fields?.comment?.error && (

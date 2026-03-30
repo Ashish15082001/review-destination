@@ -193,3 +193,19 @@ export const getReviewStatsData = async function ({
     totalLikes,
   };
 };
+
+export async function checkIfReviewExists({
+  reviewId,
+}: {
+  reviewId: string;
+}): Promise<boolean> {
+  const collection = await getReviewsCollection();
+  const reviewDocument = await collection.findOne(
+    {
+      _id: new ObjectId(reviewId),
+    },
+    { projection: { _id: 1 } },
+  );
+
+  return reviewDocument !== null;
+}

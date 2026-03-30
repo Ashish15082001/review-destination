@@ -5,8 +5,8 @@ import { ObjectId } from "mongodb";
  * Reusable field definitions shared across user schemas.
  */
 export const BaseUserFields = {
-  userName: z.string().min(1, "User name is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  userName: z.string().trim().min(1, "User name is required"),
+  password: z.string().trim().min(6, "Password must be at least 6 characters"),
   email: z.email("Invalid email address"),
 };
 
@@ -27,6 +27,7 @@ export const UserSignUpDataSchema = z.object({
   password: BaseUserFields.password,
   confirmPassword: z
     .string()
+    .trim()
     .min(6, "Confirm password must be at least 6 characters"),
   profilePicture: z
     .instanceof(File, { message: "Please upload an image" })
@@ -40,12 +41,15 @@ export const UserSignUpDataSchema = z.object({
  */
 export const UserDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
-  userName: z.string(),
-  email: z.email(),
-  password: z.string(),
+  userName: z.string().trim().min(1, "User name is required"),
+  email: z.email("Invalid email address"),
+  password: z.string().trim().min(6, "Password must be at least 6 characters"),
   registeredAt: z.date(),
   savedReviewesIds: z.array(z.instanceof(ObjectId)),
-  profilePictureUrl: z.string(),
+  profilePictureUrl: z
+    .string()
+    .trim()
+    .min(1, "Profile picture URL is required"),
   isEmailVerified: z.boolean(),
 });
 

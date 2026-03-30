@@ -12,6 +12,7 @@ import {
 } from "@/mappers/comment";
 import { getUserDataById } from "./user";
 import { cacheTag } from "next/cache";
+import { ClientSession } from "mongodb";
 
 /**
  * Validates and inserts a new comment  into the comments collection.
@@ -20,6 +21,7 @@ import { cacheTag } from "next/cache";
  */
 export async function insertCommentData(
   commentData: Omit<CommentData, "_id">,
+  clientSession?: ClientSession,
 ): Promise<string> {
   const validatedCommentDocument: CommentDocument =
     mapCommentDataToCommentDocument({
@@ -286,13 +288,16 @@ export async function removeDislikeFromComment({
  * @param replyCommentId - The string representation of the reply comment's ObjectId.
  * @returns The updated comment data if the parent document was modified, `null` otherwise.
  */
-export async function addReplyToComment({
-  parentCommentId,
-  replyCommentId,
-}: {
-  parentCommentId: string;
-  replyCommentId: string;
-}): Promise<CommentData | null> {
+export async function addReplyToComment(
+  {
+    parentCommentId,
+    replyCommentId,
+  }: {
+    parentCommentId: string;
+    replyCommentId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(parentCommentId) },
@@ -307,4 +312,18 @@ export async function addReplyToComment({
   return updatedCommentDocument !== null
     ? mapCommentDocumentToCommentData(updatedCommentDocument)
     : null;
+}
+
+export async function checkIfCommentExists({
+  commentId,
+}: {
+  commentId: string;
+}): Promise<boolean> {
+  const collection = await getCommentsCollection();
+  const commentDocument = await collection.findOne(
+    { _id: new ObjectId(commentId) },
+    { projection: { _id: 1 } },
+  );
+
+  return commentDocument !== null;
 }

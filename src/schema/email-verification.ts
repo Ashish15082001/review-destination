@@ -13,7 +13,7 @@ export const SendEmailVerificationLinkFormDataSchema = z.object({
  *  Browser payload schema for verifying an email using a token.
  */
 export const VerifyEmailFormDataSchema = z.object({
-  token: z.string().min(1, "Verification token is required"),
+  token: z.string().trim().min(1, "Verification token is required"),
 });
 
 /**
@@ -21,7 +21,7 @@ export const VerifyEmailFormDataSchema = z.object({
  */
 export const EmailVerificationDocumentSchema = z.object({
   _id: z.instanceof(ObjectId),
-  token: z.string().min(1, "Verification token is required"),
+  token: z.string().trim().min(1, "Verification token is required"),
   email: BaseUserFields.email,
   expiresAt: z.date(),
 });
@@ -31,7 +31,7 @@ export const EmailVerificationDocumentSchema = z.object({
  */
 export const EmailVerificationDataSchema = z.object({
   _id: z.string(),
-  token: z.string().min(1, "Verification token is required"),
+  token: z.string().trim().min(1, "Verification token is required"),
   email: BaseUserFields.email,
   expiresAt: z.date(),
 });

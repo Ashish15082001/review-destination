@@ -14,6 +14,7 @@ export const CommentDocumentSchema = z.object({
   commentedOn: z.date(),
   comment: z
     .string()
+    .trim()
     .min(1, "Comment cannot be empty")
     .max(500, "Comment must be at most 500 characters"),
   // array of ObjectIds representing comments that are replies to this comment
@@ -37,6 +38,7 @@ export const CommentDataSchema = z.object({
   commentedOn: z.date(),
   comment: z
     .string()
+    .trim()
     .min(1, "Comment cannot be empty")
     .max(500, "Comment must be at most 500 characters"),
   // array of strings representing IDs of comments that are replies to this comment
@@ -64,6 +66,35 @@ export const CommentDocumentWithCommenterInfoSchema =
     profilePictureUrl: z.string(),
   });
 
+/** Type inferred from CommentDocumentWithCommenterInfoSchema. */
+export const CommentFormDataSchema = z.object({
+  comment: z
+    .string()
+    .trim()
+    .min(1, "Comment cannot be empty")
+    .max(500, "Comment must be at most 500 characters"),
+  reviewId: z
+    .string()
+    .trim()
+    .refine((id) => ObjectId.isValid(id), "Invalid review ID format"),
+  parentCommentId: z.preprocess(
+    (value) => {
+      if (typeof value === "string") {
+        const trimmedValue = value.trim();
+
+        if (trimmedValue === "") return null; // Normalize all non-string values to null
+        return trimmedValue;
+      }
+
+      return null;
+    },
+    z
+      .string()
+      .refine((id) => ObjectId.isValid(id), "Invalid parent comment ID format")
+      .nullable(),
+  ),
+});
+
 /** Type inferred from CommentDocumentSchema. */
 export type CommentDocument = z.infer<typeof CommentDocumentSchema>;
 
@@ -74,6 +105,9 @@ export type CommentData = z.infer<typeof CommentDataSchema>;
 export type CommentDataWithCommenterInfo = z.infer<
   typeof CommentDataWithCommenterInfoSchema
 >;
+
+/** Type inferred from CommentFormSchema. */
+export type CommentFormData = z.infer<typeof CommentFormDataSchema>;
 
 /** Type inferred from CommentDocumentWithCommenterInfoSchema. */
 export type CommentDocumentWithCommenterInfo = z.infer<
