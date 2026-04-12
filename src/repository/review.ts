@@ -9,16 +9,19 @@ import {
 } from "@/mappers/review";
 import { ReviewData, ReviewDocument } from "@/schema/review";
 import { ObjectId } from "bson";
+import { ClientSession } from "mongodb";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
 
 /**
  * Validates and inserts a new review data into the reviews collection.
  * @param reviewData - The review data to insert.
+ * @param clientSession - Optional MongoDB client session for transaction support.
  * @returns The ID of the inserted review data.
  */
 export async function insertReviewData(
   reviewData: Omit<ReviewData, "_id">,
+  clientSession?: ClientSession,
 ): Promise<string> {
   const reviewDocument: ReviewDocument = mapReviewDataToReviewDocument({
     ...reviewData,
@@ -26,7 +29,7 @@ export async function insertReviewData(
   });
 
   const collection = await getReviewsCollection();
-  await collection.insertOne(reviewDocument);
+  await collection.insertOne(reviewDocument, { session: clientSession });
 
   return reviewDocument._id.toString();
 }
@@ -194,17 +197,26 @@ export const getReviewStatsData = async function ({
   };
 };
 
-export async function checkIfReviewExists({
-  reviewId,
-}: {
-  reviewId: string;
-}): Promise<boolean> {
+/**
+ * Checks if a review exists in the reviews collection by its ID.
+ * @param reviewId - The ID of the review to check for existence.
+ * @param clientSession - Optional MongoDB client session for transaction support.
+ * @returns `true` if the review exists, `false` otherwise.
+ */
+export async function checkIfReviewExists(
+  {
+    reviewId,
+  }: {
+    reviewId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<boolean> {
   const collection = await getReviewsCollection();
   const reviewDocument = await collection.findOne(
     {
       _id: new ObjectId(reviewId),
     },
-    { projection: { _id: 1 } },
+    { projection: { _id: 1 }, session: clientSession },
   );
 
   return reviewDocument !== null;

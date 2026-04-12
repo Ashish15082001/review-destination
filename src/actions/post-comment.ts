@@ -23,9 +23,7 @@ import domPurify from "@/utils/domPurify";
  * 1. Validates the user's session to ensure they are authenticated.
  * 2. Sanitizes the comment text to prevent XSS attacks.
  * 3. Validates the form data against the `CommentFormDataSchema`.
- * 4. If a `parentCommentId` is provided, checks if the parent comment exists to allow replies.
- * 5. Checks if the review being commented on exists.
- * 6. If all validations pass, inserts the new comment into the database and updates the parent comment if it's a reply, all within a transaction to maintain data integrity.
+ * 4. performs a transaction to insert the new comment and update the parent comment (if it's a reply).
  *
  * @param prevData - The previous action state passed automatically by `useActionState`.
  * @param formData - Form data expected to contain:
@@ -39,7 +37,7 @@ import domPurify from "@/utils/domPurify";
  *   - `fields` — Per-field values and validation error messages (comment field is always included).
  *     On success the comment `value` is reset to `""` to clear the form.
  */
-export default async function addCommentAction(
+export default async function postCommentAction(
   prevData: ApiResponse,
   formData: FormData,
 ): Promise<ApiResponse> {
@@ -50,7 +48,7 @@ export default async function addCommentAction(
     if (!userData)
       return {
         type: "error",
-        message: "You must be logged in to add a comment.",
+        message: "You must be logged in to post a comment.",
       };
 
     const comment = formData.get("comment") as string;
@@ -58,7 +56,10 @@ export default async function addCommentAction(
     const parentCommentId = formData.get("parentCommentId") as string;
 
     // 2. Sanitize the comment to prevent XSS attacks. If the sanitized comment is empty, return an error.
-    const sanitizedComment = domPurify.sanitize(comment);
+    const sanitizedComment = domPurify.sanitize(comment, {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: [],
+    });
 
     // 3. Validate the form data against the CommentFormDataSchema. If validation fails, return an error response with detailed messages for each invalid field.
     const validationResult = CommentFormDataSchema.safeParse({
@@ -82,39 +83,15 @@ export default async function addCommentAction(
 
       return {
         type: "error",
-        message: "Failed to add comment. Please check the form.",
+        message: "Failed to post comment. Please check the form.",
         fields: fieldErrors,
       };
     }
 
     const validatedCommentData: CommentFormData = validationResult.data;
 
-    // 4. If a parentCommentId is provided, ensure it exists before allowing the reply to be added.
-    if (validatedCommentData.parentCommentId !== null) {
-      const doesParentCommentExist = await checkIfCommentExists({
-        commentId: validatedCommentData.parentCommentId,
-      });
-      if (!doesParentCommentExist) {
-        return {
-          type: "error",
-          message: "The comment you are trying to reply to does not exist.",
-        };
-      }
-    }
-
-    // 5. Check if the review exists before adding the comment. If the review does not exist, return an error response indicating that the review cannot be found.
-    const doesReviewExist = await checkIfReviewExists({
-      reviewId: validatedCommentData.reviewId,
-    });
-    if (doesReviewExist === false) {
-      return {
-        type: "error",
-        message: "The review you are trying to comment on does not exist.",
-      };
-    }
-
-    // 6. Start the transaction to add the comment and update the parent comment (if it's a reply)
-    return await addCommentTransaction({
+    // 4. Start the transaction to add the comment and update the parent comment (if it's a reply)
+    return await postCommentTransaction({
       ...validatedCommentData,
       commentedBy: userData._id.toString(),
       commentedOn: new Date(),
@@ -131,45 +108,86 @@ export default async function addCommentAction(
 }
 
 /**
- * Helper function to perform the comment insertion and parent comment update as a single transaction.
- * This ensures that if any part of the process fails, the database remains consistent.
- * Note: The actual implementation of transactions depends on the database being used. This is a placeholder to indicate where transaction logic would be implemented.
+ * Performs following operations in a transaction:
+ * 1. If a `parentCommentId` is provided, checks if the parent comment exists. If it does not exist, the transaction is aborted and an error response is returned.
+ * 2. Checks if the review being commented on exists. If it does not exist, the transaction is aborted and an error response is returned.
+ * 3. Inserts the new comment into the database.
+ * 4. If the comment is a reply, updates the parent comment to include the new reply.
  *
  * @param commentData - The validated comment data to be inserted.
  */
-async function addCommentTransaction(
+async function postCommentTransaction(
   commentData: Omit<CommentData, "_id">,
 ): Promise<ApiResponse> {
   const clientSession = (await getClientPromise()).startSession();
+  let domainErrorMessage: string | null = null;
+
   try {
     await clientSession.withTransaction(async () => {
-      // 1. Insert the new comment into the database.
+      // 1. If a parentCommentId is provided, ensure it exists before allowing the reply to be added.
+      if (commentData.parentCommentId !== null) {
+        const doesParentCommentExist = await checkIfCommentExists(
+          {
+            commentId: commentData.parentCommentId,
+          },
+          clientSession,
+        );
+        if (!doesParentCommentExist) {
+          domainErrorMessage =
+            "The parent comment you are trying to reply to does not exist.";
+          throw new Error(domainErrorMessage);
+        }
+      }
+
+      // 2. Check if the review exists before adding the comment. If the review does not exist, return an error response indicating that the review cannot be found.
+      const doesReviewExist = await checkIfReviewExists(
+        {
+          reviewId: commentData.reviewId,
+        },
+        clientSession,
+      );
+      if (doesReviewExist === false) {
+        domainErrorMessage =
+          "The review you are trying to comment on does not exist.";
+        throw new Error(domainErrorMessage);
+      }
+
+      // 3. Insert the new comment into the database.
       const insertedCommentId = await insertCommentData(
         commentData,
         clientSession,
       );
 
-      // 2. If the comment is a reply, update the parent comment to include the new reply.
+      // 4. If the comment is a reply, update the parent comment to include the new reply.
       if (commentData.parentCommentId !== null) {
-        await addReplyToComment(
+        const updatedParentComment = await addReplyToComment(
           {
             parentCommentId: commentData.parentCommentId,
             replyCommentId: insertedCommentId,
           },
           clientSession,
         );
+
+        if (!updatedParentComment) {
+          domainErrorMessage =
+            "Failed to add your reply to the parent comment. Please try again.";
+          throw new Error(domainErrorMessage);
+        }
       }
     });
 
     return {
       type: "success",
-      message: "Comment added successfully",
+      message: "Comment posted successfully",
       fields: { comment: { value: "" } },
     };
   } catch (error) {
     return {
       type: "error",
-      message: "An unexpected error occurred. Please try again later.",
+      message:
+        domainErrorMessage !== null
+          ? domainErrorMessage
+          : "An unexpected error occurred. Please try again later.",
     };
   } finally {
     await clientSession.endSession();

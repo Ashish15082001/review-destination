@@ -1,6 +1,6 @@
 "use client";
 
-import addCommentAction from "@/actions/add-comment";
+import postCommentAction from "@/actions/post-comment";
 import { ApiResponse } from "@/types/apiResponse";
 import { useActionState, useEffect, useRef } from "react";
 
@@ -28,7 +28,7 @@ const initialState: ApiResponse = {};
  */
 export function CommentForm({ reviewId, parentCommentId }: CommentFormProps) {
   const [state, formAction, isPending] = useActionState(
-    addCommentAction,
+    postCommentAction,
     initialState,
   );
 

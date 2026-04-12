@@ -17,6 +17,7 @@ import { ClientSession } from "mongodb";
 /**
  * Validates and inserts a new comment  into the comments collection.
  * @param commentData - The comment  to insert.
+ * @param clientSession - Optional MongoDB client session for transaction support.
  * @returns The string representation of the inserted 's ObjectId.
  */
 export async function insertCommentData(
@@ -30,7 +31,9 @@ export async function insertCommentData(
     });
 
   const collection = await getCommentsCollection();
-  await collection.insertOne(validatedCommentDocument);
+  await collection.insertOne(validatedCommentDocument, {
+    session: clientSession,
+  });
 
   return validatedCommentDocument._id.toString();
 }
@@ -286,6 +289,7 @@ export async function removeDislikeFromComment({
  * Registers a reply comment under its parent by adding the reply's ID to the parent's `replyCommentIds` set.
  * @param parentCommentId - The string representation of the parent comment's ObjectId.
  * @param replyCommentId - The string representation of the reply comment's ObjectId.
+ * @param clientSession - Optional MongoDB client session for transaction support.
  * @returns The updated comment data if the parent document was modified, `null` otherwise.
  */
 export async function addReplyToComment(
@@ -304,6 +308,7 @@ export async function addReplyToComment(
     {
       $addToSet: { replyCommentIds: new ObjectId(replyCommentId) },
     },
+    { session: clientSession },
   );
 
   // revalidateTag(`commentData-${parentCommentId}`, "max");
@@ -314,15 +319,24 @@ export async function addReplyToComment(
     : null;
 }
 
-export async function checkIfCommentExists({
-  commentId,
-}: {
-  commentId: string;
-}): Promise<boolean> {
+/**
+ * Checks if a comment with the given ID exists in the database.
+ * @param commentId - The string representation of the comment's ObjectId.
+ * @param clientSession - Optional MongoDB client session for transaction support.
+ * @returns `true` if the comment exists, `false` otherwise.
+ */
+export async function checkIfCommentExists(
+  {
+    commentId,
+  }: {
+    commentId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<boolean> {
   const collection = await getCommentsCollection();
   const commentDocument = await collection.findOne(
     { _id: new ObjectId(commentId) },
-    { projection: { _id: 1 } },
+    { projection: { _id: 1 }, session: clientSession },
   );
 
   return commentDocument !== null;
