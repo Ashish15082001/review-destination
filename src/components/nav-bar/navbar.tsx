@@ -30,6 +30,13 @@ export default function Navbar() {
             Explore Reviews
           </Link>
 
+          <Link
+            href="/research"
+            className="text-[#2C2C2C] text-sm font-semibold hover:text-[#853853] transition-colors"
+          >
+            Research
+          </Link>
+
           <Suspense fallback={null}>
             <CheckAuth visibility={"private-only"} fallback={null}>
               <Link

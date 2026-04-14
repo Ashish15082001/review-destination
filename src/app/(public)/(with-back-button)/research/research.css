@@ -1,0 +1,587 @@
+/* ── Section labels ── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.section-label-success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.section-label-info {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.section-label-neutral {
+  background-color: #f3f4f4;
+  color: #2c2c2c;
+}
+
+.section-label-outcome {
+  background-color: #fdf4ff;
+  color: #853853;
+}
+
+/* ── Problem cards ── */
+.problem-card {
+  position: relative;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  background: linear-gradient(135deg, #fff5f5, #ffffff);
+  transition: all 0.2s;
+}
+
+.problem-card:hover {
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
+}
+
+.problem-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: #dc2626;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Diagram containers ── */
+.diagram-container {
+  background-color: #1e1b2e;
+  border-radius: 1rem;
+  padding: 2rem;
+  overflow-x: auto;
+}
+
+.diagram-container-success {
+  background-color: #0f291a;
+}
+
+.diagram-container-neutral {
+  background-color: #1a1a2e;
+}
+
+.diagram-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.diagram-arrow {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.diagram-node {
+  position: relative;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  color: white;
+  text-align: center;
+  min-width: 280px;
+  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.diagram-node-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.25rem;
+  font-family: system-ui, sans-serif;
+}
+
+.diagram-node-start {
+  background: linear-gradient(135deg, #4a4458, #2d2640);
+  border-color: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+.diagram-node-danger {
+  background: linear-gradient(135deg, #4a1c1c, #2d1212);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.diagram-node-warning {
+  background: linear-gradient(135deg, #4a3a1c, #2d2412);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.diagram-node-success {
+  background: linear-gradient(135deg, #1a3a2a, #122d1e);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.diagram-node-commit {
+  background: linear-gradient(135deg, #1a4a3a, #0f3a2a);
+  border-color: rgba(34, 197, 94, 0.6);
+  font-weight: 700;
+  font-family: system-ui, sans-serif;
+}
+
+.diagram-badge-danger,
+.diagram-badge-warning,
+.diagram-badge-success {
+  display: block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: system-ui, sans-serif;
+}
+
+.diagram-badge-danger {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.diagram-badge-warning {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+
+.diagram-badge-success {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+/* ── Code blocks ── */
+.code-block-wrapper {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: #1a1625;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.code-block-tag {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.code-block-tag-before {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.code-block-tag-after {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.code-block {
+  margin: 0;
+  background-color: #1e1b2e;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Syntax tokens (Material Palenight) ── */
+.code-block .tk-kw {
+  color: #c792ea;
+}
+.code-block .tk-fn {
+  color: #82aaff;
+}
+.code-block .tk-str {
+  color: #c3e88d;
+}
+.code-block .tk-cm {
+  color: #546e7a;
+  font-style: italic;
+}
+.code-block .tk-ty {
+  color: #ffcb6b;
+}
+.code-block .tk-ct {
+  color: #ff5370;
+}
+
+/* ── Solution steps ── */
+.solution-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.solution-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  font-size: 0.875rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* ── Concept cards ── */
+.concept-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.concept-card-read {
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.concept-card-write {
+  background: linear-gradient(135deg, #fdf4ff, #ffffff);
+  border-color: rgba(133, 56, 83, 0.15);
+}
+
+.concept-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #2c2c2c;
+}
+
+.concept-code {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.75rem;
+  color: #2c2c2c;
+}
+
+/* ── Snapshot timeline ── */
+.snapshot-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.timeline-row-active {
+  transform: scale(1.02);
+}
+
+.timeline-label {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  width: 3rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.timeline-bar {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.75rem;
+}
+
+.timeline-bar-past {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.timeline-bar-active {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.timeline-bar-future {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: rgba(239, 68, 68, 0.5);
+  border: 1px dashed rgba(239, 68, 68, 0.3);
+}
+
+/* ── Scenario cards ── */
+.scenario-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: white;
+}
+
+.scenario-card-danger {
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.scenario-card-success {
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.scenario-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.scenario-tag {
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.scenario-tag-danger {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.scenario-tag-success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.scenario-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.scenario-step {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  background-color: #f9fafb;
+  color: #2c2c2c;
+}
+
+.scenario-step-danger {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.scenario-step-info {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.scenario-step-success {
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.scenario-outcome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.scenario-outcome-danger {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.scenario-outcome-success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+/* ── Decision cards ── */
+.decision-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: #f9fafb;
+}
+
+.decision-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.decision-icon-no {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* ── Decision tree ── */
+.decision-tree {
+  font-size: 0.8125rem;
+}
+
+.tree-node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tree-question {
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+.tree-question-sub {
+  font-weight: 600;
+  color: #2c2c2c;
+  font-size: 0.8125rem;
+}
+
+.tree-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid rgba(133, 56, 83, 0.2);
+}
+
+.tree-sub-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid rgba(133, 56, 83, 0.15);
+  margin-top: 0.5rem;
+}
+
+.tree-branch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tree-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: rgba(133, 56, 83, 0.1);
+  color: #853853;
+  align-self: flex-start;
+}
+
+.tree-answer {
+  color: #2c2c2c;
+  opacity: 0.7;
+}
+
+/* ── Outcome stats ── */
+.outcome-stat {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background-color: #f9fafb;
+}
+
+.outcome-stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.outcome-stat-label {
+  font-size: 0.8125rem;
+  color: rgba(44, 44, 44, 0.6);
+  font-weight: 500;
+}
+
+.outcome-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+}
+
+/* ── Code inline ── */
+.research-section code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background-color: rgba(133, 56, 83, 0.08);
+  color: #853853;
+  font-size: 0.8125em;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .diagram-node {
+    min-width: 0;
+    font-size: 0.6875rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .timeline-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .timeline-label {
+    text-align: left;
+    width: auto;
+  }
+}
