@@ -11,14 +11,14 @@ import {
   mapCommentDataToCommentDocument,
 } from "@/mappers/comment";
 import { getUserDataById } from "./user";
-import { cacheTag } from "next/cache";
+import { cacheTag, revalidateTag } from "next/cache";
 import { ClientSession } from "mongodb";
 
 /**
- * Validates and inserts a new comment  into the comments collection.
- * @param commentData - The comment  to insert.
+ * Validates and inserts a new comment into the comments collection.
+ * @param commentData - The comment data to insert.
  * @param clientSession - Optional MongoDB client session for transaction support.
- * @returns The string representation of the inserted 's ObjectId.
+ * @returns The string representation of the inserted comment's ObjectId.
  */
 export async function insertCommentData(
   commentData: Omit<CommentData, "_id">,
@@ -156,11 +156,13 @@ export async function getCommentRepliesDataWithCommenterInfo({
 
   if (!commentDocument) return [];
 
-  const commentIds = commentDocument.replyCommentIds.map((id) => id.toString());
+  const replyCommentIds = commentDocument.replyCommentIds.map((id) =>
+    id.toString(),
+  );
 
   const commentRepliesDataWithCommenterInfoResponses =
     await getCommentsDataWithCommenterInfoByCommentIds({
-      commentIds,
+      commentIds: replyCommentIds,
     });
 
   return commentRepliesDataWithCommenterInfoResponses;
@@ -186,7 +188,12 @@ export async function addLikeToComment({
       $addToSet: { idsOfUsersWhoLiked: new ObjectId(userId) },
       $pull: { idsOfUsersWhoDisliked: new ObjectId(userId) },
     },
+    {
+      returnDocument: "after",
+    },
   );
+
+  revalidateTag(`commentDataWithCommenterInfo-commentId-${commentId}`, "max");
 
   return updatedCommentDocument !== null
     ? mapCommentDocumentToCommentData(updatedCommentDocument)
@@ -197,7 +204,6 @@ export async function addLikeToComment({
  * Removes a like from a user on a comment.
  * @param commentId - The string representation of the comment's ObjectId.
  * @param userId - The string representation of the user's ObjectId.
- * @param reviewId - The string representation of the review's ObjectId (reserved for cache invalidation).
  * @returns The updated comment data if the document was modified, `null` otherwise.
  */
 export async function removeLikeFromComment({
@@ -206,7 +212,6 @@ export async function removeLikeFromComment({
 }: {
   commentId: string;
   userId: string;
-  reviewId: string;
 }): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
@@ -214,10 +219,12 @@ export async function removeLikeFromComment({
     {
       $pull: { idsOfUsersWhoLiked: new ObjectId(userId) },
     },
+    {
+      returnDocument: "after",
+    },
   );
 
-  // revalidateTag(`commentData-${commentId}`, "max");
-  // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+  revalidateTag(`commentDataWithCommenterInfo-commentId-${commentId}`, "max");
 
   return updatedCommentDocument !== null
     ? mapCommentDocumentToCommentData(updatedCommentDocument)
@@ -244,10 +251,12 @@ export async function addDislikeToComment({
       $addToSet: { idsOfUsersWhoDisliked: new ObjectId(userId) },
       $pull: { idsOfUsersWhoLiked: new ObjectId(userId) },
     },
+    {
+      returnDocument: "after",
+    },
   );
 
-  // revalidateTag(`commentData-${commentId}`, "max");
-  // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+  revalidateTag(`commentDataWithCommenterInfo-commentId-${commentId}`, "max");
 
   return updatedCommentDocument !== null
     ? mapCommentDocumentToCommentData(updatedCommentDocument)
@@ -258,7 +267,6 @@ export async function addDislikeToComment({
  * Removes a dislike from a user on a comment.
  * @param commentId - The string representation of the comment's ObjectId.
  * @param userId - The string representation of the user's ObjectId.
- * @param reviewId - The string representation of the review's ObjectId (reserved for cache invalidation).
  * @returns The updated comment data if the document was modified, `null` otherwise.
  */
 export async function removeDislikeFromComment({
@@ -267,7 +275,6 @@ export async function removeDislikeFromComment({
 }: {
   commentId: string;
   userId: string;
-  reviewId: string;
 }): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
@@ -275,10 +282,12 @@ export async function removeDislikeFromComment({
     {
       $pull: { idsOfUsersWhoDisliked: new ObjectId(userId) },
     },
+    {
+      returnDocument: "after",
+    },
   );
 
-  // revalidateTag(`commentData-${commentId}`, "max");
-  // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+  revalidateTag(`commentDataWithCommenterInfo-commentId-${commentId}`, "max");
 
   return updatedCommentDocument !== null
     ? mapCommentDocumentToCommentData(updatedCommentDocument)
@@ -308,11 +317,16 @@ export async function addReplyToComment(
     {
       $addToSet: { replyCommentIds: new ObjectId(replyCommentId) },
     },
-    { session: clientSession },
+    {
+      returnDocument: "after",
+      session: clientSession,
+    },
   );
 
-  // revalidateTag(`commentData-${parentCommentId}`, "max");
-  // revalidateTag(`commentsData-reviewId-${reviewId}`, "max");
+  revalidateTag(
+    `commentDataWithCommenterInfo-commentId-${parentCommentId}`,
+    "max",
+  );
 
   return updatedCommentDocument !== null
     ? mapCommentDocumentToCommentData(updatedCommentDocument)

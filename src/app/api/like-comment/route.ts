@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { commentId, reviewId } = await request.json();
+    const { commentId } = await request.json();
 
-    if (!commentId || !reviewId) {
+    if (!commentId) {
       return NextResponse.json(
-        { error: true, message: "commentId and reviewId are required" },
+        { error: true, message: "commentId is required" },
         { status: 400 },
       );
     }
@@ -45,11 +45,11 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { commentId, reviewId } = await request.json();
+    const { commentId } = await request.json();
 
-    if (!commentId || !reviewId) {
+    if (!commentId) {
       return NextResponse.json(
-        { error: true, message: "commentId and reviewId are required" },
+        { error: true, message: "commentId is required" },
         { status: 400 },
       );
     }
@@ -66,7 +66,6 @@ export async function DELETE(request: NextRequest) {
     const updated = await removeLikeFromComment({
       commentId,
       userId: userData._id,
-      reviewId,
     });
 
     if (!updated) {
