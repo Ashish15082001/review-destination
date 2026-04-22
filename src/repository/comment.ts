@@ -174,13 +174,16 @@ export async function getCommentRepliesDataWithCommenterInfo({
  * @param userId - The string representation of the user's ObjectId.
  * @returns The updated comment data if the document was modified, `null` otherwise.
  */
-export async function addLikeToComment({
-  commentId,
-  userId,
-}: {
-  commentId: string;
-  userId: string;
-}): Promise<CommentData | null> {
+export async function addLikeToComment(
+  {
+    commentId,
+    userId,
+  }: {
+    commentId: string;
+    userId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
@@ -190,6 +193,7 @@ export async function addLikeToComment({
     },
     {
       returnDocument: "after",
+      session: clientSession,
     },
   );
 
@@ -206,13 +210,16 @@ export async function addLikeToComment({
  * @param userId - The string representation of the user's ObjectId.
  * @returns The updated comment data if the document was modified, `null` otherwise.
  */
-export async function removeLikeFromComment({
-  commentId,
-  userId,
-}: {
-  commentId: string;
-  userId: string;
-}): Promise<CommentData | null> {
+export async function removeLikeFromComment(
+  {
+    commentId,
+    userId,
+  }: {
+    commentId: string;
+    userId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
@@ -221,6 +228,7 @@ export async function removeLikeFromComment({
     },
     {
       returnDocument: "after",
+      session: clientSession,
     },
   );
 
@@ -237,13 +245,16 @@ export async function removeLikeFromComment({
  * @param userId - The string representation of the user's ObjectId.
  * @returns The updated comment data if the document was modified, `null` otherwise.
  */
-export async function addDislikeToComment({
-  commentId,
-  userId,
-}: {
-  commentId: string;
-  userId: string;
-}): Promise<CommentData | null> {
+export async function addDislikeToComment(
+  {
+    commentId,
+    userId,
+  }: {
+    commentId: string;
+    userId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
@@ -253,6 +264,7 @@ export async function addDislikeToComment({
     },
     {
       returnDocument: "after",
+      session: clientSession,
     },
   );
 
@@ -269,13 +281,16 @@ export async function addDislikeToComment({
  * @param userId - The string representation of the user's ObjectId.
  * @returns The updated comment data if the document was modified, `null` otherwise.
  */
-export async function removeDislikeFromComment({
-  commentId,
-  userId,
-}: {
-  commentId: string;
-  userId: string;
-}): Promise<CommentData | null> {
+export async function removeDislikeFromComment(
+  {
+    commentId,
+    userId,
+  }: {
+    commentId: string;
+    userId: string;
+  },
+  clientSession?: ClientSession,
+): Promise<CommentData | null> {
   const collection = await getCommentsCollection();
   const updatedCommentDocument = await collection.findOneAndUpdate(
     { _id: new ObjectId(commentId) },
@@ -284,6 +299,7 @@ export async function removeDislikeFromComment({
     },
     {
       returnDocument: "after",
+      session: clientSession,
     },
   );
 
