@@ -63,6 +63,12 @@ Storing `replyCommentIds` on the parent means **every new child forces an update
 
 ### The Principle
 
+> [!IMPORTANT]
+> **Store the relationship in one direction only — and pick the direction where each write touches only one document.**
+>
+> For one-to-many this means child → parent (`parentCommentId`), not parent → children (`replyCommentIds[]`).
+> "One-way" alone is not enough — the direction matters.
+
 > **The many side owns the relationship, not the one side.**
 
 In a parent → replies relationship:
