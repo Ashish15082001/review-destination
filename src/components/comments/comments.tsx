@@ -7,50 +7,78 @@ import { useEffect, useState } from "react";
 
 export function Comments({
   isRootLevel = false,
-  commentIds,
+  commentIds = [],
+  parentCommentId,
   reviewUserData,
   currentUserData,
   parentCommentData,
 }: {
   isRootLevel?: boolean;
-  commentIds: string[];
+  commentIds?: string[];
+  parentCommentId?: string;
   reviewUserData: UserData;
   currentUserData?: UserData;
   parentCommentData?: CommentDataWithCommenterInfo;
 }) {
   const [commentsDataWithCommenterName, setCommentsDataWithCommenterName] =
     useState<CommentDataWithCommenterInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(commentIds.length > 0);
+  const [isLoading, setIsLoading] = useState(
+    commentIds.length > 0 || !!parentCommentId,
+  );
 
   useEffect(() => {
-    async function fetchCommentsData() {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `/api/comments-with-commenter-name-by-commentIds?${commentIds
-            .map((id) => `commentIds=${id}`)
-            .join("&")}`,
-        );
-        const responseData = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            responseData.error || "Failed to fetch comments data",
+    if (parentCommentId) {
+      async function fetchReplies() {
+        try {
+          setIsLoading(true);
+          const response = await fetch(
+            `/api/comment-replies?commentId=${parentCommentId}`,
           );
-        }
+          const responseData = await response.json();
 
-        if (response.ok) {
-          setCommentsDataWithCommenterName(responseData.commentsData);
+          if (!response.ok) {
+            throw new Error(
+              responseData.error || "Failed to fetch replies",
+            );
+          }
+
+          setCommentsDataWithCommenterName(responseData.commentRepliesData);
+        } catch (error) {
+          console.error("Error fetching replies:", error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching comments data:", error);
-      } finally {
-        setIsLoading(false);
       }
-    }
+      fetchReplies();
+    } else if (commentIds.length > 0) {
+      async function fetchCommentsData() {
+        try {
+          setIsLoading(true);
+          const response = await fetch(
+            `/api/comments-with-commenter-name-by-commentIds?${commentIds
+              .map((id) => `commentIds=${id}`)
+              .join("&")}`,
+          );
+          const responseData = await response.json();
 
-    if (commentIds.length > 0) fetchCommentsData();
-  }, [commentIds]);
+          if (!response.ok) {
+            throw new Error(
+              responseData.error || "Failed to fetch comments data",
+            );
+          }
+
+          if (response.ok) {
+            setCommentsDataWithCommenterName(responseData.commentsData);
+          }
+        } catch (error) {
+          console.error("Error fetching comments data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      fetchCommentsData();
+    }
+  }, [commentIds, parentCommentId]);
 
   if (isLoading) {
     if (isRootLevel)
@@ -68,7 +96,7 @@ export function Comments({
 
     return (
       <div className="p-6">
-        <p className="text-gray-400 text-sm text-center">Loading comments...</p>
+        <p className="text-gray-400 text-sm text-center">Loading...</p>
       </div>
     );
   }
@@ -87,10 +115,8 @@ export function Comments({
       );
 
     return (
-      <div className="p-6">
-        <p className="text-gray-400 text-sm text-center">
-          No comments yet. Be the first to comment!
-        </p>
+      <div className="p-4">
+        <p className="text-gray-400 text-sm text-center">No replies yet.</p>
       </div>
     );
   }

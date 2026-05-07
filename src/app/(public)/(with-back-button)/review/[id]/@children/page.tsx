@@ -14,12 +14,11 @@ export default async function ReviewPage({
 }: PageProps<"/review/[id]">) {
   const { id } = await params;
   const reviewData = await getReviewData(id);
-  const commentsDataWithCommenterInfos = (
-    await getCommentsDataWithCommenterInfoByReviewId({ reviewId: id })
-  ).filter(
-    (commentDataWithCommenterInfo) =>
-      commentDataWithCommenterInfo.parentCommentId === null,
-  ); // required to ensure only top-level comments are fetched here, since replies are fetched in CommentCard component based on parent comment's _id
+  const commentsDataWithCommenterInfo =
+    await getCommentsDataWithCommenterInfoByReviewId({
+      reviewId: id,
+      rootOnly: true,
+    });
 
   if (!reviewData) {
     notFound();
@@ -152,7 +151,7 @@ export default async function ReviewPage({
 
             <Comments
               isRootLevel={true}
-              commentIds={commentsDataWithCommenterInfos.map(
+              commentIds={commentsDataWithCommenterInfo.map(
                 (comment) => comment._id,
               )}
               reviewUserData={reviewUserData}

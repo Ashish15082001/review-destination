@@ -92,22 +92,18 @@ export function CommentCard({
             {commentData.comment}
           </p>
 
-          {/* total replies */}
-          {commentData.replyCommentIds.length > 0 && (
-            <div className="mt-2 text-xs text-gray-400">
-              <button
-                className="hover:underline cursor-pointer"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleToggleCommentRespliesVisibility();
-                }}
-              >
-                {commentData.replyCommentIds.length === 1
-                  ? "1 person replied"
-                  : `${commentData.replyCommentIds.length} people replied`}
-              </button>
-            </div>
-          )}
+          {/* replies toggle */}
+          <div className="mt-2 text-xs text-gray-400">
+            <button
+              className="hover:underline cursor-pointer"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleToggleCommentRespliesVisibility();
+              }}
+            >
+              {isCommentRepliesVisible ? "Hide replies" : "View replies"}
+            </button>
+          </div>
 
           {/* Actions */}
           <CommentActions
@@ -119,9 +115,9 @@ export function CommentCard({
 
       <div className=" ml-4">
         {/* Replies */}
-        {commentData.replyCommentIds.length > 0 && isCommentRepliesVisible && (
+        {isCommentRepliesVisible && (
           <Comments
-            commentIds={commentData.replyCommentIds}
+            parentCommentId={commentData._id}
             reviewUserData={reviewUserData}
             currentUserData={currentUserData}
             parentCommentData={commentData}

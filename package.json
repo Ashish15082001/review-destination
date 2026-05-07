@@ -10,6 +10,7 @@
     "lint": "eslint",
     "migrate:users:add-email-verified-and-password-salt": "ts-node --project tsconfig.scripts.json scripts/add-email-verification-and-password-salt-migration.ts",
     "migrate:comments:rename-repliesIds": "ts-node --project tsconfig.scripts.json scripts/rename-repliesIds-migration.ts",
+    "migrate:comments:remove-replyCommentIds": "ts-node --project tsconfig.scripts.json scripts/remove-reply-comment-ids-migration.ts",
     "seed:all": "ts-node --project tsconfig.scripts.json scripts/seed-all.ts",
     "seed:dummy": "ts-node --project tsconfig.scripts.json scripts/seed-dummy.ts",
     "seed:large": "ts-node --project tsconfig.scripts.json scripts/seed-large.ts"

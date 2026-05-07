@@ -22,9 +22,6 @@ export function mapCommentDocumentToCommentData(
     commentedBy: validatedCommentDocument.commentedBy.toString(),
     commentedOn: validatedCommentDocument.commentedOn,
     comment: validatedCommentDocument.comment,
-    replyCommentIds: validatedCommentDocument.replyCommentIds.map((id) =>
-      id.toString(),
-    ),
     idsOfUsersWhoLiked: validatedCommentDocument.idsOfUsersWhoLiked.map((id) =>
       id.toString(),
     ),
@@ -53,9 +50,6 @@ export function mapCommentDataToCommentDocument(
     commentedBy: toObjectId(validatedCommentData.commentedBy, "commentedBy"),
     commentedOn: validatedCommentData.commentedOn,
     comment: validatedCommentData.comment,
-    replyCommentIds: validatedCommentData.replyCommentIds.map((id) =>
-      toObjectId(id, "replyCommentIds"),
-    ),
     idsOfUsersWhoLiked: validatedCommentData.idsOfUsersWhoLiked.map((id) =>
       toObjectId(id, "idsOfUsersWhoLiked"),
     ),
