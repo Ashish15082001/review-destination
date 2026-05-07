@@ -43,6 +43,10 @@ export function CommentCard({
   currentUserData,
 }: CommentCardProps) {
   const [isCommentRepliesVisible, setIsCommentRepliesVisible] = useState(false);
+  const [repliesData, setRepliesData] = useState<
+    CommentDataWithCommenterInfo[]
+  >([]);
+  const [isRepliesLoading, setIsRepliesLoading] = useState(false);
   const relativeTime = getRelativeTime(new Date(commentData.commentedOn));
 
   // generate a consistent color from the name
@@ -58,8 +62,35 @@ export function CommentCard({
   const colorIndex = commenterName.charCodeAt(0) % colors.length;
   const avatarColor = colors[colorIndex];
 
-  const handleToggleCommentRespliesVisibility = () => {
-    setIsCommentRepliesVisible((prev) => !prev);
+  const handleToggleCommentRepliesVisibility = async () => {
+    if (isCommentRepliesVisible) {
+      setIsCommentRepliesVisible(false);
+      return;
+    }
+
+    if (repliesData.length > 0) {
+      setIsCommentRepliesVisible(true);
+      return;
+    }
+
+    setIsRepliesLoading(true);
+    try {
+      const response = await fetch(
+        `/api/comment-replies?commentId=${commentData._id}`,
+      );
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Failed to fetch replies");
+      }
+
+      setRepliesData(responseData.commentRepliesData);
+      setIsCommentRepliesVisible(true);
+    } catch (error) {
+      console.error("Error fetching replies:", error);
+    } finally {
+      setIsRepliesLoading(false);
+    }
   };
 
   return (
@@ -98,7 +129,7 @@ export function CommentCard({
               className="hover:underline cursor-pointer"
               onClick={(event) => {
                 event.stopPropagation();
-                handleToggleCommentRespliesVisibility();
+                handleToggleCommentRepliesVisibility();
               }}
             >
               {isCommentRepliesVisible ? "Hide replies" : "View replies"}
@@ -113,15 +144,21 @@ export function CommentCard({
         </div>
       </div>
 
-      <div className=" ml-4">
+      <div className="ml-4">
         {/* Replies */}
-        {isCommentRepliesVisible && (
-          <Comments
-            parentCommentId={commentData._id}
-            reviewUserData={reviewUserData}
-            currentUserData={currentUserData}
-            parentCommentData={commentData}
-          />
+        {isRepliesLoading ? (
+          <div className="p-6">
+            <p className="text-gray-400 text-sm text-center">Loading...</p>
+          </div>
+        ) : (
+          isCommentRepliesVisible && (
+            <Comments
+              commentsData={repliesData}
+              reviewUserData={reviewUserData}
+              currentUserData={currentUserData}
+              parentCommentData={commentData}
+            />
+          )
         )}
       </div>
     </div>
